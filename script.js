@@ -974,12 +974,12 @@ function renderExpensesPagination(current, totalPages) {
             return 'Other';
         }
 
-        async function generateReports() {
+      async function generateReports() {
     const startDateString = document.getElementById('report-start-date').value;
     const endDateString = document.getElementById('report-end-date').value;
 
     if (!startDateString || !endDateString) {
-        /*showMessage('Please select both start and end dates for the reports.', 'info');*/
+        // Optionally show a message here
         return;
     }
 
@@ -990,37 +990,37 @@ function renderExpensesPagination(current, totalPages) {
     let allExpenses = [];
     let allSales = [];
 
+    const tbody = document.getElementById('department-report-tbody');
+    tbody.innerHTML = ''; // Clear any existing rows
+
     try {
-        // Fetch all sales and expenses and filter client-side for the report range
+        // Fetch sales
         const salesResponse = await authenticatedFetch(`${API_BASE_URL}/sales`);
         if (salesResponse) {
             const salesData = await salesResponse.json();
-            // IMPORTANT FIX: Ensure salesData is an array before filtering
-            if (Array.isArray(salesData)) {
-                allSales = salesData.filter(s => {
+            if (Array.isArray(salesData.data)) {
+                allSales = salesData.data.filter(s => {
                     const saleDate = new Date(s.date);
                     return saleDate >= startDate && saleDate <= endDate;
                 });
             } else {
                 console.warn('API /sales did not return an array:', salesData);
-               /* showMessage('Sales data format is incorrect. Please check the API response.', 'error');*/
-                allSales = []; // Default to empty array to prevent TypeError
+                allSales = [];
             }
         }
 
+        // Fetch expenses
         const expensesResponse = await authenticatedFetch(`${API_BASE_URL}/expenses`);
         if (expensesResponse) {
             const expensesData = await expensesResponse.json();
-            // IMPORTANT FIX: Ensure expensesData is an array before filtering
-            if (Array.isArray(expensesData)) {
-                allExpenses = expensesData.filter(e => {
+            if (Array.isArray(expensesData.data)) {
+                allExpenses = expensesData.data.filter(e => {
                     const expenseDate = new Date(e.date);
                     return expenseDate >= startDate && expenseDate <= endDate;
                 });
             } else {
                 console.warn('API /expenses did not return an array:', expensesData);
-                /*showMessage('Expenses data format is incorrect. Please check the API response.', 'error');*/
-                allExpenses = []; // Default to empty array to prevent TypeError
+                allExpenses = [];
             }
         }
 
@@ -1031,7 +1031,7 @@ function renderExpensesPagination(current, totalPages) {
         allSales.forEach(sale => {
             const department = getDepartmentFromText(sale.item);
             const saleAmount = sale.number * sale.sp;
-            
+
             overallSales += saleAmount;
             if (!departmentReports[department]) {
                 departmentReports[department] = { sales: 0, expenses: 0 };
@@ -1041,7 +1041,7 @@ function renderExpensesPagination(current, totalPages) {
 
         allExpenses.forEach(expense => {
             const department = getDepartmentFromText(expense.description + ' ' + (expense.source || ''));
-            
+
             overallExpenses += expense.amount;
             if (!departmentReports[department]) {
                 departmentReports[department] = { sales: 0, expenses: 0 };
@@ -1055,13 +1055,14 @@ function renderExpensesPagination(current, totalPages) {
         const overallBalanceElement = document.getElementById('overall-balance');
         overallBalanceElement.textContent = overallBalance.toFixed(2);
         overallBalanceElement.className = overallBalance >= 0 ? 'positive' : 'negative';
+
         const sortedDepartments = Object.keys(departmentReports).sort();
         if (sortedDepartments.length === 0) {
             const row = tbody.insertRow();
             const cell = row.insertCell();
             cell.colSpan = 4;
             cell.textContent = 'No data found for the selected period or departments.';
-            cell.className = 'text-center py-4 text-gray-500'; // Center text and add styling
+            cell.className = 'text-center py-4 text-gray-500';
         } else {
             sortedDepartments.forEach(dept => {
                 const data = departmentReports[dept];
@@ -1081,6 +1082,7 @@ function renderExpensesPagination(current, totalPages) {
         console.error('Error generating reports:', error);
     }
 }
+
 
         // --- Audit Logs Functions ---
         async function fetchAuditLogs() {
