@@ -5,6 +5,9 @@
         let currentUserRole = localStorage.getItem('userRole') || '';
 let currentPage = 1;
 const itemsPerPage = 5;
+let currentSalesPage = 1;
+const salesPerPage = 5;
+
 
         // --- Utility Functions ---
 
@@ -495,22 +498,41 @@ function renderPagination(current, totalPages) {
 
         // --- Sales Functions ---
         async function fetchSales() {
-            try {
-                const dateFilter = document.getElementById('sales-date-filter').value;
-                let url = `${API_BASE_URL}/sales`;
-                if (dateFilter) {
-                    url += `?date=${dateFilter}`;
-                }
+  try {
+    const dateFilter = document.getElementById('sales-date-filter').value;
+    let url = `${API_BASE_URL}/sales`;
+    const params = new URLSearchParams();
+    if (dateFilter) params.append('date', dateFilter);
+    params.append('page', currentSalesPage);
+    params.append('limit', salesPerPage);
+    url += `?${params.toString()}`;
 
-                const response = await authenticatedFetch(url);
-                if (!response) return;
-                const sales = await response.json();
-                renderSalesTable(sales);
-            } catch (error) {
-                console.error('Error fetching sales:', error);
-                alert('Failed to fetch sales: ' + error.message);
-            }
-        }
+    const response = await authenticatedFetch(url);
+    if (!response) return;
+
+    const result = await response.json();
+    renderSalesTable(result.data);
+    renderSalesPagination(result.page, result.pages);
+  } catch (error) {
+    console.error('Error fetching sales:', error);
+    alert('Failed to fetch sales: ' + error.message);
+  }
+}
+function renderSalesPagination(current, totalPages) {
+  const container = document.getElementById('sales-pagination');
+  container.innerHTML = '';
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.disabled = i === current;
+    btn.onclick = () => {
+      currentSalesPage = i;
+      fetchSales();
+    };
+    container.appendChild(btn);
+  }
+}
 
         function renderSalesTable(sales) {
             const tbody = document.querySelector('#sales-table tbody');
