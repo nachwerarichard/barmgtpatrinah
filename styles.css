@@ -82,14 +82,39 @@ h1, h2, h3 {
 }
 
 /* Hamburger menu toggle - hidden on desktop */
-.menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.8em;
-    cursor: pointer;
+/* Base styles */
+.header-right nav {
+    display: flex;
+    gap: 10px;
 }
+
+/* Hide nav by default on small screens */
+@media (max-width: 768px) {
+    .header-right nav {
+        display: none;
+        flex-direction: column;
+        background-color: #333;
+        position: absolute;
+        top: 60px; /* adjust to your header height */
+        right: 0;
+        width: 200px;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+    .header-right.active nav {
+        display: flex;
+    }
+
+    .menu-toggle {
+        display: block; /* Show toggle button on small screens */
+    }
+
+    .header-user-controls {
+        display: none; /* Hide user controls if needed or handle separately */
+    }
+}
+
 
 /* Main Navigation (Horizontal) */
 #main-nav {
