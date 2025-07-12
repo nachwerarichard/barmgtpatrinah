@@ -979,7 +979,7 @@ function renderExpensesPagination(current, totalPages) {
     const endDateString = document.getElementById('report-end-date').value;
 
     if (!startDateString || !endDateString) {
-        showMessage('Please select both start and end dates for the reports.', 'info');
+        /*showMessage('Please select both start and end dates for the reports.', 'info');*/
         return;
     }
 
@@ -1019,7 +1019,7 @@ function renderExpensesPagination(current, totalPages) {
                 });
             } else {
                 console.warn('API /expenses did not return an array:', expensesData);
-                showMessage('Expenses data format is incorrect. Please check the API response.', 'error');
+                /*showMessage('Expenses data format is incorrect. Please check the API response.', 'error');*/
                 allExpenses = []; // Default to empty array to prevent TypeError
             }
         }
