@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patrinah Hotel Management System</title>
     <link rel="stylesheet" href="styles.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div id="login-section">
@@ -16,258 +17,321 @@
     </div>
 
     <div id="main-container" class="container" style="display: none;">
-        <h1>Patrinah Hotel Management System</h1>
+        <header class="app-header">
+            <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
+            <h1>Patrinah Hotel Management System</h1>
+            <span id="current-user-display" class="username-display"></span>
+            <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+        </header>
 
-        <div id="main-content">
-            
-            <nav>
-                <button id="nav-inventory" onclick="showSection('inventory')">Inventory</button>
-                <button id="nav-sales" onclick="showSection('sales')">Sales</button>
-                <button id="nav-expenses" onclick="showSection('expenses')">Expenses</button>
-                <button id="nav-cash-management" onclick="showSection('cash-management')">Cash Management</button>
-                <button id="nav-reports" onclick="showSection('reports')">Reports</button>
-                <button id="nav-audit-logs" onclick="showSection('audit-logs')">Audit Logs</button>
-                <span id="current-user-display" class="username-display"></span>
-                <button id="logout-button" onclick="logout()">Logout</button>
+        <div id="app-wrapper">
+            <nav id="main-nav">
+                <div class="logo-container">
+                    <img src="logo.png" alt="Patrinah Hotel Logo" class="logo">
+                </div>
+                <button id="nav-inventory" onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
+                <button id="nav-sales" onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
+                <button id="nav-expenses" onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
+                <button id="nav-cash-management" onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
+                <button id="nav-reports" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
+                <button id="nav-audit-logs" onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
             </nav>
 
-            <div id="inventory-section" class="section">
-                <h2>Inventory Management</h2>
+            <div id="main-content">
+                <div id="inventory-section" class="section active">
+                    <h2>Inventory Management</h2>
 
-                <h3>Add/Update Inventory Item</h3>
-                <form id="inventory-form">
-                    <input type="hidden" id="inventory-id">
-                    <label for="item">Item:</label>
-                    <input type="text" id="item" required>
-                    <label for="opening">Opening Stock:</label>
-                    <input type="number" id="opening" min="0" required>
-                    <label for="purchases">Purchases:</label>
-                    <input type="number" id="purchases" min="0" required>
-                    <label for="inventory-sales">Sales (deducted from inventory):</label>
-                    <input type="number" id="inventory-sales" min="0" required>
-                    <label for="spoilage">Spoilage:</label>
-                    <input type="number" id="spoilage" min="0" required>
-                    <button type="submit">Save Inventory</button>
-                </form>
+                    <h3>Add/Update Inventory Item</h3>
+                    <form id="inventory-form">
+                        <input type="hidden" id="inventory-id">
+                        <label for="item">Item:</label>
+                        <input type="text" id="item" required>
+                        <label for="opening">Opening Stock:</label>
+                        <input type="number" id="opening" min="0" required>
+                        <label for="purchases">Purchases:</label>
+                        <input type="number" id="purchases" min="0" required>
+                        <label for="inventory-sales">Sales (deducted from inventory):</label>
+                        <input type="number" id="inventory-sales" min="0" required>
+                        <label for="spoilage">Spoilage:</label>
+                        <input type="number" id="spoilage" min="0" required>
+                        <button type="submit"><i class="fas fa-save"></i> Save Inventory</button>
+                    </form>
 
-                <h3>Current Inventory</h3>
-                <div class="filter-controls">
-                    <input type="text" id="search-inventory-item" placeholder="Search by item name">
-                    <input type="number" id="search-inventory-low" placeholder="Filter by closing stock <">
-                    <button onclick="fetchInventory()">Apply Filters</button>
-                </div>
-                <table id="inventory-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Opening</th>
-                            <th>Purchases</th>
-                            <th>Sales</th>
-                            <th>Spoilage</th>
-                            <th>Closing</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
-                <div id="pagination" class="pagination-controls"></div>
+                    <h3>Current Inventory</h3>
+                    <div class="filter-controls">
+                        <input type="text" id="search-inventory-item" placeholder="Search by item name">
+                        <input type="number" id="search-inventory-low" placeholder="Filter by closing stock <">
+                        <button onclick="fetchInventory()"><i class="fas fa-filter"></i> Apply Filters</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Opening</th>
+                                    <th>Purchases</th>
+                                    <th>Sales</th>
+                                    <th>Spoilage</th>
+                                    <th>Closing</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="pagination" class="pagination-controls"></div>
 
-            </div>
-
-            <div id="sales-section" class="section">
-                <h2>Sales Management</h2>
-
-                <h3>Record New Sale</h3>
-                <form id="sale-form">
-                    <input type="hidden" id="sale-id">
-                    <label for="sale-item">Item:</label>
-                    <input type="text" id="sale-item" required>
-                    <label for="sale-number">Number Sold:</label>
-                    <input type="number" id="sale-number" min="1" required>
-                    <label for="sale-bp">Buying Price (BP):</label>
-                    <input type="number" id="sale-bp" step="0.01" min="0" required>
-                    <label for="sale-sp">Selling Price (SP):</label>
-                    <input type="number" id="sale-sp" step="0.01" min="0" required>
-                    <button type="submit">Record Sale</button>
-                </form>
-
-                <h3 class="sales-records-heading">Sales Records</h3>
-                <div class="filter-controls sales-filter-controls">
-                    <label for="sales-date-filter" style="margin-bottom:0;">Filter by Date:</label>
-                    <input type="date" id="sales-date-filter">
-                    <button onclick="fetchSales()">Apply Filters</button>
-                </div>
-                <table id="sales-table" class="sales-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Number</th>
-                            <th>BP</th>
-                            <th>SP</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
-                <div id="sales-pagination" class="pagination-controls"></div>
-
-            </div>
-
-            <div id="expenses-section" class="section">
-                <h2>Expenses Management</h2>
-
-                <h3>Record New Expense</h3>
-                <form id="expense-form">
-                    <input type="hidden" id="expense-id">
-                    <label for="expense-description">Description:</label>
-                    <input type="text" id="expense-description" required>
-                    <label for="expense-amount">Amount:</label>
-                    <input type="number" id="expense-amount" step="0.01" min="0" required>
-                    <label for="expense-receiptId">Receipt ID (Optional):</label>
-                    <input type="text" id="expense-receiptId">
-                    <label for="expense-source">Source (Optional):</label>
-                    <input type="text" id="expense-source">
-                    <label for="expense-responsible">Responsible Person (Optional):</label>
-                    <input type="text" id="expense-responsible">
-                    <button type="submit">Record Expense</button>
-                </form>
-
-                <h3 class="expenses-records-heading">Expense Records</h3>
-                <div class="filter-controls expenses-filter-controls">
-                    <label for="expenses-date-filter" style="margin-bottom:0;">Filter by Date:</label>
-                    <input type="date" id="expenses-date-filter">
-                    <button onclick="fetchExpenses()">Apply Filters</button>
-                </div>
-                <table id="expenses-table" class="expenses-table">
-                    <thead>
-                        <tr>
-                            <th>Description</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                            <th>Receipt ID</th>
-                            <th>Source</th>
-                            <th>Responsible</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
-                <div id="expenses-pagination" class="pagination-controls"></div>
-
-            </div>
-
-            <div id="cash-management-section" class="section">
-                <h2>Cash Management</h2>
-
-                <h3>Record Cash Movement</h3>
-                <form id="cash-journal-form">
-                    <input type="hidden" id="cash-journal-id">
-                    <label for="cash-at-hand">Cash At Hand:</label>
-                    <input type="number" id="cash-at-hand" step="0.01" min="0" required>
-                    <label for="cash-banked">Cash Banked:</label>
-                    <input type="number" id="cash-banked" step="0.01" min="0" required>
-                    <label for="bank-receipt-id">Bank Receipt ID:</label>
-                    <input type="text" id="bank-receipt-id" required>
-                    <label for="responsible-person">Responsible Person:</label>
-                    <input type="text" id="responsible-person" required>
-                    <label for="cash-date">Date:</label>
-                    <input type="date" id="cash-date" required>
-                    <button type="submit">Save Cash Entry</button>
-                </form>
-
-                <h3>Cash Records</h3>
-                <div class="filter-controls">
-                    <label for="cash-filter-date">Filter by Date:</label>
-                    <input type="date" id="cash-filter-date">
-                    <label for="cash-filter-responsible">Filter by Responsible Person:</label>
-                    <input type="text" id="cash-filter-responsible" placeholder="e.g., John Doe">
-                    <button onclick="fetchCashJournal()">Apply Filters</button>
-                </div>
-                <table id="cash-journal-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Cash At Hand</th>
-                            <th>Cash Banked</th>
-                            <th>Bank Receipt ID</th>
-                            <th>Responsible Person</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
-            </div>
-
-            <div id="reports-section" class="section">
-                <h2>Financial Reports</h2>
-
-                <div class="filter-controls">
-                    <label for="report-start-date">Start Date:</label>
-                    <input type="date" id="report-start-date">
-                    <label for="report-end-date">End Date:</label>
-                    <input type="date" id="report-end-date">
-                    <button onclick="generateReports()">Generate Reports</button>
                 </div>
 
-                <h3>Overall Totals</h3>
-                <table id="overall-reports-table">
-                    <thead>
-                        <tr>
-                            <th>Total Sales</th>
-                            <th>Total Expenses</th>
-                            <th>Net Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="overall-sales">0</td>
-                            <td id="overall-expenses">0</td>
-                            <td id="overall-balance">0</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div id="sales-section" class="section">
+                    <h2>Sales Management</h2>
 
-                <!--<h3>Departmental Totals</h3>
-                <table id="departmental-reports-table">
-                    <thead>
-                        <tr>
-                            <th>Department</th>
-                            <th>Total Sales</th>
-                            <th>Total Expenses</th>
-                            <th>Net Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>-->
+                    <h3>Record New Sale</h3>
+                    <form id="sale-form">
+                        <input type="hidden" id="sale-id">
+                        <label for="sale-item">Item:</label>
+                        <input type="text" id="sale-item" required>
+                        <label for="sale-number">Number Sold:</label>
+                        <input type="number" id="sale-number" min="1" required>
+                        <label for="sale-bp">Buying Price (BP):</label>
+                        <input type="number" id="sale-bp" step="0.01" min="0" required>
+                        <label for="sale-sp">Selling Price (SP):</label>
+                        <input type="number" id="sale-sp" step="0.01" min="0" required>
+                        <button type="submit"><i class="fas fa-plus-circle"></i> Record Sale</button>
+                    </form>
+
+                    <h3 class="sales-records-heading">Sales Records</h3>
+                    <div class="filter-controls sales-filter-controls">
+                        <label for="sales-date-filter" style="margin-bottom:0;">Filter by Date:</label>
+                        <input type="date" id="sales-date-filter">
+                        <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="sales-table" class="sales-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Number</th>
+                                    <th>BP</th>
+                                    <th>SP</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="sales-pagination" class="pagination-controls"></div>
+
+                </div>
+
+                <div id="expenses-section" class="section">
+                    <h2>Expenses Management</h2>
+
+                    <h3>Record New Expense</h3>
+                    <form id="expense-form">
+                        <input type="hidden" id="expense-id">
+                        <label for="expense-description">Description:</label>
+                        <input type="text" id="expense-description" required>
+                        <label for="expense-amount">Amount:</label>
+                        <input type="number" id="expense-amount" step="0.01" min="0" required>
+                        <label for="expense-receiptId">Receipt ID (Optional):</label>
+                        <input type="text" id="expense-receiptId">
+                        <label for="expense-source">Source (Optional):</label>
+                        <input type="text" id="expense-source">
+                        <label for="expense-responsible">Responsible Person (Optional):</label>
+                        <input type="text" id="expense-responsible">
+                        <button type="submit"><i class="fas fa-plus-circle"></i> Record Expense</button>
+                    </form>
+
+                    <h3 class="expenses-records-heading">Expense Records</h3>
+                    <div class="filter-controls expenses-filter-controls">
+                        <label for="expenses-date-filter" style="margin-bottom:0;">Filter by Date:</label>
+                        <input type="date" id="expenses-date-filter">
+                        <button onclick="fetchExpenses()"><i class="fas fa-filter"></i> Apply Filters</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="expenses-table" class="expenses-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Receipt ID</th>
+                                    <th>Source</th>
+                                    <th>Responsible</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="expenses-pagination" class="pagination-controls"></div>
+
+                </div>
+
+                <div id="cash-management-section" class="section">
+                    <h2>Cash Management</h2>
+
+                    <h3>Record Cash Movement</h3>
+                    <form id="cash-journal-form">
+                        <input type="hidden" id="cash-journal-id">
+                        <label for="cash-at-hand">Cash At Hand:</label>
+                        <input type="number" id="cash-at-hand" step="0.01" min="0" required>
+                        <label for="cash-banked">Cash Banked:</label>
+                        <input type="number" id="cash-banked" step="0.01" min="0" required>
+                        <label for="bank-receipt-id">Bank Receipt ID:</label>
+                        <input type="text" id="bank-receipt-id" required>
+                        <label for="responsible-person">Responsible Person:</label>
+                        <input type="text" id="responsible-person" required>
+                        <label for="cash-date">Date:</label>
+                        <input type="date" id="cash-date" required>
+                        <button type="submit"><i class="fas fa-money-check-alt"></i> Save Cash Entry</button>
+                    </form>
+
+                    <h3>Cash Records</h3>
+                    <div class="filter-controls">
+                        <label for="cash-filter-date">Filter by Date:</label>
+                        <input type="date" id="cash-filter-date">
+                        <label for="cash-filter-responsible">Filter by Responsible Person:</label>
+                        <input type="text" id="cash-filter-responsible" placeholder="e.g., John Doe">
+                        <button onclick="fetchCashJournal()"><i class="fas fa-filter"></i> Apply Filters</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="cash-journal-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Cash At Hand</th>
+                                    <th>Cash Banked</th>
+                                    <th>Bank Receipt ID</th>
+                                    <th>Responsible Person</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="reports-section" class="section">
+                    <h2>Financial Reports</h2>
+
+                    <div class="filter-controls">
+                        <label for="report-start-date">Start Date:</label>
+                        <input type="date" id="report-start-date">
+                        <label for="report-end-date">End Date:</label>
+                        <input type="date" id="report-end-date">
+                        <button onclick="generateReports()"><i class="fas fa-chart-pie"></i> Generate Reports</button>
+                    </div>
+
+                    <h3>Overall Totals</h3>
+                    <div class="table-responsive">
+                        <table id="overall-reports-table">
+                            <thead>
+                                <tr>
+                                    <th>Total Sales</th>
+                                    <th>Total Expenses</th>
+                                    <th>Net Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="overall-sales">0</td>
+                                    <td id="overall-expenses">0</td>
+                                    <td id="overall-balance">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="audit-logs-section" class="section">
+                    <h2>Audit Logs</h2>
+                    <div class="table-responsive">
+                        <table id="audit-logs-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="audit-pagination" class="pagination-controls"></div>
+
+                </div>
             </div>
-
-            <div id="audit-logs-section" class="section">
-                <h2>Audit Logs</h2>
-
-                <table id="audit-logs-table">
-                    <thead>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>User</th>
-                            <th>Action</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
-                <div id="audit-pagination" class="pagination-controls"></div>
-
-            </div>
-
         </div>
     </div>
-<script src="script.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Basic JavaScript for section display and menu toggle
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId + '-section').classList.add('active');
+
+            // Close the nav on mobile when a section is selected
+            if (window.innerWidth <= 768) {
+                document.getElementById('main-nav').classList.remove('active');
+                document.getElementById('app-wrapper').classList.remove('nav-active');
+            }
+        }
+
+        // Dummy login function (replace with actual authentication)
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginMessage = document.getElementById('login-message');
+
+            if (username === 'admin' && password === 'password') { // Example credentials
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('main-container').style.display = 'block';
+                document.getElementById('current-user-display').textContent = `Logged in as: ${username}`;
+                showSection('inventory'); // Show inventory section by default
+            } else {
+                loginMessage.textContent = 'Invalid username or password.';
+            }
+        }
+
+        function logout() {
+            document.getElementById('login-section').style.display = 'flex'; // Changed to flex for centering
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('login-message').textContent = '';
+        }
+
+        // Toggle mobile navigation
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('main-nav').classList.toggle('active');
+            document.getElementById('app-wrapper').classList.toggle('nav-active');
+        });
+
+        // Initialize display
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initially hide the main container and show login
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('login-section').style.display = 'flex';
+        });
+
+        // Placeholder functions for data fetching and form submission
+        function fetchInventory() { console.log('Fetching inventory...'); }
+        function fetchSales() { console.log('Fetching sales...'); }
+        function fetchExpenses() { console.log('Fetching expenses...'); }
+        function fetchCashJournal() { console.log('Fetching cash journal...'); }
+        function generateReports() { console.log('Generating reports...'); }
+        // ... (You'll have more detailed JavaScript in script.js)
+    </script>
 </body>
 </html>
