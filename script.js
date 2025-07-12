@@ -3,6 +3,8 @@
         let authToken = localStorage.getItem('authToken') || '';
         let currentUsername = localStorage.getItem('username') || '';
         let currentUserRole = localStorage.getItem('userRole') || '';
+let currentPage = 1;
+const itemsPerPage = 5;
 
         // --- Utility Functions ---
 
@@ -337,28 +339,47 @@
 
         // --- Inventory Functions ---
         async function fetchInventory() {
-            try {
-                const itemFilter = document.getElementById('search-inventory-item').value;
-                const lowFilter = document.getElementById('search-inventory-low').value;
+    try {
+        const itemFilter = document.getElementById('search-inventory-item').value;
+        const lowFilter = document.getElementById('search-inventory-low').value;
 
-                let url = `${API_BASE_URL}/inventory`;
-                const params = new URLSearchParams();
-                if (itemFilter) params.append('item', itemFilter);
-                if (lowFilter) params.append('low', lowFilter);
+        let url = `${API_BASE_URL}/inventory`;
+        const params = new URLSearchParams();
+        if (itemFilter) params.append('item', itemFilter);
+        if (lowFilter) params.append('low', lowFilter);
+        params.append('page', currentPage);
+        params.append('limit', itemsPerPage);
 
-                if (params.toString()) {
-                    url += `?${params.toString()}`;
-                }
+        url += `?${params.toString()}`;
 
-                const response = await authenticatedFetch(url);
-                if (!response) return;
-                const inventory = await response.json();
-                renderInventoryTable(inventory);
-            } catch (error) {
-                console.error('Error fetching inventory:', error);
-                alert('Failed to fetch inventory: ' + error.message);
-            }
-        }
+        const response = await authenticatedFetch(url);
+        if (!response) return;
+
+        const result = await response.json();
+        renderInventoryTable(result.data);
+        renderPagination(result.page, result.pages);
+    } catch (error) {
+        console.error('Error fetching inventory:', error);
+        alert('Failed to fetch inventory: ' + error.message);
+    }
+}
+
+function renderPagination(current, totalPages) {
+    const container = document.getElementById('pagination');
+    container.innerHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.disabled = i === current;
+        btn.onclick = () => {
+            currentPage = i;
+            fetchInventory();
+        };
+        container.appendChild(btn);
+    }
+}
+
 
         function renderInventoryTable(inventory) {
             const tbody = document.querySelector('#inventory-table tbody');
