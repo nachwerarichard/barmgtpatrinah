@@ -975,99 +975,119 @@ function renderExpensesPagination(current, totalPages) {
         }
 
         async function generateReports() {
-            const startDateString = document.getElementById('report-start-date').value;
-            const endDateString = document.getElementById('report-end-date').value;
+    const startDateString = document.getElementById('report-start-date').value;
+    const endDateString = document.getElementById('report-end-date').value;
 
-            if (!startDateString || !endDateString) {
-                alert('Please select both start and end dates for the reports.');
-                return;
-            }
+    if (!startDateString || !endDateString) {
+        showMessage('Please select both start and end dates for the reports.', 'info');
+        return;
+    }
 
-            const startDate = new Date(startDateString);
-            const endDate = new Date(endDateString);
-            endDate.setHours(23, 59, 59, 999); // Set to end of day
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+    endDate.setHours(23, 59, 59, 999); // Set to end of day
 
-            let allExpenses = [];
-            let allSales = [];
+    let allExpenses = [];
+    let allSales = [];
 
-            try {
-                // Fetch all sales and expenses and filter client-side for the report range
-                const salesResponse = await authenticatedFetch(`${API_BASE_URL}/sales`);
-                if (salesResponse) {
-                    const salesData = await salesResponse.json();
-                    allSales = salesData.filter(s => {
-                        const saleDate = new Date(s.date);
-                        return saleDate >= startDate && saleDate <= endDate;
-                    });
-                }
-
-                const expensesResponse = await authenticatedFetch(`${API_BASE_URL}/expenses`);
-                if (expensesResponse) {
-                    const expensesData = await expensesResponse.json();
-                    allExpenses = expensesData.filter(e => {
-                        const expenseDate = new Date(e.date);
-                        return expenseDate >= startDate && expenseDate <= endDate;
-                    });
-                }
-
-                const departmentReports = {};
-                let overallSales = 0;
-                let overallExpenses = 0;
-
-                allSales.forEach(sale => {
-                    const department = getDepartmentFromText(sale.item);
-                    const saleAmount = sale.number * sale.sp;
-                    
-                    overallSales += saleAmount;
-                    if (!departmentReports[department]) {
-                        departmentReports[department] = { sales: 0, expenses: 0 };
-                    }
-                    departmentReports[department].sales += saleAmount;
+    try {
+        // Fetch all sales and expenses and filter client-side for the report range
+        const salesResponse = await authenticatedFetch(`${API_BASE_URL}/sales`);
+        if (salesResponse) {
+            const salesData = await salesResponse.json();
+            // IMPORTANT FIX: Ensure salesData is an array before filtering
+            if (Array.isArray(salesData)) {
+                allSales = salesData.filter(s => {
+                    const saleDate = new Date(s.date);
+                    return saleDate >= startDate && saleDate <= endDate;
                 });
-
-                allExpenses.forEach(expense => {
-                    const department = getDepartmentFromText(expense.description + ' ' + (expense.source || ''));
-                    
-                    overallExpenses += expense.amount;
-                    if (!departmentReports[department]) {
-                        departmentReports[department] = { sales: 0, expenses: 0 };
-                    }
-                    departmentReports[department].expenses += expense.amount;
-                });
-
-                document.getElementById('overall-sales').textContent = overallSales.toFixed(2);
-                document.getElementById('overall-expenses').textContent = overallExpenses.toFixed(2);
-                document.getElementById('overall-balance').textContent = (overallSales - overallExpenses).toFixed(2);
-
-                const tbody = document.querySelector('#departmental-reports-table tbody');
-                tbody.innerHTML = '';
-
-                const sortedDepartments = Object.keys(departmentReports).sort();
-
-                if (sortedDepartments.length === 0) {
-                    const row = tbody.insertRow();
-                    row.insertCell().colSpan = 4;
-                    row.insertCell().textContent = 'No data found for the selected period or departments.';
-                } else {
-                    sortedDepartments.forEach(dept => {
-                        const data = departmentReports[dept];
-                        const deptSales = data.sales;
-                        const deptExpenses = data.expenses;
-                        const deptBalance = deptSales - deptExpenses;
-
-                        const row = tbody.insertRow();
-                        row.insertCell().textContent = dept;
-                        row.insertCell().textContent = deptSales.toFixed(2);
-                        row.insertCell().textContent = deptExpenses.toFixed(2);
-                        row.insertCell().textContent = deptBalance.toFixed(2);
-                    });
-                }
-
-            } catch (error) {
-                console.error('Error generating reports:', error);
-                alert('Failed to generate reports: ' + error.message);
+            } else {
+                console.warn('API /sales did not return an array:', salesData);
+                showMessage('Sales data format is incorrect. Please check the API response.', 'error');
+                allSales = []; // Default to empty array to prevent TypeError
             }
         }
+
+        const expensesResponse = await authenticatedFetch(`${API_BASE_URL}/expenses`);
+        if (expensesResponse) {
+            const expensesData = await expensesResponse.json();
+            // IMPORTANT FIX: Ensure expensesData is an array before filtering
+            if (Array.isArray(expensesData)) {
+                allExpenses = expensesData.filter(e => {
+                    const expenseDate = new Date(e.date);
+                    return expenseDate >= startDate && expenseDate <= endDate;
+                });
+            } else {
+                console.warn('API /expenses did not return an array:', expensesData);
+                showMessage('Expenses data format is incorrect. Please check the API response.', 'error');
+                allExpenses = []; // Default to empty array to prevent TypeError
+            }
+        }
+
+        const departmentReports = {};
+        let overallSales = 0;
+        let overallExpenses = 0;
+
+        allSales.forEach(sale => {
+            const department = getDepartmentFromText(sale.item);
+            const saleAmount = sale.number * sale.sp;
+            
+            overallSales += saleAmount;
+            if (!departmentReports[department]) {
+                departmentReports[department] = { sales: 0, expenses: 0 };
+            }
+            departmentReports[department].sales += saleAmount;
+        });
+
+        allExpenses.forEach(expense => {
+            const department = getDepartmentFromText(expense.description + ' ' + (expense.source || ''));
+            
+            overallExpenses += expense.amount;
+            if (!departmentReports[department]) {
+                departmentReports[department] = { sales: 0, expenses: 0 };
+            }
+            departmentReports[department].expenses += expense.amount;
+        });
+
+        document.getElementById('overall-sales').textContent = overallSales.toFixed(2);
+        document.getElementById('overall-expenses').textContent = overallExpenses.toFixed(2);
+        const overallBalance = overallSales - overallExpenses;
+        const overallBalanceElement = document.getElementById('overall-balance');
+        overallBalanceElement.textContent = overallBalance.toFixed(2);
+        overallBalanceElement.className = overallBalance >= 0 ? 'positive' : 'negative';
+
+
+        const tbody = document.querySelector('#departmental-reports-table tbody');
+        tbody.innerHTML = ''; // Clear previous rows
+
+        const sortedDepartments = Object.keys(departmentReports).sort();
+
+        if (sortedDepartments.length === 0) {
+            const row = tbody.insertRow();
+            const cell = row.insertCell();
+            cell.colSpan = 4;
+            cell.textContent = 'No data found for the selected period or departments.';
+            cell.className = 'text-center py-4 text-gray-500'; // Center text and add styling
+        } else {
+            sortedDepartments.forEach(dept => {
+                const data = departmentReports[dept];
+                const deptSales = data.sales;
+                const deptExpenses = data.expenses;
+                const deptBalance = deptSales - deptExpenses;
+
+                const row = tbody.insertRow();
+                row.insertCell().textContent = dept;
+                row.insertCell().textContent = deptSales.toFixed(2);
+                row.insertCell().textContent = deptExpenses.toFixed(2);
+                row.insertCell().textContent = deptBalance.toFixed(2);
+            });
+        }
+
+    } catch (error) {
+        console.error('Error generating reports:', error);
+        showMessage('Failed to generate reports: ' + error.message, 'error');
+    }
+}
 
         // --- Audit Logs Functions ---
         async function fetchAuditLogs() {
