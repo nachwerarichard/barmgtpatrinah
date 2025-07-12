@@ -82,70 +82,14 @@ h1, h2, h3 {
 }
 
 /* Hamburger menu toggle - hidden on desktop */
-/* Base styles */
-/* Show nav normally on large screens */
-#main-nav {
-  display: flex;
-  gap: 10px;
-}
-
-/* Hide hamburger by default on large screens */
 .menu-toggle {
-  display: none;
-}
-
-/* SMALL DEVICES */
-@media (max-width: 768px) {
-  /* Hide nav and user controls initially */
-  #main-nav,
-  .header-user-controls {
     display: none;
-    flex-direction: column;
-    background-color: #222;
-    position: absolute;
-    top: 60px; /* adjust based on your header height */
-    right: 10px;
-    width: 200px;
-    padding: 10px;
-    border-radius: 8px;
-    z-index: 1000;
-  }
-
-  /* Show nav when active */
-  .header-right.active #main-nav,
-  .header-right.active .header-user-controls {
-    display: flex;
-  }
-
-  /* Show hamburger icon */
-  .menu-toggle {
-    display: block;
     background: none;
     border: none;
+    color: white;
     font-size: 1.8em;
-    color: white;
     cursor: pointer;
-  }
-
-  /* Optional: style buttons inside nav for better mobile look */
-  #main-nav button {
-    width: 100%;
-    margin: 5px 0;
-    text-align: left;
-    color: white;
-    background-color: transparent;
-    border: none;
-    padding: 10px;
-    font-size: 1em;
-  }
-
-  /* Background color for nav area (optional) */
-  .header-right {
-    position: relative;
-  }
 }
-
-
 
 /* Main Navigation (Horizontal) */
 #main-nav {
