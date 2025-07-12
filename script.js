@@ -1055,13 +1055,7 @@ function renderExpensesPagination(current, totalPages) {
         const overallBalanceElement = document.getElementById('overall-balance');
         overallBalanceElement.textContent = overallBalance.toFixed(2);
         overallBalanceElement.className = overallBalance >= 0 ? 'positive' : 'negative';
-
-
-        const tbody = document.querySelector('#departmental-reports-table tbody');
-        tbody.innerHTML = ''; // Clear previous rows
-
         const sortedDepartments = Object.keys(departmentReports).sort();
-
         if (sortedDepartments.length === 0) {
             const row = tbody.insertRow();
             const cell = row.insertCell();
