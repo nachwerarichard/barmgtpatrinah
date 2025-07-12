@@ -9,9 +9,8 @@ let currentSalesPage = 1;
 const salesPerPage = 5;
 let currentExpensesPage = 1;
 const expensesPerPage = 5;
-
-
-
+let currentAuditPage = 1;
+const auditLogsPerPage = 5;
         // --- Utility Functions ---
 
         /**
@@ -1072,16 +1071,40 @@ function renderExpensesPagination(current, totalPages) {
 
         // --- Audit Logs Functions ---
         async function fetchAuditLogs() {
-            try {
-                const response = await authenticatedFetch(`${API_BASE_URL}/audit-logs`);
-                if (!response) return;
-                const logs = await response.json();
-                renderAuditLogsTable(logs);
-            } catch (error) {
-                console.error('Error fetching audit logs:', error);
-                alert('Failed to fetch audit logs: ' + error.message);
-            }
-        }
+  try {
+    const params = new URLSearchParams();
+    params.append('page', currentAuditPage);
+    params.append('limit', auditLogsPerPage);
+
+    const response = await authenticatedFetch(`${API_BASE_URL}/audit-logs?${params.toString()}`);
+    if (!response) return;
+
+    const result = await response.json();
+    renderAuditLogsTable(result.data);
+    renderAuditPagination(result.page, result.pages);
+  } catch (error) {
+    console.error('Error fetching audit logs:', error);
+    alert('Failed to fetch audit logs: ' + error.message);
+  }
+}
+
+function renderAuditPagination(current, totalPages) {
+  const container = document.getElementById('audit-pagination');
+  container.innerHTML = '';
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.disabled = i === current;
+    btn.onclick = () => {
+      currentAuditPage = i;
+      fetchAuditLogs();
+    };
+    container.appendChild(btn);
+  }
+}
+
+
 
         function renderAuditLogsTable(logs) {
             const tbody = document.querySelector('#audit-logs-table tbody');
