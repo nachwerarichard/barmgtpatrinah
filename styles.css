@@ -83,37 +83,68 @@ h1, h2, h3 {
 
 /* Hamburger menu toggle - hidden on desktop */
 /* Base styles */
-.header-right nav {
-    display: flex;
-    gap: 10px;
+/* Show nav normally on large screens */
+#main-nav {
+  display: flex;
+  gap: 10px;
 }
 
-/* Hide nav by default on small screens */
+/* Hide hamburger by default on large screens */
+.menu-toggle {
+  display: none;
+}
+
+/* SMALL DEVICES */
 @media (max-width: 768px) {
-    .header-right nav {
-        display: none;
-        flex-direction: column;
-        background-color: #333;
-        position: absolute;
-        top: 60px; /* adjust to your header height */
-        right: 0;
-        width: 200px;
-        padding: 10px;
-        z-index: 1000;
-    }
+  /* Hide nav and user controls initially */
+  #main-nav,
+  .header-user-controls {
+    display: none;
+    flex-direction: column;
+    background-color: #222;
+    position: absolute;
+    top: 60px; /* adjust based on your header height */
+    right: 10px;
+    width: 200px;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1000;
+  }
 
-    .header-right.active nav {
-        display: flex;
-    }
+  /* Show nav when active */
+  .header-right.active #main-nav,
+  .header-right.active .header-user-controls {
+    display: flex;
+  }
 
-    .menu-toggle {
-        display: block; /* Show toggle button on small screens */
-    }
+  /* Show hamburger icon */
+  .menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    color: white;
+    cursor: pointer;
+  }
 
-    .header-user-controls {
-        display: none; /* Hide user controls if needed or handle separately */
-    }
+  /* Optional: style buttons inside nav for better mobile look */
+  #main-nav button {
+    width: 100%;
+    margin: 5px 0;
+    text-align: left;
+    color: white;
+    background-color: transparent;
+    border: none;
+    padding: 10px;
+    font-size: 1em;
+  }
+
+  /* Background color for nav area (optional) */
+  .header-right {
+    position: relative;
+  }
 }
+
 
 
 /* Main Navigation (Horizontal) */
