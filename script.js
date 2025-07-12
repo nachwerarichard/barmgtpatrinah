@@ -654,23 +654,45 @@ function renderSalesPagination(current, totalPages) {
         }
 
         // --- Expenses Functions ---
-        async function fetchExpenses() {
-            try {
-                const dateFilter = document.getElementById('expenses-date-filter').value;
-                let url = `${API_BASE_URL}/expenses`;
-                if (dateFilter) {
-                    url += `?date=${dateFilter}`;
-                }
+       async function fetchExpenses() {
+  try {
+    const dateFilter = document.getElementById('expenses-date-filter').value;
+    const params = new URLSearchParams();
 
-                const response = await authenticatedFetch(url);
-                if (!response) return;
-                const expenses = await response.json();
-                renderExpensesTable(expenses);
-            } catch (error) {
-                console.error('Error fetching expenses:', error);
-                alert('Failed to fetch expenses: ' + error.message);
-            }
-        }
+    if (dateFilter) params.append('date', dateFilter);
+    params.append('page', currentExpensesPage);
+    params.append('limit', expensesPerPage);
+
+    const url = `${API_BASE_URL}/expenses?${params.toString()}`;
+
+    const response = await authenticatedFetch(url);
+    if (!response) return;
+
+    const result = await response.json();
+    renderExpensesTable(result.data);
+    renderExpensesPagination(result.page, result.pages);
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
+    alert('Failed to fetch expenses: ' + error.message);
+  }
+}
+
+function renderExpensesPagination(current, totalPages) {
+  const container = document.getElementById('expenses-pagination');
+  container.innerHTML = '';
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.disabled = i === current;
+    btn.onclick = () => {
+      currentExpensesPage = i;
+      fetchExpenses();
+    };
+    container.appendChild(btn);
+  }
+}
+
 
         function renderExpensesTable(expenses) {
             const tbody = document.querySelector('#expenses-table tbody');
