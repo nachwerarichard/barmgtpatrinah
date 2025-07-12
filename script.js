@@ -79,7 +79,7 @@
             console.log('Current User Role:', currentUserRole); // ADDED THIS LINE FOR DEBUGGING
 
             if (authToken  && currentUserRole) {
-                userDisplay.textContent = `Logged in as: ${currentUsername} (${currentUserRole})`;
+                userDisplay.textContent = `Logged in as  (${currentUserRole})`;
                 
                 // --- Hide Login Section, Show Main Container ---
                 loginSection.style.display = 'none';
