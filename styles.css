@@ -36,7 +36,7 @@ h1, h2, h3 {
 
 /* --- Header Bar (Top Navigation) --- */
 .app-header {
-    background-color: #908ea9; /* Slate Gray - from new palette */
+    background-color: #494949; /* Slate Gray - from new palette */
     color: white;
     padding: 15px 30px;
     display: flex;
