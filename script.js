@@ -82,7 +82,7 @@ const auditLogsPerPage = 5;
             const navButtons = document.querySelectorAll('nav button');
 
             console.log('updateUIForUserRole called. AuthToken present:', !!authToken); // Debugging log
-            console.log('Current Username:', currentUsername); // ADDED THIS LINE FOR DEBUGGING
+            /*console.log('Current Username:', currentUsername); */
             console.log('Current User Role:', currentUserRole); // ADDED THIS LINE FOR DEBUGGING
 
             if (authToken  && currentUserRole) {
