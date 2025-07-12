@@ -971,7 +971,7 @@ function renderExpensesPagination(current, totalPages) {
             if (lowerText.startsWith('conf-') || lowerText.includes('conference')) return 'Conference';
             if (lowerText.startsWith('grdn-') || lowerText.includes('garden')) return 'Gardens';
             if (lowerText.startsWith('accomm-') || lowerText.includes('accommodation') || lowerText.includes('room')) return 'Accommodation';
-            return 'Other';
+            return 'Bar';
         }
 
       async function generateReports() {
