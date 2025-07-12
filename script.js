@@ -7,6 +7,9 @@ let currentPage = 1;
 const itemsPerPage = 5;
 let currentSalesPage = 1;
 const salesPerPage = 5;
+let currentExpensesPage = 1;
+const expensesPerPage = 5;
+
 
 
         // --- Utility Functions ---
