@@ -15,10 +15,8 @@ body {
 .container {
     width: 100%;
     max-width: 100%; /* Increased max-width for more content space */
-    margin: 10px;
     background-color: #ffffff;
     padding: 0; /* Remove padding from main container as internal elements will have it */
-    border-radius: 5px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     display: flex; /* Use flexbox for the main app layout */
     flex-direction: column; /* Stack header, then wrapper */
