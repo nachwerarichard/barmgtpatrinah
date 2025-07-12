@@ -1003,7 +1003,7 @@ function renderExpensesPagination(current, totalPages) {
                 });
             } else {
                 console.warn('API /sales did not return an array:', salesData);
-                showMessage('Sales data format is incorrect. Please check the API response.', 'error');
+               /* showMessage('Sales data format is incorrect. Please check the API response.', 'error');*/
                 allSales = []; // Default to empty array to prevent TypeError
             }
         }
