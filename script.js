@@ -1085,7 +1085,6 @@ function renderExpensesPagination(current, totalPages) {
 
     } catch (error) {
         console.error('Error generating reports:', error);
-        showMessage('Failed to generate reports: ' + error.message, 'error');
     }
 }
 
