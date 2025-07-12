@@ -988,9 +988,9 @@ function renderExpensesPagination(current, totalPages) {
             endDate.setHours(23, 59, 59, 999); // Set to end of day
 
             let allExpenses = [];
+            let allSales = [];
 
             try {
-                let allSales = [];
                 // Fetch all sales and expenses and filter client-side for the report range
                 const salesResponse = await authenticatedFetch(`${API_BASE_URL}/sales`);
                 if (salesResponse) {
