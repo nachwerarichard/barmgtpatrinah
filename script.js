@@ -964,7 +964,7 @@ function renderExpensesPagination(current, totalPages) {
         }
 
         // --- Reports Functions ---
-        function getDepartmentFromText(text) {
+        /*function getDepartmentFromText(text) {
             const lowerText = text.toLowerCase();
             if (lowerText.startsWith('bar-') || lowerText.includes('bar ')) return 'Bar';
             if (lowerText.startsWith('rest-') || lowerText.includes('restaurant')) return 'Restaurant';
@@ -973,7 +973,7 @@ function renderExpensesPagination(current, totalPages) {
             if (lowerText.startsWith('accomm-') || lowerText.includes('accommodation') || lowerText.includes('room')) return 'Accommodation';
             return 'Other';
         }
-
+*/
       async function generateReports() {
     const startDateString = document.getElementById('report-start-date').value;
     const endDateString = document.getElementById('report-end-date').value;
