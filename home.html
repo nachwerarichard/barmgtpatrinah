@@ -7,6 +7,24 @@
     <link rel="stylesheet" href="styles.css"/>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @media print {
+            body * {
+                visibility: hidden; /* Hide everything by default */
+            }
+            #sales-table, #sales-table * {
+                visibility: visible; /* Show only the table and its contents */
+            }
+            #sales-table {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+            .print-button {
+                display: none; /* Hide the print button when printing */
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="login-section">
@@ -110,10 +128,8 @@
                     <input type="date" id="sales-date-filter">
                     <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
                 </div>
-                <div class="controls">
-                     <button onclick="printTable()">🖨️ Print Table</button>
-                      <button onclick="exportTableToExcel('sales-table', 'sales-data')">📁 Export to Excel</button>
-                </div>
+                    <button class="print-button" onclick="window.print()">Print Sales Table</button>
+
                 <div class="table-responsive">
                     <table id="sales-table" class="sales-table">
                         <thead>
