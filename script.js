@@ -103,21 +103,21 @@ const auditLogsPerPage = 5;
                     button.style.display = 'none'; // Hide all buttons by default
                 });
 
-                if (currentUserRole === 'admin') {
+                if (currentUserRole === 'allowRoles') {
                     // Admins see all buttons
                     navButtons.forEach(button => {
                         button.style.display = 'inline-block';
                     });
-                } else if (currentUserRole === 'bar_staff') {
+                } else if (currentUserRole === 'allowedRoles') {
                     // Bar staff ONLY see Sales and Expenses
                     document.getElementById('nav-sales').style.display = 'inline-block';
                     document.getElementById('nav-expenses').style.display = 'inline-block';
                 }
 
                 // Show default section based on role
-                if (currentUserRole === 'admin') {
+                if (currentUserRole === 'allowRoles') {
                     showSection('inventory'); // Admins start with inventory
-                } else if (currentUserRole === 'bar_staff') {
+                } else if (currentUserRole === 'allowedRoles') {
                     showSection('sales'); // Bar staff start with sales
                 }
 
@@ -143,7 +143,9 @@ const auditLogsPerPage = 5;
         function showSection(sectionId) {
             // Define which sections are allowed for each role
             const allowedSections = {
-                'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
+                'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],                'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
+                'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
+
                 'bar_staff': ['sales', 'expenses']
             };
 
