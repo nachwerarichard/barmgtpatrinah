@@ -236,6 +236,7 @@
                 </div>
 
                 <h3>Overall Totals</h3>
+                <button class="export-button" onclick="exportTableToExcelSheetJS('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
                 <div class="table-responsive">
                    <table>
                      <thead>
@@ -251,7 +252,7 @@
 
 
                     <table id="overall-reports-table">
-                        <thead>
+                       <!-- <thead>
                             <tr>
                                 <th>Total Sales</th>
                                 <th>Total Expenses</th>
@@ -263,7 +264,7 @@
                                 <td id="overall-sales">0</td>
                                 <td id="overall-expenses">0</td>
                                 <td id="overall-balance">0</td>
-                            </tr>
+                            </tr>-->
                         </tbody>
                     </table>
                 </div>
