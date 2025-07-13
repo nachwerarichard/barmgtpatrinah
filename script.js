@@ -103,7 +103,7 @@ const auditLogsPerPage = 5;
                     button.style.display = 'none'; // Hide all buttons by default
                 });
 
-                if (currentUserRole === 'allowRoles') {
+                if (currentUserRole === 'admin') {
                     // Admins see all buttons
                     navButtons.forEach(button => {
                         button.style.display = 'inline-block';
@@ -115,7 +115,7 @@ const auditLogsPerPage = 5;
                 }
 
                 // Show default section based on role
-                if (currentUserRole === 'allowRole') {
+                if (currentUserRole === 'admin') {
                     showSection('inventory'); // Admins start with inventory
                 } else if (currentUserRole === 'bar_staff') {
                     showSection('sales'); // Bar staff start with sales
@@ -145,11 +145,6 @@ const auditLogsPerPage = 5;
             const allowedSections = {
                 'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
                 'bar_staff': ['sales', 'expenses']
-               'Nahwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-                 'Wanambi Nelson ': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-                'Nabudde Florene': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-                'Woniala Joshua': ['sales', 'expenses']
-                'Martha': ['sales', 'expenses']
             };
 
             // --- Role-based Access Check ---
