@@ -110,6 +110,10 @@
                     <input type="date" id="sales-date-filter">
                     <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
                 </div>
+                <div class="controls">
+                     <button onclick="printTable()">🖨️ Print Table</button>
+                      <button onclick="exportTableToExcel('sales-table', 'sales-data')">📁 Export to Excel</button>
+                </div>
                 <div class="table-responsive">
                     <table id="sales-table" class="sales-table">
                         <thead>
@@ -358,5 +362,39 @@
         function generateReports() { console.log('Generating reports...'); }
         // ... (You'll have more detailed JavaScript in script.js)
     </script>
+    <SCRIPT>
+    function printTable() {
+  const tableElement = document.getElementById("sales-table");
+  if (!tableElement) {
+    console.error("Table with ID 'sales-table' not found.");
+    return;
+  }
+
+  const clonedTable = tableElement.cloneNode(true);
+  const container = document.createElement('div');
+  container.appendChild(clonedTable);
+
+  const printWindow = window.open();
+  printWindow.document.body.appendChild(container);
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+}
+
+        unction exportTableToExcel(tableID, filename = '') {
+  const table = document.getElementById(sales-table);
+  const tableHTML = table.outerHTML.replace(/ /g, '%20');
+
+  filename = filename ? filename + '.xls' : 'excel_data.xls';
+
+  const downloadLink = document.createElement('a');
+  document.body.appendChild(downloadLink);
+
+  downloadLink.href = 'data:application/vnd.ms-excel,' + tableHTML;
+  downloadLink.download = filename;
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
+</SCRIPT>
 </body>
 </html>
