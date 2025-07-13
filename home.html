@@ -7,50 +7,7 @@
     <link rel="stylesheet" href="styles.css"/>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        @media print {
-            body * {
-                visibility: hidden; /* Hide everything by default */
-            }
-
-            /* Make only the sales-table and its contents visible */
-            #sales-table, #sales-table * {
-                visibility: visible;
-                display: table; /* Crucial for reinforcing table structure */
-            }
-
-            #sales-table {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%; /* Ensure table takes full print width */
-                border-collapse: collapse; /* Re-apply collapse for print */
-            }
-
-            /* Ensure thead and tbody maintain their display roles */
-            #sales-table thead {
-                display: table-header-group; /* This is key for headers to stay at the top */
-            }
-
-            #sales-table tbody {
-                display: table-row-group; /* Ensure body behaves as a row group */
-            }
-
-            #sales-table tr {
-                display: table-row; /* Ensure rows behave as table rows */
-            }
-
-            #sales-table th, #sales-table td {
-                display: table-cell; /* Ensure cells behave as table cells */
-                border: 1px solid #000; /* Use black border for print clarity */
-                padding: 8px;
-            }
-
-            .print-button {
-                display: none; /* Hide the print button when printing */
-            }
-        }
-    </style>
+    
 </head>
 <body>
     <div id="login-section">
@@ -154,7 +111,7 @@
                     <input type="date" id="sales-date-filter">
                     <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
                 </div>
-                    <button class="print-button" onclick="window.print()">Print Sales Table</button>
+                    <button class="export-button" onclick="exportTableToExcelSheetJS('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
 
                 <div class="table-responsive">
                     <table id="sales-table" class="sales-table">
@@ -333,6 +290,8 @@
             </div>
         </div>
     </div>
+        <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+
     <script src="script.js"></script>
     <script>
         // Basic JavaScript for section display and menu toggle
@@ -404,39 +363,17 @@
         function generateReports() { console.log('Generating reports...'); }
         // ... (You'll have more detailed JavaScript in script.js)
     </script>
-    <SCRIPT>
-    function printTable() {
-  const tableElement = document.getElementById("sales-table");
-  if (!tableElement) {
-    console.error("Table with ID 'sales-table' not found.");
-    return;
-  }
+   
+    <script>
+     function exportTableToExcelSheetJS(tableID, filename = 'excel_data') {
+            const table = document.getElementById(tableID);
+            const ws = XLSX.utils.table_to_sheet(table); // Convert HTML table to worksheet
+            const wb = XLSX.utils.book_new(); // Create new workbook
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1"); // Add worksheet to workbook
 
-  const clonedTable = tableElement.cloneNode(true);
-  const container = document.createElement('div');
-  container.appendChild(clonedTable);
-
-  const printWindow = window.open();
-  printWindow.document.body.appendChild(container);
-  printWindow.focus();
-  printWindow.print();
-  printWindow.close();
-}
-
-        unction exportTableToExcel(tableID, filename = '') {
-  const table = document.getElementById(sales-table);
-  const tableHTML = table.outerHTML.replace(/ /g, '%20');
-
-  filename = filename ? filename + '.xls' : 'excel_data.xls';
-
-  const downloadLink = document.createElement('a');
-  document.body.appendChild(downloadLink);
-
-  downloadLink.href = 'data:application/vnd.ms-excel,' + tableHTML;
-  downloadLink.download = filename;
-  downloadLink.click();
-  document.body.removeChild(downloadLink);
-}
-</SCRIPT>
+            /* Export to XLSX file */
+            XLSX.writeFile(wb, filename + '.xlsx');
+        }
+    </script>
 </body>
 </html>
