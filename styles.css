@@ -316,7 +316,7 @@ tr:hover {
 }
 
 .login-logo {
-    max-width: 120px; /* Size for login logo */
+    max-width: 60px; /* Size for login logo */
     height: auto;
     margin-bottom: 25px;
     border-radius: 8px;
