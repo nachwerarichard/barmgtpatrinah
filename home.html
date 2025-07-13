@@ -12,14 +12,40 @@
             body * {
                 visibility: hidden; /* Hide everything by default */
             }
+
+            /* Make only the sales-table and its contents visible */
             #sales-table, #sales-table * {
-                visibility: visible; /* Show only the table and its contents */
+                visibility: visible;
+                display: table; /* Crucial for reinforcing table structure */
             }
+
             #sales-table {
                 position: absolute;
                 left: 0;
                 top: 0;
+                width: 100%; /* Ensure table takes full print width */
+                border-collapse: collapse; /* Re-apply collapse for print */
             }
+
+            /* Ensure thead and tbody maintain their display roles */
+            #sales-table thead {
+                display: table-header-group; /* This is key for headers to stay at the top */
+            }
+
+            #sales-table tbody {
+                display: table-row-group; /* Ensure body behaves as a row group */
+            }
+
+            #sales-table tr {
+                display: table-row; /* Ensure rows behave as table rows */
+            }
+
+            #sales-table th, #sales-table td {
+                display: table-cell; /* Ensure cells behave as table cells */
+                border: 1px solid #000; /* Use black border for print clarity */
+                padding: 8px;
+            }
+
             .print-button {
                 display: none; /* Hide the print button when printing */
             }
