@@ -395,7 +395,7 @@ tr:hover {
 .filter-controls input[type="date"] {
     width: auto;
     flex-grow: 1;
-    min-width: 160px; /* Slightly reduced from 180px */
+    min-width: 100px; /* Slightly reduced from 180px */
     margin-bottom: 0;
     padding: 8px; /* Reduced from 10px */
     border-radius: 6px;
