@@ -29,7 +29,11 @@ const auditLogsPerPage = 5;
                 const expensesHeading = document.querySelector('#expenses-section .expenses-records-heading');
                 const expensesFilter = document.querySelector('#expenses-section .expenses-filter-controls');
                 const expensesTable = document.getElementById('expenses-table');
-
+              
+                const cashHeading = document.querySelector('cash-header');
+                const cashFilter = document.querySelector('filter-controls');
+                const cashTable = document.getElementById('cash-journal-table');
+              
                 if (sectionId === 'sales') {
                     if (salesHeading) salesHeading.style.display = 'none';
                     if (salesFilter) salesFilter.style.display = 'none';
@@ -41,6 +45,16 @@ const auditLogsPerPage = 5;
                     if (salesTable) salesTable.style.display = 'table';
                 }
 
+              if (sectionId === 'cash-management-section') {
+                    if (cashHeading) cashHeading.style.display = 'none';
+                    if (cashFilter) cashFilter.style.display = 'none';
+                    if (cashTable) cashTable.style.display = 'none';
+                }
+              else{
+                 if (cashHeading) cashHeading.style.display = 'block';
+                    if (cashFilter) cashFilter.style.display = 'flex';
+                    if (cashTable) cashTable.style.display = 'table';
+              }
                 if (sectionId === 'expenses') {
                     if (expensesHeading) expensesHeading.style.display = 'none';
                     if (expensesFilter) expensesFilter.style.display = 'none';
