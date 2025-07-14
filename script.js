@@ -19,7 +19,7 @@ const auditLogsPerPage = 5;
          * @param {string} sectionId The ID of the currently active section.
          */
         function applyBarStaffUIRestrictions(sectionId) {
-            if (currentUserRole === 'Martha') {
+            if (currentUserRole === 'Martha' ||currentUserRole === 'Joshua' ) {
                 // Sales section specific elements
                 const salesHeading = document.querySelector('#sales-section .sales-records-heading');
                 const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
@@ -121,7 +121,7 @@ const auditLogsPerPage = 5;
                     navButtons.forEach(button => {
                         button.style.display = 'inline-block';
                     });
-                } else if (currentUserRole === 'Martha') {
+                } else if (currentUserRole === 'Martha' ||currentUserRole === 'Joshua'  ) {
                     // Bar staff ONLY see Sales and Expenses
                     document.getElementById('nav-sales').style.display = 'inline-block';
                     document.getElementById('nav-expenses').style.display = 'inline-block';
@@ -132,7 +132,7 @@ const auditLogsPerPage = 5;
                 // Show default section based on role
                 if (currentUserRole === 'admin') {
                     showSection('inventory'); // Admins start with inventory
-                } else if (currentUserRole === 'Martha') {
+                } else if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
                     showSection('sales'); // Bar staff start with sales
                 }
 
@@ -159,7 +159,8 @@ const auditLogsPerPage = 5;
             // Define which sections are allowed for each role
             const allowedSections = {
                 'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-                'Martha': ['inventory', 'sales', 'expenses', 'cash-management' ]
+                'Martha': ['inventory', 'sales', 'expenses', 'cash-management' ],
+                'Joshua': ['inventory', 'sales', 'expenses', 'cash-management' ]
             };
 
             // --- Role-based Access Check ---
@@ -168,7 +169,7 @@ const auditLogsPerPage = 5;
                 // Redirect to a default allowed section if trying to access unauthorized
                 if (currentUserRole === 'admin') {
                     showSection('inventory'); // Admin default
-                } else if (currentUserRole === 'Martha') {
+                } else if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
                     showSection('sales'); // Bar staff default
                 }
                 return; // Prevent further execution for unauthorized access
@@ -188,7 +189,7 @@ const auditLogsPerPage = 5;
             if (sectionId === 'inventory') {
                 fetchInventory();
             } else if (sectionId === 'sales') {
-                if (currentUserRole === 'Martha') {
+                if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
                     // For bar staff, clear the table and show a message to prompt filtering.
                     document.querySelector('#sales-table tbody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
                     // Ensure the date filter is set to today for convenience if they click "Apply Filters" (though filters are hidden)
@@ -202,7 +203,7 @@ const auditLogsPerPage = 5;
                     fetchSales();
                 }
             } else if (sectionId === 'expenses') {
-                if (currentUserRole === 'Martha') {
+                if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
                     // For bar staff, clear the table and show a message to prompt recording.
                     document.querySelector('#expenses-table tbody').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>';
                     // Ensure the date filter is set to today for convenience
@@ -556,7 +557,7 @@ function renderSalesPagination(current, totalPages) {
         function renderSalesTable(sales) {
             const tbody = document.querySelector('#sales-table tbody');
             // Only render table if not Martha, as per new requirement
-            if (currentUserRole === 'Martha') {
+            if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
                 return;
             }
@@ -599,7 +600,7 @@ function renderSalesPagination(current, totalPages) {
 
         async function submitSaleForm(event) {
             event.preventDefault();
-            if (currentUserRole !== 'admin' && currentUserRole !== 'Martha') {
+            if (currentUserRole !== 'admin' && currentUserRole !== 'Martha' ||  currentUserRole !== 'Joshua') {
                 alert('Permission Denied: You do not have permission to record sales.');
                 return;
             }
@@ -716,7 +717,7 @@ function renderExpensesPagination(current, totalPages) {
         function renderExpensesTable(expenses) {
             const tbody = document.querySelector('#expenses-table tbody');
             // Only render table if not Martha, as per new requirement
-            if (currentUserRole === 'Martha') {
+            if (currentUserRole === 'Martha'||  currentUserRole !== 'Joshua') {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>';
                 return;
             }
@@ -760,7 +761,7 @@ function renderExpensesPagination(current, totalPages) {
 
         async function submitExpenseForm(event) {
             event.preventDefault();
-            if (currentUserRole !== 'admin' && currentUserRole !== 'Martha') {
+            if (currentUserRole !== 'admin' && currentUserRole !== 'Martha' ||currentUserRole !== 'Joshua') {
                 alert('Permission Denied: You do not have permission to record expenses.');
                 return;
             }
@@ -900,7 +901,7 @@ function renderExpensesPagination(current, totalPages) {
 
         async function submitCashJournalForm(event) {
             event.preventDefault();
-            if (currentUserRole !== 'admin' && currentUserRole !== 'Martha') {
+            if (currentUserRole !== 'admin' && currentUserRole !== 'Martha' ||  currentUserRole !== 'Joshua') {
                 alert('Permission Denied: You do not have permission to record cash entries.');
                 return;
             }
