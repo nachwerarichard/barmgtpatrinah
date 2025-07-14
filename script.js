@@ -12,8 +12,6 @@ const expensesPerPage = 5;
 let currentAuditPage = 1;
 const auditLogsPerPage = 5;
         // --- Utility Functions ---
-     const allowedRoles = ['bar_staff', 'Martha', 'Woniala Joshua'];
-     const allowRoles = ['admin', 'Nahwera Richard', 'Wanambi Nelson','Nabudde Florence'];
 
         /**
          * Applies specific UI restrictions for 'bar_staff' role in Sales and Expenses sections.
@@ -21,7 +19,7 @@ const auditLogsPerPage = 5;
          * @param {string} sectionId The ID of the currently active section.
          */
         function applyBarStaffUIRestrictions(sectionId) {
-            if (allowedRoles) {
+            if (currentUserRole === 'bar_staff') {
                 // Sales section specific elements
                 const salesHeading = document.querySelector('#sales-section .sales-records-heading');
                 const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
