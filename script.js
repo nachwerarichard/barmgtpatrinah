@@ -11,16 +11,19 @@ const expensesPerPage = 5;
 let currentAuditPage = 1;
 const auditLogsPerPage = 5;
 
-// --- User Definitions (HARDCODED FOR DEMONSTRATION - INSECURE FOR PRODUCTION) ---
-// In a real application, user authentication and roles would come from a secure backend database.
-const APP_USERS = {
-    'NachweraRichard': { password: 'adminpassword', role: 'admin', displayName: 'Nachwera Richard' },
-    'NabuddeFlorence': { password: 'adminpassword', role: 'admin', displayName: 'Nabudde Florence' },
-    'WanambiNelson': { password: 'adminpassword', role: 'admin', displayName: 'Wanambi Nelson' },
-    'Martha': { password: 'barpassword', role: 'bar_staff', displayName: 'Martha' },
-    'Joshua': { password: 'barpassword', role: 'bar_staff', displayName: 'Joshua' }
-    // Add more users as needed
-};
+// --- Specific User Privilege Lists ---
+// These lists grant privileges by name, overriding/supplementing role-based access.
+const SPECIFIC_ADMINS = ['Nachwera Richard', 'Nabudde Florence', 'Wanambi Nelson'];
+const SPECIFIC_BAR_STAFF = ['Martha', 'Joshua'];
+
+// Helper functions to check for specific user privileges
+function isSpecificAdmin() {
+    return SPECIFIC_ADMINS.includes(currentUsername);
+}
+
+function isSpecificBarStaff() {
+    return SPECIFIC_BAR_STAFF.includes(currentUsername);
+}
 
 // --- Utility Functions ---
 
@@ -30,7 +33,12 @@ const APP_USERS = {
  * @param {string} sectionId The ID of the currently active section.
  */
 function applyBarStaffUIRestrictions(sectionId) {
-    if (currentUserRole === 'bar_staff') {
+    // Check if the current user is a bar staff member (either by role or by specific name)
+    const isBarStaffUser = currentUserRole === 'bar_staff' || isSpecificBarStaff();
+    const isAdminUser = currentUserRole === 'admin' || isSpecificAdmin();
+
+
+    if (isBarStaffUser && !isAdminUser) { // Apply restrictions only if primarily bar staff and not also an admin
         // Sales section specific elements
         const salesHeading = document.querySelector('#sales-section .sales-records-heading');
         const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
@@ -63,7 +71,7 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (expensesTable) expensesTable.style.display = 'table';
         }
     } else {
-        // For admin or other roles, ensure all elements are visible in sales/expenses sections
+        // For admin or other roles (or specific admins), ensure all elements are visible in sales/expenses sections
         const salesHeading = document.querySelector('#sales-section .sales-records-heading');
         const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
         const salesTable = document.getElementById('sales-table');
@@ -96,7 +104,7 @@ function updateUIForUserRole() {
     console.log('Current Username:', currentUsername);
     console.log('Current User Role:', currentUserRole);
 
-    if (authToken && currentUserRole && currentUsername) {
+    if (authToken && currentUsername) { // Check for username as well
         userDisplay.textContent = `${currentUsername} (${currentUserRole})`; // Display both name and role
 
         // --- Hide Login Section, Show Main Container ---
@@ -112,21 +120,25 @@ function updateUIForUserRole() {
             button.style.display = 'none'; // Hide all buttons by default
         });
 
-        if (currentUserRole === 'admin') {
-            // Admins see all buttons
+        // Determine effective role for UI display
+        const isAdminUser = currentUserRole === 'admin' || isSpecificAdmin();
+        const isBarStaffUser = currentUserRole === 'bar_staff' || isSpecificBarStaff();
+
+        if (isAdminUser) {
+            // Admins (including specific admins) see all buttons
             navButtons.forEach(button => {
                 button.style.display = 'inline-block';
             });
-        } else if (currentUserRole === 'bar_staff') {
-            // Bar staff ONLY see Sales and Expenses
+        } else if (isBarStaffUser) {
+            // Bar staff (including specific bar staff) ONLY see Sales and Expenses
             document.getElementById('nav-sales').style.display = 'inline-block';
             document.getElementById('nav-expenses').style.display = 'inline-block';
         }
 
         // Show default section based on role
-        if (currentUserRole === 'admin') {
+        if (isAdminUser) {
             showSection('inventory'); // Admins start with inventory
-        } else if (currentUserRole === 'bar_staff') {
+        } else if (isBarStaffUser) {
             showSection('sales'); // Bar staff start with sales
         }
 
@@ -150,6 +162,10 @@ function updateUIForUserRole() {
  * @param {string} sectionId The ID of the section to show.
  */
 function showSection(sectionId) {
+    // Determine effective role for access control
+    const isAdminUser = currentUserRole === 'admin' || isSpecificAdmin();
+    const isBarStaffUser = currentUserRole === 'bar_staff' || isSpecificBarStaff();
+
     // Define which sections are allowed for each role
     const allowedSections = {
         'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
@@ -157,13 +173,24 @@ function showSection(sectionId) {
     };
 
     // --- Role-based Access Check ---
-    if (currentUserRole && !allowedSections[currentUserRole].includes(sectionId)) {
+    let hasAccess = false;
+    if (isAdminUser && allowedSections['admin'].includes(sectionId)) {
+        hasAccess = true;
+    } else if (isBarStaffUser && allowedSections['bar_staff'].includes(sectionId)) {
+        hasAccess = true;
+    }
+
+    if (!hasAccess) {
         alert('Access Denied: You do not have permission to view this section.');
         // Redirect to a default allowed section if trying to access unauthorized
-        if (currentUserRole === 'admin') {
+        if (isAdminUser) {
             showSection('inventory'); // Admin default
-        } else if (currentUserRole === 'bar_staff') {
+        } else if (isBarStaffUser) {
             showSection('sales'); // Bar staff default
+        } else {
+             // If not a recognized role, force logout or show a generic message
+             alert('Your session is invalid or you lack permissions. Please log in.');
+             logout();
         }
         return; // Prevent further execution for unauthorized access
     }
@@ -182,7 +209,7 @@ function showSection(sectionId) {
     if (sectionId === 'inventory') {
         fetchInventory();
     } else if (sectionId === 'sales') {
-        if (currentUserRole === 'bar_staff') {
+        if (isBarStaffUser && !isAdminUser) { // If primarily bar staff (and not also admin)
             // For bar staff, clear the table and show a message to prompt filtering.
             document.querySelector('#sales-table tbody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
             // Ensure the date filter is set to today for convenience if they click "Apply Filters" (though filters are hidden)
@@ -196,7 +223,7 @@ function showSection(sectionId) {
             fetchSales();
         }
     } else if (sectionId === 'expenses') {
-        if (currentUserRole === 'bar_staff') {
+        if (isBarStaffUser && !isAdminUser) { // If primarily bar staff (and not also admin)
             // For bar staff, clear the table and show a message to prompt recording.
             document.querySelector('#expenses-table tbody').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>';
             // Ensure the date filter is set to today for convenience
@@ -289,64 +316,46 @@ async function login() {
 
     loginMessage.textContent = 'Logging in...';
 
-    // --- Hardcoded User Authentication (INSECURE FOR PRODUCTION) ---
-    const user = APP_USERS[usernameInput];
+    try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: usernameInput, password: passwordInput })
+        });
 
-    if (user && user.password === passwordInput) {
-        authToken = btoa(`${usernameInput}:${passwordInput}`); // Still generate a basic auth token
-        currentUsername = user.displayName;
-        currentUserRole = user.role;
+        if (response.ok) {
+            const data = await response.json();
+            authToken = btoa(`${usernameInput}:${passwordInput}`); // Re-generate basic auth token for consistency
+            currentUsername = data.username; // Get username from backend
+            currentUserRole = data.role;     // Get role from backend
 
-        localStorage.setItem('authToken', authToken);
-        localStorage.setItem('username', currentUsername);
-        localStorage.setItem('userRole', currentUserRole);
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('username', currentUsername);
+            localStorage.setItem('userRole', currentUserRole);
 
-        loginMessage.textContent = '';
-        console.log('Login successful, calling updateUIForUserRole...');
-        updateUIForUserRole(); // Update UI based on new role
-    } else {
-        // Fallback to backend authentication if user not found in hardcoded list
-        try {
-            const response = await fetch(`${API_BASE_URL}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username: usernameInput, password: passwordInput })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                authToken = btoa(`${usernameInput}:${passwordInput}`);
-                currentUsername = data.username; // Assuming backend returns username
-                currentUserRole = data.role; // Assuming backend returns role
-
-                localStorage.setItem('authToken', authToken);
-                localStorage.setItem('username', currentUsername);
-                localStorage.setItem('userRole', currentUserRole);
-
-                loginMessage.textContent = '';
-                console.log('Backend login successful, calling updateUIForUserRole...');
-                updateUIForUserRole();
-            } else {
-                const errorData = await response.json();
-                loginMessage.textContent = errorData.error || 'Invalid username or password.';
-                authToken = '';
-                currentUsername = '';
-                currentUserRole = '';
-                localStorage.clear();
-                console.log('Login failed (backend).');
-                updateUIForUserRole();
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            loginMessage.textContent = 'Network error or server unavailable.';
+            loginMessage.textContent = '';
+            console.log('Login successful, calling updateUIForUserRole...');
+            updateUIForUserRole(); // Update UI based on new role
+        } else {
+            const errorData = await response.json();
+            loginMessage.textContent = errorData.error || 'Invalid username or password.';
             authToken = '';
             currentUsername = '';
             currentUserRole = '';
             localStorage.clear();
+            console.log('Login failed.');
             updateUIForUserRole();
         }
+    } catch (error) {
+        console.error('Login error:', error);
+        loginMessage.textContent = 'Network error or server unavailable.';
+        authToken = '';
+        currentUsername = '';
+        currentUserRole = '';
+        localStorage.clear();
+        updateUIForUserRole();
     }
 }
 
@@ -435,7 +444,7 @@ function renderInventoryTable(inventory) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        if (currentUserRole === 'admin') { // Admin can edit/delete
+        if (currentUserRole === 'admin' || isSpecificAdmin()) { // Admin can edit/delete
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -455,7 +464,7 @@ function renderInventoryTable(inventory) {
 
 async function submitInventoryForm(event) {
     event.preventDefault();
-    if (currentUserRole !== 'admin') {
+    if (currentUserRole !== 'admin' && !isSpecificAdmin()) {
         alert('Permission Denied: Only administrators can add/update inventory.');
         return;
     }
@@ -504,7 +513,7 @@ function populateInventoryForm(item) {
 }
 
 async function deleteInventory(id) {
-    if (currentUserRole !== 'admin') {
+    if (currentUserRole !== 'admin' && !isSpecificAdmin()) {
         alert('Permission Denied: Only administrators can delete inventory.');
         return;
     }
@@ -566,8 +575,11 @@ function renderSalesPagination(current, totalPages) {
 
 function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
-    // Only render table if not bar_staff, as per new requirement
-    if (currentUserRole === 'bar_staff') {
+    // Only render table if not bar_staff (either by role or by specific name), as per new requirement
+    const isBarStaffUser = currentUserRole === 'bar_staff' || isSpecificBarStaff();
+    const isAdminUser = currentUserRole === 'admin' || isSpecificAdmin();
+
+    if (isBarStaffUser && !isAdminUser) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
         return;
     }
@@ -590,7 +602,7 @@ function renderSalesTable(sales) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        if (currentUserRole === 'admin') { // Admin can edit/delete
+        if (currentUserRole === 'admin' || isSpecificAdmin()) { // Admin can edit/delete
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -610,7 +622,10 @@ function renderSalesTable(sales) {
 
 async function submitSaleForm(event) {
     event.preventDefault();
-    if (currentUserRole !== 'admin' && currentUserRole !== 'bar_staff') {
+    const isBarStaffUser = currentUserRole === 'bar_staff' || isSpecificBarStaff();
+    const isAdminUser = currentUserRole === 'admin' || isSpecificAdmin();
+
+    if (!isAdminUser && !isBarStaffUser) {
         alert('Permission Denied: You do not have permission to record sales.');
         return;
     }
@@ -624,8 +639,8 @@ async function submitSaleForm(event) {
 
     try {
         let response;
-        if (id) { // Edit operation (Admin only)
-            if (currentUserRole !== 'admin') {
+        if (id) { // Edit operation
+            if (!isAdminUser) { // Only admins can edit
                 alert('Permission Denied: Only administrators can edit sales.');
                 return;
             }
@@ -633,7 +648,7 @@ async function submitSaleForm(event) {
                 method: 'PUT',
                 body: JSON.stringify(saleData)
             });
-        } else { // New sale creation (Admin or Bar Staff)
+        } else { // New sale creation
             response = await authenticatedFetch(`${API_BASE_URL}/sales`, {
                 method: 'POST',
                 body: JSON.stringify(saleData)
@@ -661,7 +676,7 @@ function populateSaleForm(sale) {
 }
 
 async function deleteSale(id) {
-    if (currentUserRole !== 'admin') {
+    if (currentUserRole !== 'admin' && !isSpecificAdmin()) {
         alert('Permission Denied: Only administrators can delete sales.');
         return;
     }
@@ -726,8 +741,11 @@ function renderExpensesPagination(current, totalPages) {
 
 function renderExpensesTable(expenses) {
     const tbody = document.querySelector('#expenses-table tbody');
-    // Only render table if not bar_staff, as per new requirement
-    if (currentUserRole === 'bar_staff') {
+    // Only render table if not bar_staff (either by role or by specific name), as per new requirement
+    const isBarStaffUser = currentUserRole === 'bar_staff' || isSpecificBarStaff();
+    const isAdminUser = currentUserRole === 'admin' || isSpecificAdmin();
+
+    if (isBarStaffUser && !isAdminUser) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>';
         return;
     }
@@ -751,7 +769,7 @@ function renderExpensesTable(expenses) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        if (currentUserRole === 'admin') { // Admin can edit/delete
+        if (currentUserRole === 'admin' || isSpecificAdmin()) { // Admin can edit/delete
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -771,7 +789,10 @@ function renderExpensesTable(expenses) {
 
 async function submitExpenseForm(event) {
     event.preventDefault();
-    if (currentUserRole !== 'admin' && currentUserRole !== 'bar_staff') {
+    const isBarStaffUser = currentUserRole === 'bar_staff' || isSpecificBarStaff();
+    const isAdminUser = currentUserRole === 'admin' || isSpecificAdmin();
+
+    if (!isAdminUser && !isBarStaffUser) {
         alert('Permission Denied: You do not have permission to record expenses.');
         return;
     }
@@ -786,8 +807,8 @@ async function submitExpenseForm(event) {
 
     try {
         let response;
-        if (id) { // Edit operation (Admin only)
-            if (currentUserRole !== 'admin') {
+        if (id) { // Edit operation
+            if (!isAdminUser) { // Only admins can edit
                 alert('Permission Denied: Only administrators can edit expenses.');
                 return;
             }
@@ -795,7 +816,7 @@ async function submitExpenseForm(event) {
                 method: 'PUT',
                 body: JSON.stringify(expenseData)
             });
-        } else { // New expense creation (Admin or Bar Staff)
+        } else { // New expense creation
             response = await authenticatedFetch(`${API_BASE_URL}/expenses`, {
                 method: 'POST',
                 body: JSON.stringify(expenseData)
@@ -824,7 +845,7 @@ function populateExpenseForm(expense) {
 }
 
 async function deleteExpense(id) {
-    if (currentUserRole !== 'admin') {
+    if (currentUserRole !== 'admin' && !isSpecificAdmin()) {
         alert('Permission Denied: Only administrators can delete expenses.');
         return;
     }
@@ -891,7 +912,7 @@ function renderCashJournalTable(records) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        if (currentUserRole === 'admin') { // Admin can edit/delete
+        if (currentUserRole === 'admin' || isSpecificAdmin()) { // Admin can edit/delete
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -911,7 +932,10 @@ function renderCashJournalTable(records) {
 
 async function submitCashJournalForm(event) {
     event.preventDefault();
-    if (currentUserRole !== 'admin' && currentUserRole !== 'bar_staff') { // Bar staff can also record cash entries
+    const isBarStaffUser = currentUserRole === 'bar_staff' || isSpecificBarStaff();
+    const isAdminUser = currentUserRole === 'admin' || isSpecificAdmin();
+
+    if (!isAdminUser && !isBarStaffUser) {
         alert('Permission Denied: You do not have permission to record cash entries.');
         return;
     }
@@ -926,8 +950,8 @@ async function submitCashJournalForm(event) {
 
     try {
         let response;
-        if (id) { // Edit operation (Admin only)
-            if (currentUserRole !== 'admin') {
+        if (id) { // Edit operation
+            if (!isAdminUser) { // Only admins can edit
                 alert('Permission Denied: Only administrators can edit cash entries.');
                 return;
             }
@@ -935,7 +959,7 @@ async function submitCashJournalForm(event) {
                 method: 'PUT',
                 body: JSON.stringify(cashData)
             });
-        } else { // New entry creation (Admin or Bar Staff)
+        } else { // New entry creation
             response = await authenticatedFetch(`${API_BASE_URL}/cash-journal`, {
                 method: 'POST',
                 body: JSON.stringify(cashData)
@@ -969,7 +993,7 @@ function populateCashJournalForm(record) {
 }
 
 async function deleteCashJournal(id) {
-    if (currentUserRole !== 'admin') {
+    if (currentUserRole !== 'admin' && !isSpecificAdmin()) {
         alert('Permission Denied: Only administrators can delete cash entries.');
         return;
     }
@@ -1146,6 +1170,7 @@ function renderAuditPagination(current, totalPages) {
         container.appendChild(btn);
     }
 }
+
 
 
 function renderAuditLogsTable(logs) {
