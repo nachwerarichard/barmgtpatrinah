@@ -50,11 +50,7 @@ const auditLogsPerPage = 5;
                     cashFilter.style.display = 'none';
                     cashTable.style.display = 'none';
                 }
-              else{
-                 if (cashHeading) cashHeading.style.display = 'block';
-                    if (cashFilter) cashFilter.style.display = 'flex';
-                    if (cashTable) cashTable.style.display = 'table';
-              }
+             
                 if (sectionId === 'expenses') {
                     if (expensesHeading) expensesHeading.style.display = 'none';
                     if (expensesFilter) expensesFilter.style.display = 'none';
