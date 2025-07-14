@@ -190,9 +190,7 @@ form input[type="number"],
 form input[type="date"],
 form input[type="password"],
 form select {
-    /* Original: width: calc(100% - 24px); */
-    width: 100%; /* Allows it to take full width on small screens */
-    max-width: 400px; /* Limits width on larger screens */
+    width: calc(100% - 24px);
     padding: 12px;
     margin-bottom: 20px;
     border: 1px solid #c7c7d4; /* Cool Gray */
@@ -214,7 +212,6 @@ form select:focus {
 
 form button {
     width: auto;
-    /* Removed max-width: 200px; */
     background-color: #28a745; /* Green (kept original for action buttons) */
     color: white;
     cursor: pointer;
@@ -223,10 +220,9 @@ form button {
     border: none;
     border-radius: 6px;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    display: inline-flex; /* Changed back to inline-flex */
-    margin: 15px 0 0 0; /* Adjusted margin to align with left */
-    align-items: center; /* Re-added for inline-flex */
-    gap: 8px; /* Re-added for inline-flex */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 form button:hover {
@@ -396,15 +392,13 @@ tr:hover {
 .filter-controls input[type="text"],
 .filter-controls input[type="number"],
 .filter-controls input[type="date"] {
-    /* Original: width: auto; flex-grow: 1; min-width: 180px; */
-    width: 100%; /* Allows it to take full width on small screens */
-    max-width: 250px; /* Limits width on larger screens for filters */
-    min-width: 180px; /* Retain a minimum width */
+    width: auto;
+    flex-grow: 1;
+    min-width: 180px;
     margin-bottom: 0;
     padding: 10px;
     border-radius: 6px;
     font-size: 0.95em;
-    flex-grow: 0; /* Prevent it from growing too much within flex container */
 }
 
 .filter-controls button {
@@ -549,10 +543,6 @@ tr:hover {
         padding: 30px;
     }
 
-    #login-section input {
-        width: calc(100% - 30px); /* Maintain full width for login inputs on mobile */
-    }
-
     .filter-controls {
         flex-direction: column;
         align-items: stretch;
@@ -563,7 +553,6 @@ tr:hover {
     .filter-controls button {
         width: 100%;
         min-width: unset;
-        max-width: unset; /* Remove max-width on mobile for filters */
     }
 
     table {
