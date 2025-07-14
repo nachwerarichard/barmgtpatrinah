@@ -156,9 +156,9 @@
                 <div class="filter-controls expenses-filter-controls">
                     <label for="expenses-date-filter" style="margin-bottom:0;">Filter by Date:</label>
                     <input type="date" id="expenses-date-filter">
+                    <button onclick="fetchExpenses()"><i class="fas fa-filter"></i> Apply Filters</button>
                 </div>
                 <div class="table-responsive">
-                   <button onclick="fetchExpenses()"><i class="fas fa-filter"></i> Apply Filters</button>
                     <table id="expenses-table" class="expenses-table">
                         <thead>
                             <tr>
@@ -174,8 +174,8 @@
                         <tbody>
                         </tbody>
                     </table>
-                     <div id="expenses-pagination" class="pagination-controls"></div>
                 </div>
+                <div id="expenses-pagination" class="pagination-controls"></div>
 
             </div>
 
