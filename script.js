@@ -90,7 +90,10 @@ function showConfirm(message) {
  * @param {string} sectionId The ID of the currently active section.
  */
 function applyBarStaffUIRestrictions(sectionId) {
-    if (currentUserRole === 'bar_staff') {
+    // Determine if the current user has bar staff-like privileges
+    const isBarStaffLike = ['bar_staff', 'Woniala Joshua', 'Martha'].includes(currentUserRole);
+
+    if (isBarStaffLike) {
         // Sales section specific elements
         const salesHeading = document.querySelector('#sales-section .sales-records-heading');
         const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
@@ -182,12 +185,18 @@ function updateUIForUserRole() {
             button.style.display = 'none'; // Hide all buttons by default
         });
 
-        if (currentUserRole === 'admin') {
+        // Determine if the current user has admin-like privileges
+        const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole);
+        // Determine if the current user has bar staff-like privileges
+        const isBarStaffLike = ['bar_staff', 'Woniala Joshua', 'Martha'].includes(currentUserRole);
+
+
+        if (isAdminLike) {
             // Admins see all buttons
             navButtons.forEach(button => {
                 button.style.display = 'inline-block';
             });
-        } else if (currentUserRole === 'bar_staff') {
+        } else if (isBarStaffLike) {
             // Bar staff ONLY see Sales and Expenses
             document.getElementById('nav-sales').style.display = 'inline-block';
             document.getElementById('nav-expenses').style.display = 'inline-block';
@@ -196,9 +205,9 @@ function updateUIForUserRole() {
         }
 
         // Show default section based on role
-        if (currentUserRole === 'admin') {
+        if (isAdminLike) {
             showSection('inventory'); // Admins start with inventory
-        } else if (currentUserRole === 'bar_staff') {
+        } else if (isBarStaffLike) {
             showSection('sales'); // Bar staff start with sales
         } else {
             // For other roles, maybe show a welcome message or restrict further
@@ -229,21 +238,25 @@ function showSection(sectionId) {
     const allowedSections = {
         'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'bar_staff': ['sales', 'expenses'],
-        // Assuming 'guest' or other roles can only see 'welcome'
         'guest': ['welcome'],
+        // Match backend roles exactly, including the trailing space for 'Wanambi Nelson '
         'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'], // Admin-like
-        'Wanambi Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],   // Admin-like
+        'Wanambi Nelson ': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],   // Admin-like (corrected role string)
         'Nabudde Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'], // Admin-like
         'Woniala Joshua': ['sales', 'expenses'], // Bar staff-like
         'Martha': ['sales', 'expenses']          // Bar staff-like
     };
 
+    // Get the allowed sections for the current user's role
+    const userAllowedSections = allowedSections[currentUserRole];
+
     // --- Role-based Access Check ---
-    if (currentUserRole && !allowedSections[currentUserRole]?.includes(sectionId)) {
+    // If the current user's role is not defined in allowedSections, or if the section is not allowed for their role
+    if (!userAllowedSections || !userAllowedSections.includes(sectionId)) {
         showMessage('Access Denied: You do not have permission to view this section.');
-        // Redirect to a default allowed section if trying to access unauthorized
-        if (allowedSections[currentUserRole] && allowedSections[currentUserRole].length > 0) {
-            showSection(allowedSections[currentUserRole][0]); // Redirect to first allowed section for their role
+        // Redirect to the first allowed section for their role, or 'welcome' if no sections are allowed/role is unknown
+        if (userAllowedSections && userAllowedSections.length > 0) {
+            showSection(userAllowedSections[0]); // Redirect to first allowed section
         } else {
             showSection('welcome'); // Fallback for roles with no allowed sections or unknown role
         }
@@ -263,10 +276,6 @@ function showSection(sectionId) {
 
 
     // --- Apply Bar Staff UI Restrictions (Headings, Filters, Tables) ---
-    // This function needs to be updated to check for specific user names if their roles are custom strings
-    // For now, it checks if the role is literally 'bar_staff'.
-    // If 'Nachwera Richard' has role 'Nachwera Richard', they won't be treated as 'bar_staff' by this function.
-    // Let's modify this to check for admin-like or bar_staff-like behavior
     const isBarStaffLike = ['bar_staff', 'Woniala Joshua', 'Martha'].includes(currentUserRole);
 
     if (isBarStaffLike) {
@@ -512,7 +521,7 @@ async function logout() {
 // --- Inventory Functions ---
 async function fetchInventory() {
     // Determine if the current user has admin-like privileges for inventory
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         // This check is already in showSection, but good to have here for direct calls
         showMessage('Permission Denied: Only administrators can view/manage inventory.');
@@ -575,7 +584,7 @@ function renderInventoryTable(inventory) {
         return;
     }
 
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
 
     inventory.forEach(item => {
         const row = tbody.insertRow();
@@ -608,7 +617,7 @@ function renderInventoryTable(inventory) {
 
 async function submitInventoryForm(event) {
     event.preventDefault();
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         showMessage('Permission Denied: Only administrators can add/update inventory.');
         return;
@@ -664,7 +673,7 @@ function populateInventoryForm(item) {
 }
 
 async function deleteInventory(id) {
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         showMessage('Permission Denied: Only administrators can delete inventory.');
         return;
@@ -706,7 +715,8 @@ async function fetchSales() {
         const result = await response.json();
         renderSalesTable(result.data);
         renderSalesPagination(result.page, result.pages);
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Error fetching sales:', error);
         showMessage('Failed to fetch sales: ' + error.message);
     }
@@ -749,7 +759,7 @@ function renderSalesTable(sales) {
         return;
     }
 
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
 
     sales.forEach(sale => {
         const row = tbody.insertRow();
@@ -781,7 +791,7 @@ function renderSalesTable(sales) {
 
 async function submitSaleForm(event) {
     event.preventDefault();
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     const isBarStaffLike = ['bar_staff', 'Woniala Joshua', 'Martha'].includes(currentUserRole);
 
     if (!isAdminLike && !isBarStaffLike) { // Only admin-like or bar_staff-like can record sales
@@ -841,7 +851,7 @@ function populateSaleForm(sale) {
 }
 
 async function deleteSale(id) {
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         showMessage('Permission Denied: Only administrators can delete sales.');
         return;
@@ -929,7 +939,7 @@ function renderExpensesTable(expenses) {
         return;
     }
 
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
 
     expenses.forEach(expense => {
         const row = tbody.insertRow();
@@ -962,7 +972,7 @@ function renderExpensesTable(expenses) {
 
 async function submitExpenseForm(event) {
     event.preventDefault();
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     const isBarStaffLike = ['bar_staff', 'Woniala Joshua', 'Martha'].includes(currentUserRole);
 
     if (!isAdminLike && !isBarStaffLike) { // Only admin-like or bar_staff-like can record expenses
@@ -1024,7 +1034,7 @@ function populateExpenseForm(expense) {
 }
 
 async function deleteExpense(id) {
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         showMessage('Permission Denied: Only administrators can delete expenses.');
         return;
@@ -1052,7 +1062,7 @@ async function deleteExpense(id) {
 // --- Cash Management Functions ---
 async function fetchCashJournal() {
     // Determine if the current user has admin-like privileges for cash management
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         showMessage('Permission Denied: Only administrators can view/manage cash journal.');
         return;
@@ -1093,7 +1103,7 @@ function renderCashJournalTable(records) {
         return;
     }
 
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
 
     records.forEach(record => {
         const row = tbody.insertRow();
@@ -1125,7 +1135,7 @@ function renderCashJournalTable(records) {
 
 async function submitCashJournalForm(event) {
     event.preventDefault();
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     const isBarStaffLike = ['bar_staff', 'Woniala Joshua', 'Martha'].includes(currentUserRole);
 
     if (!isAdminLike && !isBarStaffLike) { // Only admin-like or bar_staff-like can record cash entries
@@ -1192,7 +1202,7 @@ function populateCashJournalForm(record) {
 }
 
 async function deleteCashJournal(id) {
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         showMessage('Permission Denied: Only administrators can delete cash entries.');
         return;
@@ -1230,7 +1240,7 @@ function getDepartmentFromText(text) {
 
 async function generateReports() {
     // Determine if the current user has admin-like privileges for reports
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         showMessage('Permission Denied: Only administrators can generate reports.');
         return;
@@ -1351,7 +1361,7 @@ async function generateReports() {
 // --- Audit Logs Functions ---
 async function fetchAuditLogs() {
     // Determine if the current user has admin-like privileges for audit logs
-    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson', 'Nabudde Florence'].includes(currentUserRole);
+    const isAdminLike = ['admin', 'Nachwera Richard', 'Wanambi Nelson ', 'Nabudde Florence'].includes(currentUserRole); // Corrected role string for Wanambi Nelson
     if (!isAdminLike) {
         showMessage('Permission Denied: Only administrators can view audit logs.');
         return;
