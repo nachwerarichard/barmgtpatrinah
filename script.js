@@ -40,11 +40,14 @@ const auditLogsPerPage = 5;
                     if (salesHeading) salesHeading.style.display = 'none';
                     if (salesFilter) salesFilter.style.display = 'none';
                     if (salesTable) salesTable.style.display = 'none';
+                    if (excelbtnTable) excelbtnTable.style.display = 'none';
+
                 } else {
                     // Ensure these are visible if not in sales section (e.g., if admin switches to sales)
                     if (salesHeading) salesHeading.style.display = 'block';
                     if (salesFilter) salesFilter.style.display = 'flex'; // Use flex for filter controls
                     if (salesTable) salesTable.style.display = 'table';
+                    if (excelbtnTable) excelbtnTable.style.display = 'block';
                 }
 
               if (sectionId === 'cash-management') {
