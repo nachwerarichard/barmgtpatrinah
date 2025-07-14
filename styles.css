@@ -190,7 +190,9 @@ form input[type="number"],
 form input[type="date"],
 form input[type="password"],
 form select {
-    width: calc(100% - 24px);
+    /* Original: width: calc(100% - 24px); */
+    width: 100%; /* Allows it to take full width on small screens */
+    max-width: 400px; /* Limits width on larger screens */
     padding: 12px;
     margin-bottom: 20px;
     border: 1px solid #c7c7d4; /* Cool Gray */
@@ -392,13 +394,15 @@ tr:hover {
 .filter-controls input[type="text"],
 .filter-controls input[type="number"],
 .filter-controls input[type="date"] {
-    width: auto;
-    flex-grow: 1;
-    min-width: 180px;
+    /* Original: width: auto; flex-grow: 1; min-width: 180px; */
+    width: 100%; /* Allows it to take full width on small screens */
+    max-width: 250px; /* Limits width on larger screens for filters */
+    min-width: 180px; /* Retain a minimum width */
     margin-bottom: 0;
     padding: 10px;
     border-radius: 6px;
     font-size: 0.95em;
+    flex-grow: 0; /* Prevent it from growing too much within flex container */
 }
 
 .filter-controls button {
@@ -543,6 +547,10 @@ tr:hover {
         padding: 30px;
     }
 
+    #login-section input {
+        width: calc(100% - 30px); /* Maintain full width for login inputs on mobile */
+    }
+
     .filter-controls {
         flex-direction: column;
         align-items: stretch;
@@ -553,6 +561,7 @@ tr:hover {
     .filter-controls button {
         width: 100%;
         min-width: unset;
+        max-width: unset; /* Remove max-width on mobile for filters */
     }
 
     table {
