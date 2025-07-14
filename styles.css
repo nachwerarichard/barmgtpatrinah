@@ -214,6 +214,7 @@ form select:focus {
 
 form button {
     width: auto;
+    max-width: 200px; /* Added to limit button width */
     background-color: #28a745; /* Green (kept original for action buttons) */
     color: white;
     cursor: pointer;
@@ -222,9 +223,9 @@ form button {
     border: none;
     border-radius: 6px;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    display: block; /* Changed from inline-flex to block */
+    margin: 15px auto 0 auto; /* Added margin for spacing and centering */
+    /* Removed: align-items and gap as they are not applicable to block display */
 }
 
 form button:hover {
