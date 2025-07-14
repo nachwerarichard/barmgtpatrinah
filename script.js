@@ -46,9 +46,9 @@ const auditLogsPerPage = 5;
                 }
 
               if (sectionId === 'cash-management') {
-                    if (cashHeading) cashHeading.style.display = 'none';
-                    if (cashFilter) cashFilter.style.display = 'none';
-                    if (cashTable) cashTable.style.display = 'none';
+                    cashHeading.style.display = 'none';
+                    cashFilter.style.display = 'none';
+                    cashTable.style.display = 'none';
                 }
               else{
                  if (cashHeading) cashHeading.style.display = 'block';
