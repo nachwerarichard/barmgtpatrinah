@@ -45,7 +45,7 @@ const auditLogsPerPage = 5;
                     if (salesTable) salesTable.style.display = 'table';
                 }
 
-              if (sectionId === 'cash-management-section') {
+              if (sectionId === 'cash-management') {
                     if (cashHeading) cashHeading.style.display = 'none';
                     if (cashFilter) cashFilter.style.display = 'none';
                     if (cashTable) cashTable.style.display = 'none';
@@ -158,7 +158,7 @@ const auditLogsPerPage = 5;
             // Define which sections are allowed for each role
             const allowedSections = {
                 'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-                'Martha': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs' ]
+                'Martha': ['inventory', 'sales', 'expenses', 'cash-management' ]
             };
 
             // --- Role-based Access Check ---
