@@ -110,7 +110,7 @@ const auditLogsPerPage = 5;
                     // Bar staff ONLY see Sales and Expenses
                     document.getElementById('nav-sales').style.display = 'inline-block';
                     document.getElementById('nav-expenses').style.display = 'inline-block';
-                    document.getElementById('nav-cashmanagement').style.display = 'inline-block';
+                    document.getElementById('nav-cash-management').style.display = 'inline-block';
 
                 }
 
