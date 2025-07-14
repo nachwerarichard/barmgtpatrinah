@@ -101,7 +101,7 @@ const auditLogsPerPage = 5;
                     button.style.display = 'none'; // Hide all buttons by default
                 });
 
-                if (currentUserRole === 'admin') {
+                if (currentUserRole === 'admin' || currentUserRole === 'Nachwera Richard') {
                     // Admins see all buttons
                     navButtons.forEach(button => {
                         button.style.display = 'inline-block';
@@ -113,7 +113,7 @@ const auditLogsPerPage = 5;
                 }
 
                 // Show default section based on role
-                if (currentUserRole === 'admin') {
+                if (currentUserRole === 'admin' || currentUserRole === 'Nachwera Richard') {
                     showSection('inventory'); // Admins start with inventory
                 } else if (currentUserRole === 'bar_staff') {
                     showSection('sales'); // Bar staff start with sales
