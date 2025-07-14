@@ -142,7 +142,7 @@ const auditLogsPerPage = 5;
             // Define which sections are allowed for each role
             const allowedSections = {
                 'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-                'Martha': ['sales', 'expenses','cash-management']
+                'Martha': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs' ]
             };
 
             // --- Role-based Access Check ---
