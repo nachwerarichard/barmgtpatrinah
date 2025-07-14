@@ -24,7 +24,7 @@ const auditLogsPerPage = 5;
                 const salesHeading = document.querySelector('#sales-section .sales-records-heading');
                 const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
                 const salesTable = document.getElementById('sales-table');
-                const excelbtnTable =  document.querySelector('#sales-section .export button');
+                const excelbtnTable =  document.querySelector('#sales-section .export-button');
 
 
                 // Expenses section specific elements
