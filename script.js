@@ -103,21 +103,21 @@ const auditLogsPerPage = 5;
                     button.style.display = 'none'; // Hide all buttons by default
                 });
 
-                if (currentUserRole === 'allowRoles') {
+                if (currentUserRole === 'admin') {
                     // Admins see all buttons
                     navButtons.forEach(button => {
                         button.style.display = 'inline-block';
                     });
-                } else if (currentUserRole === 'allowedRoles') {
+                } else if (currentUserRole === 'bar_staff') {
                     // Bar staff ONLY see Sales and Expenses
                     document.getElementById('nav-sales').style.display = 'inline-block';
                     document.getElementById('nav-expenses').style.display = 'inline-block';
                 }
 
                 // Show default section based on role
-                if (currentUserRole === 'allowRoles') {
+                if (currentUserRole === 'admin') {
                     showSection('inventory'); // Admins start with inventory
-                } else if (currentUserRole === 'allowedRoles') {
+                } else if (currentUserRole === 'bar_staff') {
                     showSection('sales'); // Bar staff start with sales
                 }
 
@@ -143,9 +143,7 @@ const auditLogsPerPage = 5;
         function showSection(sectionId) {
             // Define which sections are allowed for each role
             const allowedSections = {
-                'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],                'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-                'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-
+                'admin': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
                 'bar_staff': ['sales', 'expenses']
             };
 
@@ -175,7 +173,7 @@ const auditLogsPerPage = 5;
             if (sectionId === 'inventory') {
                 fetchInventory();
             } else if (sectionId === 'sales') {
-                if (currentUserRole === 'allowRoles') {
+                if (currentUserRole === 'bar_staff') {
                     // For bar staff, clear the table and show a message to prompt filtering.
                     document.querySelector('#sales-table tbody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
                     // Ensure the date filter is set to today for convenience if they click "Apply Filters" (though filters are hidden)
@@ -189,7 +187,7 @@ const auditLogsPerPage = 5;
                     fetchSales();
                 }
             } else if (sectionId === 'expenses') {
-                if (currentUserRole === 'allowRoles') {
+                if (currentUserRole === 'bar_staff') {
                     // For bar staff, clear the table and show a message to prompt recording.
                     document.querySelector('#expenses-table tbody').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>';
                     // Ensure the date filter is set to today for convenience
@@ -747,7 +745,7 @@ function renderExpensesPagination(current, totalPages) {
 
         async function submitExpenseForm(event) {
             event.preventDefault();
-            if (currentUserRole !== 'admin' && currentUserRole !== 'allowedRoles') {
+            if (currentUserRole !== 'admin' && currentUserRole !== 'bar_staff') {
                 alert('Permission Denied: You do not have permission to record expenses.');
                 return;
             }
@@ -763,7 +761,7 @@ function renderExpensesPagination(current, totalPages) {
             try {
                 let response;
                 if (id) { // Edit operation (Admin only)
-                    if (currentUserRole !== 'allowRoles') {
+                    if (currentUserRole !== 'admin') {
                         alert('Permission Denied: Only administrators can edit expenses.');
                         return;
                     }
@@ -867,7 +865,7 @@ function renderExpensesPagination(current, totalPages) {
                 const actionsCell = row.insertCell();
                 actionsCell.className = 'actions';
 
-                if (currentUserRole === 'allowRoles') { // Admin can edit/delete
+                if (currentUserRole === 'admin') { // Admin can edit/delete
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
                     editButton.className = 'edit';
@@ -887,7 +885,7 @@ function renderExpensesPagination(current, totalPages) {
 
         async function submitCashJournalForm(event) {
             event.preventDefault();
-            if (currentUserRole !== 'allowRoles' && currentUserRole !== 'allowedRoles') {
+            if (currentUserRole !== 'admin' && currentUserRole !== 'bar_staff') {
                 alert('Permission Denied: You do not have permission to record cash entries.');
                 return;
             }
@@ -903,7 +901,7 @@ function renderExpensesPagination(current, totalPages) {
             try {
                 let response;
                 if (id) { // Edit operation (Admin only)
-                    if (currentUserRole !== 'allowRoles') {
+                    if (currentUserRole !== 'admin') {
                         alert('Permission Denied: Only administrators can edit cash entries.');
                         return;
                     }
