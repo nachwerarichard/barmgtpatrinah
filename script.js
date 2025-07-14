@@ -31,7 +31,7 @@ const auditLogsPerPage = 5;
                 const expensesTable = document.getElementById('expenses-table');
               
                 const cashHeading = document.querySelector('cash-header');
-                const cashFilter = document.querySelector('filter-controls');
+                const cashFilter = document.querySelector('cash-filter-controls');
                 const cashTable = document.getElementById('cash-journal-table');
               
                 if (sectionId === 'sales') {
