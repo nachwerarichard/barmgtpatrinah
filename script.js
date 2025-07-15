@@ -105,12 +105,14 @@ function applyBarStaffUIRestrictions(sectionId) {
     // Sales section specific elements
     const salesHeading = document.querySelector('#sales-section .sales-records-heading');
     const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
+    const paginationControl = document.querySelector('#sales-section .pagination-controls');
     const salesTable = document.getElementById('sales-table');
     const excelbtnTable = document.querySelector('#sales-section .export-button');
 
     // Expenses section specific elements
     const expensesHeading = document.querySelector('#expenses-section .expenses-records-heading');
     const expensesFilter = document.querySelector('#expenses-section .expenses-filter-controls');
+    const expensePag = document.querySelector('#expenses-section .pagination-controls');
     const expensesTable = document.getElementById('expenses-table');
 
     // Cash Management section specific elements
@@ -125,12 +127,15 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (salesFilter) salesFilter.style.display = 'none';
             if (salesTable) salesTable.style.display = 'none';
             if (excelbtnTable) excelbtnTable.style.display = 'none';
+           if (paginationControl) paginationControl.style.display = 'none';
         } else {
             // Ensure these are visible if not in sales section (e.g., if a different admin role switches to sales)
             if (salesHeading) salesHeading.style.display = 'block';
             if (salesFilter) salesFilter.style.display = 'flex'; // Use flex for filter controls
             if (salesTable) salesTable.style.display = 'table';
             if (excelbtnTable) excelbtnTable.style.display = 'block';
+            if (paginationControl) paginationControl.style.display = 'block';
+
         }
 
         if (sectionId === 'cash-management') {
@@ -147,11 +152,14 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (expensesHeading) expensesHeading.style.display = 'none';
             if (expensesFilter) expensesFilter.style.display = 'none';
             if (expensesTable) expensesTable.style.display = 'none';
+            if (expensePag) expensePag.style.display = 'none';
+
         } else {
             // Ensure these are visible if not in expenses section
             if (expensesHeading) expensesHeading.style.display = 'block';
             if (expensesFilter) expensesFilter.style.display = 'flex'; // Use flex for filter controls
             if (expensesTable) expensesTable.style.display = 'table';
+            if (expensePag) expensePag.style.display = 'block';
         }
     } else {
         // For Nachwera Richard, Nelson, Florence, or other roles, ensure all elements are visible
