@@ -393,13 +393,22 @@ tr:hover {
 .filter-controls input[type="text"],
 .filter-controls input[type="number"],
 .filter-controls input[type="date"] {
-    width: auto;
-    flex-grow: 1;
-    min-width: 100px; /* Slightly reduced from 180px */
-    margin-bottom: 0;
-    padding: 8px; /* Reduced from 10px */
-    border-radius: 6px;
-    font-size: 0.9em; /* Slightly reduced from 0.95em */
+    width: 100%; /* Make them take up full available width within their container */
+    max-width: 180px; /* Set a maximum width to prevent them from becoming too wide */
+    min-width: 80px; /* Ensure a minimum width for usability */
+    padding: 6px 10px; /* Slightly reduced vertical padding, standard horizontal */
+    border: 1px solid #ccc; /* A subtle border for definition */
+    border-radius: 4px; /* Slightly smaller border-radius for a more compact look */
+    font-size: 0.875em; /* A common and readable font size */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* If your filter controls are in a flex container, you might also want to adjust that */
+.filter-controls {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line on smaller screens */
+    gap: 10px; /* Add some space between filter controls */
+    align-items: center; /* Vertically align items */
 }
 
 .filter-controls button {
