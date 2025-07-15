@@ -121,7 +121,7 @@ const auditLogsPerPage = 5;
                     button.style.display = 'none'; // Hide all buttons by default
                 });
 
-                if (currentUserRole === 'Nachwera Richard') {
+                if (currentUserRole === 'Nachwera Richard ' || currentUserRole === 'Nelson' || currentUserRole === 'Florence ') {
                     // Nachwera Richards see all buttons
                     navButtons.forEach(button => {
                         button.style.display = 'inline-block';
@@ -135,7 +135,7 @@ const auditLogsPerPage = 5;
                 }
 
                 // Show default section based on role
-                if (currentUserRole === 'Nachwera Richard') {
+                if (currentUserRole === 'Nachwera Richard' || currentUserRole === 'Nelson' || currentUserRole === 'Florence ') {
                     showSection('inventory'); // Nachwera Richards start with inventory
                 } else if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
                     showSection('sales'); // Bar staff start with sales
