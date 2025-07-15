@@ -1257,18 +1257,27 @@ async function fetchAuditLogs() {
 
 function renderAuditPagination(current, totalPages) {
     const container = document.getElementById('audit-pagination');
-    container.innerHTML = '';
+    container.innerHTML = ''; // Clear existing buttons
 
-    for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        btn.disabled = i === current;
-        btn.onclick = () => {
-            currentAuditPage = i;
-            fetchAuditLogs();
-        };
-        container.appendChild(btn);
-    }
+    // Create "Prev" button
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Prev';
+    prevButton.disabled = current === 1; // Disable if on the first page
+    prevButton.onclick = () => {
+        currentAuditPage--; // Decrement page number
+        fetchAuditLogs();
+    };
+    container.appendChild(prevButton);
+
+    // Create "Next" button
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.disabled = current === totalPages; // Disable if on the last page
+    nextButton.onclick = () => {
+        currentAuditPage++; // Increment page number
+        fetchAuditLogs();
+    };
+    container.appendChild(nextButton);
 }
 
 
