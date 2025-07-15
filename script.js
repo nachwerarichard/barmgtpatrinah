@@ -164,6 +164,8 @@ const auditLogsPerPage = 5;
             // Define which sections are allowed for each role
             const allowedSections = {
                 'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
+                'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
+                'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
                 'Martha': ['inventory', 'sales', 'expenses', 'cash-management' ],
                 'Joshua': ['inventory', 'sales', 'expenses', 'cash-management' ]
             };
