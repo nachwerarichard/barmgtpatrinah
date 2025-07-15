@@ -174,7 +174,7 @@ const auditLogsPerPage = 5;
             if (currentUserRole && !allowedSections[currentUserRole].includes(sectionId)) {
                 alert('Access Denied: You do not have permission to view this section.');
                 // Redirect to a default allowed section if trying to access unauthorized
-                if (currentUserRole === 'Nachwera Richard') {
+                if (currentUserRole === 'Nachwera Richard' || currentUserRole === 'Nelson' || currentUserRole === 'Florence') {
                     showSection('inventory'); // Nachwera Richard default
                 } else if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
                     showSection('sales'); // Bar staff default
@@ -432,7 +432,7 @@ function renderPagination(current, totalPages) {
                 const actionsCell = row.insertCell();
                 actionsCell.className = 'actions';
 
-                if (currentUserRole === 'Nachwera Richard') { // Nachwera Richard can edit/delete
+                if (currentUserRole === 'Nachwera Richard' || currentUserRole === 'Nelson' || currentUserRole === 'Florence') { // Nachwera Richard can edit/delete
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
                     editButton.className = 'edit';
@@ -453,7 +453,7 @@ function renderPagination(current, totalPages) {
         async function submitInventoryForm(event) {
             event.preventDefault();
             if (currentUserRole !== 'Nachwera Richard') {
-                alert('Permission Denied: Only Nachwera Richardistrators can add/update inventory.');
+                alert('Permission Denied: Only administrators can add/update inventory.');
                 return;
             }
             const id = document.getElementById('inventory-id').value;
@@ -501,8 +501,8 @@ function renderPagination(current, totalPages) {
         }
 
         async function deleteInventory(id) {
-            if (currentUserRole !== 'Nachwera Richard') {
-                alert('Permission Denied: Only Nachwera Richardistrators can delete inventory.');
+            if (currentUserRole !== 'Nachwera Richard' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence') {
+                alert('Permission Denied: Only administrators can delete inventory.');
                 return;
             }
             if (!confirm('Are you sure you want to delete this inventory item?')) return;
@@ -587,7 +587,7 @@ function renderSalesPagination(current, totalPages) {
                 const actionsCell = row.insertCell();
                 actionsCell.className = 'actions';
 
-                if (currentUserRole === 'Nachwera Richard') { // Nachwera Richard can edit/delete
+                if (currentUserRole === 'Nachwera Richard' || currentUserRole === 'Nelson' || currentUserRole === 'Florence') { // Nachwera Richard can edit/delete
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
                     editButton.className = 'edit';
@@ -607,7 +607,7 @@ function renderSalesPagination(current, totalPages) {
 
         async function submitSaleForm(event) {
             event.preventDefault();
-            if (currentUserRole !== 'Nachwera Richard' && currentUserRole !== 'Martha' ||  currentUserRole !== 'Joshua') {
+            if (currentUserRole !== 'Nachwera Richard' && currentUserRole !== 'Martha' ||  currentUserRole !== 'Joshua' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence') {
                 alert('Permission Denied: You do not have permission to record sales.');
                 return;
             }
@@ -622,8 +622,8 @@ function renderSalesPagination(current, totalPages) {
             try {
                 let response;
                 if (id) { // Edit operation (Nachwera Richard only)
-                    if (currentUserRole !== 'Nachwera Richard') {
-                        alert('Permission Denied: Only Nachwera Richardistrators can edit sales.');
+                    if (currentUserRole !== 'Nachwera Richard' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence') {
+                        alert('Permission Denied: Only administrators can edit sales.');
                         return;
                     }
                     response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
@@ -658,7 +658,7 @@ function renderSalesPagination(current, totalPages) {
         }
 
         async function deleteSale(id) {
-            if (currentUserRole !== 'Nachwera Richard') {
+            if (currentUserRole !== 'Nachwera Richard' || currentUserRole !== 'Nelson'|| currentUserRole !== 'Florence' ) {
                 alert('Permission Denied: Only Nachwera Richardistrators can delete sales.');
                 return;
             }
@@ -748,7 +748,7 @@ function renderExpensesPagination(current, totalPages) {
                 const actionsCell = row.insertCell();
                 actionsCell.className = 'actions';
 
-                if (currentUserRole === 'Nachwera Richard') { // Nachwera Richard can edit/delete
+                if (currentUserRole === 'Nachwera Richard' || currentUserRole === 'Nelson'|| currentUserRole === 'Florence' ) { // Nachwera Richard can edit/delete
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
                     editButton.className = 'edit';
@@ -768,7 +768,7 @@ function renderExpensesPagination(current, totalPages) {
 
         async function submitExpenseForm(event) {
             event.preventDefault();
-            if (currentUserRole !== 'Nachwera Richard' && currentUserRole !== 'Martha' ||currentUserRole !== 'Joshua') {
+            if (currentUserRole !== 'Nachwera Richard' && currentUserRole !== 'Martha' ||currentUserRole !== 'Joshua' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence'   ) {
                 alert('Permission Denied: You do not have permission to record expenses.');
                 return;
             }
@@ -784,8 +784,8 @@ function renderExpensesPagination(current, totalPages) {
             try {
                 let response;
                 if (id) { // Edit operation (Nachwera Richard only)
-                    if (currentUserRole !== 'Nachwera Richard') {
-                        alert('Permission Denied: Only Nachwera Richardistrators can edit expenses.');
+                    if (currentUserRole !== 'Nachwera Richard' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence') {
+                        alert('Permission Denied: Only administarators can edit expenses.');
                         return;
                     }
                     response = await authenticatedFetch(`${API_BASE_URL}/expenses/${id}`, {
@@ -821,8 +821,8 @@ function renderExpensesPagination(current, totalPages) {
         }
 
         async function deleteExpense(id) {
-            if (currentUserRole !== 'Nachwera Richard') {
-                alert('Permission Denied: Only Nachwera Richardistrators can delete expenses.');
+            if (currentUserRole !== 'Nachwera Richard' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence' ) {
+                alert('Permission Denied: Only administrators can delete expenses.');
                 return;
             }
             if (!confirm('Are you sure you want to delete this expense record?')) return;
@@ -888,7 +888,7 @@ function renderExpensesPagination(current, totalPages) {
                 const actionsCell = row.insertCell();
                 actionsCell.className = 'actions';
 
-                if (currentUserRole === 'Nachwera Richard') { // Nachwera Richard can edit/delete
+                if (currentUserRole === 'Nachwera Richard' || currentUserRole === 'Nelson' || currentUserRole === 'Florence') { // Nachwera Richard can edit/delete
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
                     editButton.className = 'edit';
@@ -908,7 +908,7 @@ function renderExpensesPagination(current, totalPages) {
 
         async function submitCashJournalForm(event) {
             event.preventDefault();
-            if (currentUserRole !== 'Nachwera Richard' && currentUserRole !== 'Martha' ||  currentUserRole !== 'Joshua') {
+            if (currentUserRole !== 'Nachwera Richard' && currentUserRole !== 'Martha' ||  currentUserRole !== 'Joshua' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence' ) {
                 alert('Permission Denied: You do not have permission to record cash entries.');
                 return;
             }
@@ -924,8 +924,8 @@ function renderExpensesPagination(current, totalPages) {
             try {
                 let response;
                 if (id) { // Edit operation (Nachwera Richard only)
-                    if (currentUserRole !== 'Nachwera Richard') {
-                        alert('Permission Denied: Only Nachwera Richardistrators can edit cash entries.');
+                    if (currentUserRole !== 'Nachwera Richard' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence') {
+                        alert('Permission Denied: Only Nadministrators can edit cash entries.');
                         return;
                     }
                     response = await authenticatedFetch(`${API_BASE_URL}/cash-journal/${id}`, {
@@ -966,8 +966,8 @@ function renderExpensesPagination(current, totalPages) {
         }
 
         async function deleteCashJournal(id) {
-            if (currentUserRole !== 'Nachwera Richard') {
-                alert('Permission Denied: Only Nachwera Richardistrators can delete cash entries.');
+            if (currentUserRole !== 'Nachwera Richard' || currentUserRole !== 'Nelson' || currentUserRole !== 'Florence') {
+                alert('Permission Denied: Only administarators  can delete cash entries.');
                 return;
             }
             if (!confirm('Are you sure you want to delete this cash journal entry?')) return;
