@@ -10,7 +10,7 @@ const salesPerPage = 5;
 let currentExpensesPage = 1;
 const expensesPerPage = 5;
 let currentAuditPage = 1;
-const auditLogsPerPage = 5;
+const auditLogsPerPage = 20;
         // --- Utility Functions ---
 
         /**
