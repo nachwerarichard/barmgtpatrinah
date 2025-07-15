@@ -1237,11 +1237,26 @@ async function generateReports() {
 
 
 // --- Audit Logs Functions ---
+function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+}
+
+// Function to fetch audit logs (modified)
 async function fetchAuditLogs() {
     try {
         const params = new URLSearchParams();
         params.append('page', currentAuditPage);
         params.append('limit', auditLogsPerPage);
+
+        const searchQuery = document.getElementById('audit-search-input').value.trim();
+        if (searchQuery) {
+            params.append('search', searchQuery); // Add search query parameter
+        }
 
         const response = await authenticatedFetch(`${API_BASE_URL}/audit-logs?${params.toString()}`);
         if (!response) return;
@@ -1255,6 +1270,7 @@ async function fetchAuditLogs() {
     }
 }
 
+// Function to render pagination (no change needed here)
 function renderAuditPagination(current, totalPages) {
     const container = document.getElementById('audit-pagination');
     container.innerHTML = ''; // Clear existing buttons
@@ -1278,9 +1294,17 @@ function renderAuditPagination(current, totalPages) {
         fetchAuditLogs();
     };
     container.appendChild(nextButton);
+
+    // Optional: Add page numbers
+    if (totalPages > 0) {
+        const pageInfo = document.createElement('span');
+        pageInfo.textContent = `Page ${current} of ${totalPages}`;
+        container.insertBefore(pageInfo, nextButton);
+    }
 }
 
 
+// Function to render audit logs table (no change needed here)
 function renderAuditLogsTable(logs) {
     const tbody = document.querySelector('#audit-logs-table tbody');
     tbody.innerHTML = '';
@@ -1298,11 +1322,32 @@ function renderAuditLogsTable(logs) {
         row.insertCell().textContent = new Date(log.timestamp).toLocaleString();
         row.insertCell().textContent = log.user;
         row.insertCell().textContent = log.action;
-        row.insertCell().textContent = JSON.stringify(log.details); // Display details as string
+        // Display details as string, consider formatting for better readability
+        row.insertCell().textContent = JSON.stringify(log.details);
     });
 }
 
+// Initialize the search functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const auditSearchInput = document.getElementById('audit-search-input');
+    // Debounce the fetchAuditLogs call to avoid too many requests
+    const debouncedFetchAuditLogs = debounce(() => {
+        currentAuditPage = 1; // Reset to the first page when a new search is initiated
+        fetchAuditLogs();
+    }, 300); // 300ms debounce delay
 
+    auditSearchInput.addEventListener('input', debouncedFetchAuditLogs);
+
+    // Initial fetch of audit logs when the page loads
+    fetchAuditLogs();
+});
+
+// Placeholder for authenticatedFetch and showMessage if they are not defined in your snippets
+
+function showMessage(message) {
+    // Implement your message display logic (e.g., a toast notification)
+    console.log("Message:", message);
+}
 // --- Initial Setup and Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
     // Check authentication status on page load
