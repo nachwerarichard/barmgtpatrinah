@@ -735,7 +735,7 @@ tr:hover {
  @media (max-width: 240px) {
     .app-header h1 {
         font-size: 1em; /* Further reduced */
-        margin-left: 5px; /* Further reduced */
+        margin-left: 2px; /* Further reduced */
     }
 
     .header-logo {
