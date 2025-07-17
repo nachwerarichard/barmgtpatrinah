@@ -24,6 +24,10 @@ body {
 #mobile-nav #mobil-nav{
     color:orange;
 }
+#mobile-nav img
+{
+height:20px;
+width:20px;}
 /* Mobile menu base (hidden by default) */
 #mobile-nav {
     display:none;
