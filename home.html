@@ -7,67 +7,8 @@
     <link rel="stylesheet" href="styles.css"/>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-   <style>
-      /* Base Styles */
-.menu-toggle {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #333;
-    display: none;
-}
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-/* Desktop styles */
-.desktop-nav,
-.desktop-controls {
-    display: flex;
-    gap: 10px;
-}
-
-.mobile-nav-container {
-    display: none;
-}
-
-/* Mobile styles */
-@media (max-width: 768px) {
-    .desktop-nav,
-    .desktop-controls {
-        display: none;
-    }
-
-    .menu-toggle {
-        display: block;
-    }
-
-    .mobile-nav-container {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 250px;
-        height: 100%;
-        background: white;
-        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-        transition: right 0.3s ease;
-        z-index: 1000;
-        padding: 1rem;
-    }
-
-    .mobile-nav-container.active {
-        right: 0;
-    }
-
-    .mobile-nav {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .mobile-nav .header-user-controls {
-        margin-top: 2rem;
-    }
-}
-
-   </style>
 </head>
 <body>
     <div id="login-section">
