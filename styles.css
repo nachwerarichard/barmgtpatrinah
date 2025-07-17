@@ -21,7 +21,9 @@ body {
   color: #fff;
   z-index: 1001;
 }
-
+#mobil-nav{
+    color:orange;
+}
 /* Mobile menu base (hidden by default) */
 #mobile-nav {
     display:none;
