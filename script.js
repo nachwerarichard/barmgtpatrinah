@@ -1423,7 +1423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Dummy login function (replace with actual authentication)
-        function login() {
+        /*function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const loginMessage = document.getElementById('login-message');
@@ -1479,8 +1479,8 @@ document.addEventListener('DOMContentLoaded', () => {
             XLSX.utils.book_append_sheet(wb, ws, "Sheet1"); // Add worksheet to workbook
 
             /* Export to XLSX file */
-            XLSX.writeFile(wb, filename + '.xlsx');
-        }
+          /*  XLSX.writeFile(wb, filename + '.xlsx');
+        }*/
     
         function exportTableToExcel(tableID, filename = '') {
     const dataType = 'application/vnd.ms-excel';
