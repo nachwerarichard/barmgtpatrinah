@@ -26,26 +26,4 @@ function exportTableToExcel(tableID, filename = '') {
 }
 
 
-
-        // Basic JavaScript for section display and menu toggle
-        function showSection(sectionId) {
-            // Remove 'active' from all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            // Add 'active' to the target section
-            document.getElementById(sectionId + '-section').classList.add('active');
-
-            // Update active state for navigation buttons
-            document.querySelectorAll('#main-nav button').forEach(button => {
-                button.classList.remove('active-nav');
-            });
-            document.getElementById('nav-' + sectionId).classList.add('active-nav');
-
-            // Close the mobile nav when a section is selected
-            if (window.innerWidth <= 768) {
-                document.getElementById('header-right').classList.remove('active');
-            }
-        }
-
        
