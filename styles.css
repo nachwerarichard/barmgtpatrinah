@@ -29,7 +29,7 @@ body {
   right: -100%; /* Hide off screen */
   width: 80%;
   height: 100vh;
-  background-color: #161616;
+  background-color: #494949;
   flex-direction: column;
   justify-content: center;
   align-items: center;
