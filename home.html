@@ -426,14 +426,24 @@
             const menuToggle = document.getElementById('menu-toggle');
             const mobileNav = document.getElementById('mobile-nav');
             const closeMobileNav = document.getElementById('close-mobile-nav');
-            const sections = document.querySelectorAll('.section'); // Get all section elements
+            const sections = document.querySelectorAll('.section');
+
+            console.log('DOM Content Loaded.');
+            console.log('menuToggle element:', menuToggle);
+            console.log('mobileNav element:', mobileNav);
 
             /**
              * Toggles the visibility of the mobile navigation menu.
              * Adds or removes the 'is-active' class to trigger CSS transitions.
              */
             window.toggleMobileNav = function() {
-                mobileNav.classList.toggle('is-active');
+                console.log('toggleMobileNav called.');
+                if (mobileNav) {
+                    mobileNav.classList.toggle('is-active');
+                    console.log('mobileNav classes after toggle:', mobileNav.classList);
+                } else {
+                    console.error('mobileNav element not found in toggleMobileNav!');
+                }
             };
 
             /**
@@ -441,21 +451,40 @@
              * This function is called when a navigation button is clicked.
              * @param {string} sectionId - The ID of the section to display.
              */
-           
+            window.showSection = function(sectionId) {
+                console.log(`Attempting to show section: ${sectionId}`);
+                sections.forEach(section => {
+                    if (section.id === sectionId) {
+                        section.classList.remove('hidden'); // Show the target section
+                    } else {
+                        section.classList.add('hidden'); // Hide other sections
+                    }
+                });
+                console.log(`Showing section: ${sectionId}`); // Log for demonstration
+            };
 
             // Event listener to open the mobile navigation
             if (menuToggle) {
                 menuToggle.addEventListener('click', () => {
+                    console.log('Menu toggle button clicked!');
                     toggleMobileNav();
                 });
+            } else {
+                console.error('Menu toggle button not found!');
             }
 
             // Event listener to close the mobile navigation
             if (closeMobileNav) {
                 closeMobileNav.addEventListener('click', () => {
+                    console.log('Close mobile nav button clicked!');
                     toggleMobileNav();
                 });
+            } else {
+                console.error('Close mobile nav button not found!');
             }
+
+            // Initially show the 'inventory' section or a default section
+            // You can change 'inventory' to whatever section you want to show by default
         });
     </script>
     </script>
