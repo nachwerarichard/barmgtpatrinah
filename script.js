@@ -1481,8 +1481,7 @@ document.addEventListener('DOMContentLoaded', () => {
             /* Export to XLSX file */
             XLSX.writeFile(wb, filename + '.xlsx');
         }
-    </script>
-    <script>
+    
         function exportTableToExcel(tableID, filename = '') {
     const dataType = 'application/vnd.ms-excel';
     const tableSelect = document.getElementById(tableID);
