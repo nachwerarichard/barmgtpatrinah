@@ -12,64 +12,7 @@ body {
     overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-/* Default (desktop) */
-.desktop-nav,
-.desktop-controls {
-  display: flex;
-  gap: 10px;
-}
 
-.menu-toggle {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #333;
-}
-
-.mobile-nav-container {
-  display: none; /* Hidden by default */
-}
-
-/* Mobile view */
-@media (max-width: 768px) {
-  .desktop-nav,
-  .desktop-controls {
-    display: none;
-  }
-
-  .menu-toggle {
-    display: block;
-  }
-
-  .mobile-nav-container {
-    position: fixed;
-    top: 0;
-    right: -250px;
-    width: 250px;
-    height: 100vh;
-    background-color: #fff;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
-    transition: right 0.3s ease-in-out;
-    z-index: 1000;
-    padding: 20px;
-    display: block;
-  }
-
-  .mobile-nav-container.active {
-    right: 0;
-  }
-
-  .mobile-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .mobile-nav .header-user-controls {
-    margin-top: 2rem;
-  }
-}
 
 /* --- Main Application Container --- */
 .container {
