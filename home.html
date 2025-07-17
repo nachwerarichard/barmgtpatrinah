@@ -8,50 +8,62 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
    <style>
-       /* Hide nav and user controls on small screens */
-@media (max-width: 768px) {
-    .header-right nav,
-    .header-user-controls {
-        display: none;
-        flex-direction: column;
-        background: #fff;
-        position: absolute;
-        top: 60px; /* adjust based on header height */
-        right: 0;
-        width: 200px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        padding: 1rem;
-        z-index: 1000;
-    }
-
-    .header-right.active nav,
-    .header-right.active .header-user-controls {
-        display: flex;
-    }
-
-    /* Adjust toggle icon button */
-    .menu-toggle {
-        display: block;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: #333;
-    }
+      /* Base Styles */
+.menu-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    display: none;
 }
 
-/* Always show nav on desktop */
-@media (min-width: 769px) {
-    .menu-toggle {
+/* Desktop styles */
+.desktop-nav,
+.desktop-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.mobile-nav-container {
+    display: none;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .desktop-nav,
+    .desktop-controls {
         display: none;
     }
 
-    .header-right nav,
-    .header-user-controls {
-        display: flex !important;
-        position: static;
-        flex-direction: row;
-        box-shadow: none;
-        padding: 0;
+    .menu-toggle {
+        display: block;
+    }
+
+    .mobile-nav-container {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 250px;
+        height: 100%;
+        background: white;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+        transition: right 0.3s ease;
+        z-index: 1000;
+        padding: 1rem;
+    }
+
+    .mobile-nav-container.active {
+        right: 0;
+    }
+
+    .mobile-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .mobile-nav .header-user-controls {
+        margin-top: 2rem;
     }
 }
 
@@ -68,27 +80,50 @@
     </div>
 
     <div id="main-container" class="container" style="display: none;">
-        <header class="app-header">
-            <div class="header-left">
-                <img src="patrina.png" alt="Patrinah Hotel Logo" class="header-logo">
-            </div>
-            <div class="header-right">
-                <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
-                <nav id="main-nav">
-                    <button id="nav-inventory" onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
-                    <button id="nav-sales" onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
-                    <button id="nav-expenses" onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
-                    <button id="nav-cash-management" onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
-                    <button id="nav-reports" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
-                    <button id="nav-audit-logs" onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
-                </nav>
-                <div class="header-user-controls">
-                    <span id="current-user-display" class="username-display"></span>
-                    <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
-                </div>
-            </div>
-        </header>
+       
+<header class="app-header">
+    <div class="header-left">
+        <img src="patrina.png" alt="Patrinah Hotel Logo" class="header-logo">
+    </div>
 
+    <div class="header-right">
+        <!-- Desktop Nav -->
+        <nav class="desktop-nav">
+            <button id="nav-inventory" onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
+            <button id="nav-sales" onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
+            <button id="nav-expenses" onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
+            <button id="nav-cash-management" onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
+            <button id="nav-reports" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
+            <button id="nav-audit-logs" onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
+        </nav>
+
+        <div class="header-user-controls desktop-controls">
+            <span id="current-user-display" class="username-display"></span>
+            <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+        </div>
+
+        <!-- Menu Toggle for Mobile -->
+        <button id="menu-toggle" class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Slide-in Nav -->
+    <div class="mobile-nav-container" id="mobile-nav">
+        <nav class="mobile-nav">
+            <button onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
+            <button onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
+            <button onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
+            <button onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
+            <button onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
+            <button onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
+            <div class="header-user-controls">
+                <span id="current-user-display-mobile" class="username-display"></span>
+                <button onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </nav>
+    </div>
+</header>
 
         <div id="main-content">
             <div id="inventory-section" class="section active">
@@ -347,13 +382,13 @@
     <script src="script.js"></script>
     <script>
         document.getElementById('menu-toggle').addEventListener('click', function () {
-    const headerRight = document.querySelector('.header-right');
+    const mobileNav = document.getElementById('mobile-nav');
     const icon = this.querySelector('i');
 
-    headerRight.classList.toggle('active');
+    mobileNav.classList.toggle('active');
 
-    // Toggle between hamburger and close icon
-    if (headerRight.classList.contains('active')) {
+    // Toggle hamburger ↔ X icon
+    if (mobileNav.classList.contains('active')) {
         icon.classList.remove('fa-bars');
         icon.classList.add('fa-times');
     } else {
@@ -361,6 +396,13 @@
         icon.classList.add('fa-bars');
     }
 });
+
+       // Optional: sync username to mobile nav
+document.addEventListener('DOMContentLoaded', () => {
+    const username = document.getElementById('current-user-display').textContent;
+    document.getElementById('current-user-display-mobile').textContent = username;
+});
+ 
 
     </script>
 </body>
