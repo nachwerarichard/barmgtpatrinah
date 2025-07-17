@@ -249,8 +249,8 @@ function showSection(sectionId) {
         'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-        'Martha': ['inventory', 'sales', 'expenses', 'cash-management'],
-        'Joshua': ['inventory', 'sales', 'expenses', 'cash-management']
+        'Martha': [ 'sales', 'expenses', 'cash-management'],
+        'Joshua': ['sales', 'expenses', 'cash-management']
     };
 
     // --- Role-based Access Check ---
