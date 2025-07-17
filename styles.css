@@ -1,39 +1,109 @@
-/* General Styles */
+/* --- Global Styles & Body --- */
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6;
+    background-color: #e3e3e9; /* Pale Gray - from new palette */
     color: #333;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-.container {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    margin: 20px;
-    width: 100%;
-    max-width: 1200px;
-    overflow: hidden;
+/* Default (desktop) */
+.desktop-nav,
+.desktop-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.mobile-nav-container {
+  display: none; /* Hidden by default */
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  .desktop-nav,
+  .desktop-controls {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .mobile-nav-container {
+    position: fixed;
+    top: 0;
+    right: -250px;
+    width: 250px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+    padding: 20px;
+    display: block;
+  }
+
+  .mobile-nav-container.active {
+    right: 0;
+  }
+
+  .mobile-nav {
     display: flex;
     flex-direction: column;
+    gap: 15px;
+  }
+
+  .mobile-nav .header-user-controls {
+    margin-top: 2rem;
+  }
 }
 
-/* Header Styles */
+/* --- Main Application Container --- */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 20px;
+    background-color: #f9f9f9; /* Ghost White - from new palette */
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+h1, h2, h3 {
+    color: #908ea9; /* Slate Gray - from new palette */
+    border-bottom: 1px solid #c7c7d4; /* Cool Gray - from new palette */
+    padding-bottom: 10px;
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+
+/* --- Header Bar (Top Navigation) --- */
 .app-header {
-    background-color: #6a6691;
+    background-color: #494949; /* Slate Gray - from new palette */
     color: white;
-    padding: 20px 30px;
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 12px 12px 0 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
@@ -41,44 +111,60 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
 .header-logo {
-    max-width: 50px;
+    max-width: 50px; /* Smaller logo for header */
     height: auto;
-    border-radius: 8px;
+    border-radius: 5px;
 }
 
 .app-header h1 {
     margin: 0;
+    color: white;
     font-size: 1.8em;
-    font-weight: 600;
+    border-bottom: none;
+    padding-bottom: 0;
+    flex-grow: 1; /* Allow title to take space */
+    white-space: nowrap; /* Prevent title from wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Add ellipsis if title is too long */
 }
 
 .header-right {
     display: flex;
     align-items: center;
     gap: 20px;
+    flex-grow: 1; /* Allow right section to grow */
+    justify-content: flex-end; /* Push content to the right */
 }
 
-/* Hide menu toggle and close button by default on desktop */
-.menu-toggle, .close-mobile-nav {
+/* Hamburger menu toggle - hidden on desktop */
+.menu-toggle {
     display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8em;
+    cursor: pointer;
 }
 
+/* Main Navigation (Horizontal) */
 #main-nav {
     display: flex;
-    gap: 10px;
+    gap: 10px; /* Space between nav buttons */
+    flex-wrap: wrap; /* Allow nav items to wrap */
 }
 
 #main-nav button {
-    background-color: #7a7891;
-    color: white;
+    padding: 10px 20px;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    background-color: transparent;
+    color: white;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.95em;
+    font-size: 1em;
     transition: background-color 0.3s ease, transform 0.2s ease;
     display: flex;
     align-items: center;
@@ -86,13 +172,14 @@ body {
 }
 
 #main-nav button:hover {
-    background-color: #5a5770;
+    background-color: #acaabe; /* Light Gray - from new palette */
     transform: translateY(-2px);
 }
 
 #main-nav button.active-nav {
-    background-color: #4a4760;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    background-color: #acaabe; /* Light Gray - from new palette */
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .header-user-controls {
@@ -102,70 +189,60 @@ body {
 }
 
 .username-display {
-    font-weight: 500;
-    color: #e0e0e0;
+    font-weight: bold;
+    color: white;
+    white-space: nowrap;
 }
 
 #logout-button {
-    background-color: #d9534f; /* Bootstrap 'danger' red */
+    background-color: #dc3545; /* Red for logout (kept original for clarity) */
+    padding: 10px 20px;
+    border-radius: 6px;
     color: white;
     border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 15px;
     transition: background-color 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
 }
 
 #logout-button:hover {
-    background-color: #c9302c;
+    background-color: #c82333;
 }
 
-/* Main Content Area */
+/* --- Main Content Area --- */
 #main-content {
     padding: 30px;
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; /* Ghost White - from new palette */
 }
 
 .section {
-    display: none; /* Hidden by default */
-    background-color: #ffffff;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    margin-bottom: 20px;
+    display: none;
 }
 
 .section.active {
-    display: block; /* Show active section */
+    display: block;
 }
 
-.section h2, .section h3 {
-    color: #4a4760;
-    margin-top: 0;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
-}
-
-/* Form Styles */
+/* --- Forms --- */
 form {
-    background-color: #f0f2f5;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    background-color: #ffffff; /* White */
+    padding: 20px; /* Reduced from 30px */
+    border-radius: 10px;
+    width:200px;
+    margin-bottom: 20px; /* Reduced from 30px */
+    border: 1px solid #e3e3e9; /* Pale Gray */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
 
 form label {
-    font-weight: 500;
-    color: #555;
-    margin-bottom: 5px;
+    display: block;
+    margin-bottom: 6px; /* Reduced from 8px */
+    font-weight: 600;
+    color: #444;
+    font-size: 0.95em;
 }
 
 form input[type="text"],
@@ -173,166 +250,263 @@ form input[type="number"],
 form input[type="date"],
 form input[type="password"],
 form select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    width: calc(100% - 24px);
+    padding: 10px; /* Reduced from 12px */
+    margin-bottom: 15px; /* Reduced from 20px */
+    border: 1px solid #c7c7d4; /* Cool Gray */
+    border-radius: 6px;
     font-size: 1em;
-    box-sizing: border-box; /* Include padding in element's total width and height */
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-form button[type="submit"] {
-    background-color: #5cb85c; /* Bootstrap 'success' green */
+form input[type="text"]:focus,
+form input[type="number"]:focus,
+form input[type="date"]:focus,
+form input[type="password"]:focus,
+form select:focus {
+    border-color: #908ea9; /* Slate Gray */
+    outline: none;
+    box-shadow: 0 0 8px rgba(144, 142, 169, 0.2); /* Shadow with palette color */
+}
+
+form button {
+    width: auto;
+    background-color: #28a745; /* Green (kept original for action buttons) */
     color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
     cursor: pointer;
-    font-size: 1.05em;
+    font-size: 1em; /* Slightly reduced from 1.05em */
+    padding: 10px 20px; /* Reduced from 12px 25px */
+    border: none;
+    border-radius: 6px;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
-    margin-top: 10px;
 }
 
-form button[type="submit"]:hover {
-    background-color: #4cae4c;
+form button:hover {
+    background-color: #218838;
     transform: translateY(-2px);
 }
 
-/* Table Styles */
+/* --- Tables --- */
 .table-responsive {
-    overflow-x: auto; /* Enable horizontal scrolling for tables on small screens */
-    margin-top: 20px;
+    overflow-x: auto;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    overflow: hidden; /* Ensures rounded corners apply to table content */
-    min-width: 700px; /* Minimum width for desktop tables */
+    background-color: #ffffff; /* White */
+    min-width: 700px;
 }
 
 th, td {
-    border: 1px solid #e0e0e0;
-    padding: 12px 15px;
+    border: 1px solid #e3e3e9; /* Pale Gray */
+    padding: 15px;
     text-align: left;
+    vertical-align: middle;
 }
 
 th {
-    background-color: #f0f2f5;
-    color: #6a6691;
+    background-color: #908ea9; /* Slate Gray - from new palette */
+    color: white;
     font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.9em;
+    position: sticky;
+    top: 0;
 }
 
 tr:nth-child(even) {
-    background-color: #f8f8f8;
+    background-color: #f9f9f9; /* Ghost White */
 }
 
 tr:hover {
-    background-color: #f1f1f1;
+    background-color: #f0f2f5; /* Slightly darker than body for hover */
 }
 
 .actions button {
-    background-color: #0275d8; /* Bootstrap 'info' blue */
-    color: white;
+    padding: 8px 15px;
+    margin-right: 8px;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 0.85em;
-    transition: background-color 0.3s ease;
-    margin-right: 5px;
+    color: white;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.actions button:hover {
-    background-color: #025aa5;
+.actions .edit {
+    background-color: #ffc107; /* Warning yellow */
+}
+.actions .edit:hover {
+    background-color: #e0a800;
+    transform: translateY(-1px);
+}
+.actions .delete {
+    background-color: #dc3545; /* Danger red */
+}
+.actions .delete:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
 }
 
-.actions button.delete {
-    background-color: #d9534f; /* Bootstrap 'danger' red */
-}
-
-.actions button.delete:hover {
-    background-color: #c9302c;
-}
-
-/* Filter Controls */
-.filter-controls {
+/* --- Login Section --- */
+#login-section {
+    text-align: center;
+    margin-top: 100px;
+    padding: 30px; /* Reduced from 40px */
+    background-color: #f9f9f9; /* Kept from original for login */
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.18);
+    max-width: 450px;
+    width: 90%;
+    box-sizing: border-box;
     display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #f0f2f5;
-    border-radius: 8px;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
+.login-logo {
+    max-width: 120px; /* Size for login logo */
+    height: auto;
+    margin-bottom: 20px; /* Reduced from 25px */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+#login-section h2 {
+    color: #007bff; /* Kept original for login */
+    margin-bottom: 20px; /* Reduced from 25px */
+    border-bottom: none;
+    padding-bottom: 0;
+    font-size: 1.8em; /* Slightly reduced from 2em */
+}
+
+#login-section input {
+    width: calc(100% - 30px);
+    padding: 12px; /* Reduced from 15px */
+    margin-bottom: 15px; /* Reduced from 20px */
+    border: 1px solid #ccc; /* Kept original for login */
+    border-radius: 8px;
+    font-size: 1em; /* Reduced from 1.1em */
+    box-sizing: border-box;
+}
+
+#login-section input:focus {
+    border-color: #007bff; /* Kept original for login */
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.25);
+}
+
+#login-section button {
+    padding: 12px 30px; /* Reduced from 15px 40px */
+    background-color: #007bff; /* Kept original for login */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em; /* Reduced from 1.2em */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#login-section button:hover {
+    background-color: #0056b3;
+    transform: translateY(-3px);
+}
+
+#login-message {
+    color: #dc3545;
+    margin-top: 15px; /* Reduced from 20px */
+    font-weight: bold;
+    font-size: 1em; /* Reduced from 1.1em */
+}
+
+/* --- Filter Controls --- */
+.filter-controls {
+    margin-bottom: 20px; /* Reduced from 25px */
+    padding: 15px; /* Reduced from 20px */
+    background-color: #e3e3e9; /* Pale Gray - from new palette */
+    border: 1px solid #c7c7d4; /* Cool Gray - from new palette */
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Reduced from 15px */
+    align-items: center;
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.03);
+}
+
 .filter-controls label {
-    font-weight: 500;
+    font-weight: 600;
     color: #555;
-    margin-right: 5px;
+    margin-bottom: 0;
 }
 
 .filter-controls input[type="text"],
 .filter-controls input[type="number"],
 .filter-controls input[type="date"] {
-    flex: 1;
-    min-width: 150px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    width: 100%; /* Make them take up full available width within their container */
+    max-width: 180px; /* Set a maximum width to prevent them from becoming too wide */
+    min-width: 80px; /* Ensure a minimum width for usability */
+    padding: 6px 10px; /* Slightly reduced vertical padding, standard horizontal */
+    border: 1px solid #ccc; /* A subtle border for definition */
+    border-radius: 4px; /* Slightly smaller border-radius for a more compact look */
+    font-size: 0.875em; /* A common and readable font size */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* If your filter controls are in a flex container, you might also want to adjust that */
+.filter-controls {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line on smaller screens */
+    gap: 10px; /* Add some space between filter controls */
+    align-items: center; /* Vertically align items */
 }
 
 .filter-controls button {
-    background-color: #5bc0de; /* Bootstrap 'info' blue */
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
+    margin-bottom: 0;
+    padding: 8px 18px; /* Reduced from 10px 20px */
+    font-size: 0.95em; /* Slightly reduced from 1em */
+    background-color: #acaabe; /* Light Gray - from new palette for filter buttons */
+    color: #2c3e50; /* Dark text for light button */
+    border-radius: 6px;
+    display: inline-flex;
     align-items: center;
-    gap: 5px;
-    transition: background-color 0.3s ease;
+    gap: 8px;
 }
-
 .filter-controls button:hover {
-    background-color: #31b0d5;
+    background-color: #908ea9; /* Slate Gray - darker on hover */
+    color: white;
 }
 
-/* Pagination Controls */
+/* --- Pagination Controls --- */
 .pagination-controls {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #f0f2f5;
+    align-items: center;
+    margin-top: 15px; /* Reduced from 20px */
+    gap: 8px; /* Reduced from 10px */
+    padding: 8px; /* Reduced from 10px */
+    background-color: #e3e3e9; /* Pale Gray */
     border-radius: 8px;
+    border: 1px solid #c7c7d4; /* Cool Gray */
 }
 
 .pagination-controls button {
-    background-color: #6a6691;
+    background-color: #908ea9; /* Slate Gray */
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 6px 12px; /* Reduced from 8px 15px */
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-}
-
-.pagination-controls button:hover:not(:disabled) {
-    background-color: #5a5770;
 }
 
 .pagination-controls button:disabled {
@@ -340,109 +514,11 @@ tr:hover {
     cursor: not-allowed;
 }
 
-/* Login Section Specific Styles */
-#login-section {
-    background-color: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-    margin-top: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+.pagination-controls button:hover:not(:disabled) {
+    background-color: #7a7891; /* Darker slate gray */
 }
 
-.login-logo {
-    max-width: 150px;
-    height: auto;
-    margin-bottom: 20px;
-    border-radius: 10px;
-}
-
-#login-section h2 {
-    color: #4a4760;
-    margin-bottom: 25px;
-    font-size: 2em;
-}
-
-#login-section input {
-    width: calc(100% - 20px); /* Account for padding */
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1.05em;
-}
-
-#login-section button {
-    background-color: #6a6691;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 100%;
-}
-
-#login-section button:hover {
-    background-color: #5a5770;
-    transform: translateY(-2px);
-}
-
-#login-message {
-    color: #d9534f;
-    margin-top: 10px;
-    font-weight: 500;
-}
-
-/* Export Button */
-.export-button {
-    background-color: #28a745; /* Bootstrap 'success' green */
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.95em;
-    transition: background-color 0.3s ease;
-    margin-top: 15px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.export-button:hover {
-    background-color: #218838;
-}
-
-/* Search Container for Audit Logs */
-.search-container {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #f0f2f5;
-    border-radius: 8px;
-}
-
-#audit-search-input {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1em;
-}
-
-/* Specific heading adjustments */
-.sales-records-heading, .expenses-records-heading, .cash-header {
-    margin-top: 30px;
-}
-
-/* Mobile Responsiveness */
+/* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
     .container {
         margin: 10px;
@@ -450,58 +526,46 @@ tr:hover {
     }
 
     .app-header {
-        flex-direction: row; /* Keep logo and toggle on one row */
-        justify-content: space-between; /* Space them out */
-        align-items: center;
+        flex-direction: column; /* Stack header items */
+        align-items: flex-start; /* Align header items to the left */
         padding: 15px 20px;
         border-radius: 8px 8px 0 0;
-        position: relative;
+        position: relative; /* For positioning menu-toggle */
     }
 
     .header-left {
-        display: flex; /* Allow logo and toggle to be side-by-side */
-        align-items: center;
-        width: auto; /* Adjust width */
-        flex-grow: 1; /* Allow left side to grow */
+        width: 100%; /* Full width for logo and title */
+        justify-content: space-between; /* Space out logo and title */
     }
 
     .app-header h1 {
         font-size: 1.5em;
         text-align: left;
-        margin-left: 15px;
-    }
-
-    .menu-toggle {
-        display: block; /* Show hamburger menu */
-        margin-left: auto; /* Push to the right within header-left */
-        background-color: transparent;
-        border: none;
-        color: white;
-        font-size: 1.8em; /* Slightly larger for touch */
-        cursor: pointer;
-        padding: 5px;
+        flex-grow: 1; /* Allow title to take space */
+        margin-left: 15px; /* Space from logo */
     }
 
     .header-right {
         flex-direction: column; /* Stack nav and user controls */
         align-items: flex-start; /* Align to the left */
         width: 100%;
-        gap: 0;
+        gap: 0; /* Remove gap when stacked */
         max-height: 0; /* Initially hidden */
         overflow: hidden;
-        transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-        background-color: #5a5770; /* Background for the mobile menu */
-        position: absolute; /* Position below the header-left */
-        top: 100%; /* Place it right below the header */
-        left: 0;
-        z-index: 999; /* Ensure it's below the toggle but above content */
-        padding: 0 20px; /* No padding when hidden */
-        box-sizing: border-box;
+        transition: max-height 0.3s ease-in-out;
     }
 
     .header-right.active {
         max-height: 500px; /* Max height to reveal content */
-        padding: 15px 20px; /* Add padding when active */
+        margin-top: 15px; /* Space from header-left */
+    }
+
+    .menu-toggle {
+        display: block; /* Show hamburger menu */
+        position: absolute; /* Position independently */
+        top: 20px;
+        right: 20px;
+        z-index: 1001; /* Ensure it's on top */
     }
 
     #main-nav {
@@ -513,13 +577,11 @@ tr:hover {
     #main-nav button {
         width: 100%; /* Full width buttons */
         padding: 12px 20px;
-        border-radius: 0;
-        text-align: left; /* Align text to left */
-        justify-content: flex-start; /* Align icon and text to start */
+        border-radius: 0; /* No border radius for stacked buttons */
     }
-
-    #main-nav button i {
-        margin-right: 10px; /* Space between icon and text */
+    #main-nav button:hover,
+    #main-nav button.active-nav {
+        background-color: #7a7891; /* Darker hover for mobile nav */
     }
 
     .header-user-controls {
@@ -527,41 +589,18 @@ tr:hover {
         width: 100%;
         align-items: flex-start;
         gap: 10px;
-        border-top: 1px solid rgba(255, 255, 255, 0.2); /* Separator */
-        padding-top: 10px;
     }
 
     .username-display {
         margin-bottom: 5px;
-        color: white; /* Ensure visibility */
     }
 
     #logout-button {
         width: 100%;
         text-align: left;
-        justify-content: flex-start;
+        justify-content: flex-start; /* Align icon and text to start */
         padding: 12px 20px;
         border-radius: 0;
-        background-color: #d9534f;
-        color: white;
-    }
-
-    .close-mobile-nav {
-        display: none; /* Hidden by default */
-        background-color: transparent;
-        border: none;
-        color: white;
-        font-size: 1.8em; /* Slightly larger for touch */
-        cursor: pointer;
-        padding: 5px;
-        position: absolute; /* Position within header-right */
-        top: 10px;
-        right: 10px;
-        z-index: 1002; /* Ensure it's on top when menu is open */
-    }
-
-    .header-right.active .close-mobile-nav {
-        display: block; /* Show when menu is active */
     }
 
     #main-content {
@@ -570,15 +609,15 @@ tr:hover {
 
     #login-section {
         margin-top: 50px;
-        padding: 25px;
+        padding: 25px; /* Further reduced for mobile */
     }
 
     #login-section input {
-        padding: 10px;
+        padding: 10px; /* Further reduced for mobile */
     }
 
     #login-section button {
-        padding: 10px 25px;
+        padding: 10px 25px; /* Further reduced for mobile */
         font-size: 1em;
     }
 
@@ -592,8 +631,8 @@ tr:hover {
     .filter-controls button {
         width: 100%;
         min-width: unset;
-        padding: 8px;
-        font-size: 0.9em;
+        padding: 8px; /* Ensure consistency for mobile */
+        font-size: 0.9em; /* Ensure consistency for mobile */
     }
 
     table {
@@ -617,11 +656,11 @@ tr:hover {
     }
 
     form {
-        padding: 15px;
+        padding: 15px; /* Further reduced for very small screens */
     }
 
     form label {
-        font-size: 0.9em;
+        font-size: 0.9em; /* Slightly smaller font */
     }
 
     form input[type="text"],
@@ -629,29 +668,29 @@ tr:hover {
     form input[type="date"],
     form input[type="password"],
     form select {
-        padding: 8px;
+        padding: 8px; /* Further reduced for very small screens */
         font-size: 0.9em;
-        margin-bottom: 10px;
+        margin-bottom: 10px; /* Reduced margin */
     }
 
     form button {
-        padding: 8px 15px;
+        padding: 8px 15px; /* Further reduced */
         font-size: 0.95em;
     }
 
     th, td {
-        padding: 8px;
-        font-size: 0.85em;
+        padding: 8px; /* Reduced from 10px */
+        font-size: 0.85em; /* Slightly smaller font */
     }
 
     .actions button {
-        padding: 5px 8px;
+        padding: 5px 8px; /* Further reduced */
         font-size: 11px;
         margin-right: 3px;
     }
 
     #login-section {
-        padding: 20px;
+        padding: 20px; /* Further reduced for very small screens */
     }
 
     #login-section h2 {
@@ -690,27 +729,30 @@ tr:hover {
     }
 }
 
-@media (max-width: 240px) {
+
+    
+
+ @media (max-width: 240px) {
     .app-header h1 {
-        font-size: 1em;
-        margin-left: 2px;
+        font-size: 1em; /* Further reduced */
+        margin-left: 2px; /* Further reduced */
     }
 
     .header-logo {
-        max-width: 30px;
+        max-width: 30px; /* Further reduced */
     }
 
     #logout-button {
-        padding: 4px 8px;
-        font-size: 10px;
+        padding: 4px 8px; /* Further reduced */
+        font-size: 10px; /* Further reduced */
     }
 
     form {
-        padding: 10px;
+        padding: 10px; /* Significantly reduced */
     }
 
     form label {
-        font-size: 0.8em;
+        font-size: 0.8em; /* Further reduced */
     }
 
     form input[type="text"],
@@ -718,100 +760,63 @@ tr:hover {
     form input[type="date"],
     form input[type="password"],
     form select {
-        padding: 6px;
-        font-size: 0.8em;
-        margin-bottom: 8px;
+        padding: 6px; /* Significantly reduced */
+        font-size: 0.8em; /* Further reduced */
+        margin-bottom: 8px; /* Further reduced */
     }
 
     form button {
-        padding: 6px 10px;
-        font-size: 0.85em;
+        padding: 6px 10px; /* Significantly reduced */
+        font-size: 0.85em; /* Further reduced */
     }
 
     th, td {
-        padding: 5px;
-        font-size: 0.75em;
+        padding: 5px; /* Significantly reduced */
+        font-size: 0.75em; /* Further reduced */
     }
 
     .actions button {
-        padding: 3px 6px;
-        font-size: 10px;
-        margin-right: 2px;
+        padding: 3px 6px; /* Significantly reduced */
+        font-size: 10px; /* Further reduced */
+        margin-right: 2px; /* Further reduced */
     }
 
     #login-section {
-        padding: 15px;
+        padding: 15px; /* Further reduced */
     }
 
     #login-section h2 {
-        font-size: 1.2em;
+        font-size: 1.2em; /* Further reduced */
     }
 
     #login-section input {
-        padding: 8px;
-        font-size: 0.85em;
+        padding: 8px; /* Further reduced */
+        font-size: 0.85em; /* Further reduced */
     }
 
     #login-section button {
-        padding: 8px 15px;
-        font-size: 0.9em;
+        padding: 8px 15px; /* Further reduced */
+        font-size: 0.9em; /* Further reduced */
     }
 
     .filter-controls {
-        padding: 5px;
-        gap: 3px;
+        padding: 5px; /* Significantly reduced */
+        gap: 3px; /* Further reduced */
     }
 
     .filter-controls input,
     .filter-controls button {
-        padding: 4px;
-        font-size: 0.75em;
+        padding: 4px; /* Significantly reduced */
+        font-size: 0.75em; /* Further reduced */
     }
 
     .pagination-controls {
-        padding: 3px;
-        gap: 3px;
+        padding: 3px; /* Significantly reduced */
+        gap: 3px; /* Further reduced */
     }
 
     .pagination-controls button {
-        padding: 3px 8px;
-        font-size: 0.7em;
-    }
-}
-
-/* Desktop-specific overrides to ensure correct display when not in mobile view */
-@media (min-width: 769px) {
-    .menu-toggle, .close-mobile-nav {
-        display: none !important; /* Hide on desktop */
-    }
-    .header-right {
-        max-height: none !important; /* Ensure it's visible on desktop */
-        overflow: visible !important;
-        position: static !important; /* Reset positioning */
-        padding: 0 !important; /* Reset padding */
-        flex-direction: row !important; /* Reset flex direction */
-        align-items: center !important;
-        width: auto !important;
-        gap: 20px !important; /* Restore desktop gap */
-    }
-    #main-nav {
-        flex-direction: row !important;
-        margin-bottom: 0 !important;
-    }
-    #main-nav button {
-        width: auto !important;
-        border-radius: 5px !important;
-        text-align: center !important;
-        justify-content: center !important;
-    }
-    .header-user-controls {
-        flex-direction: row !important;
-        border-top: none !important;
-        padding-top: 0 !important;
-    }
-    #logout-button {
-        width: auto !important;
-        text-align: center !important;
-        justify-content: center !important;
+        padding: 3px 8px; /* Significantly reduced */
+        font-size: 0.7em; /* Further reduced */
     }
 }
