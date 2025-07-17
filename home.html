@@ -8,8 +8,7 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Mobile navigation specific styles */
-        #mobile-nav {
+       #mobile-nav {
             position: fixed; /* Use fixed to cover the whole viewport */
             top: 0;
             left: 0;
@@ -17,7 +16,7 @@
             height: 100%;
             transform: translateX(100%); /* Initially hidden off-screen */
             transition: transform 0.3s ease-in-out;
-            background-color: gray;
+            background-color: #ffffff;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             z-index: 50; /* Ensure it's above other content */
             display: flex; /* Use flexbox for centering content */
@@ -33,12 +32,28 @@
             transform: translateX(0); /* Slide into view */
         }
 
+        /* Custom CSS for the mobile navigation content container */
+        .mobile-nav-content {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+            /* Equivalent to space-y-6 for direct children */
+            /* This targets all direct children except the first */
+            /* The margin-bottom on mobile-nav-button also contributes */
+        }
+
+        .mobile-nav-content > *:not(:last-child) {
+            margin-bottom: 1.5rem; /* Equivalent to Tailwind's space-y-6 */
+        }
+
+
         .mobile-nav-button {
             display: flex;
             align-items: center;
             justify-content: center; /* Center content horizontally */
             padding: 1rem 1.5rem;
-            margin-bottom: 1rem; /* Space between buttons */
+            /* margin-bottom: 1rem; Removed as space-y-6 handles spacing */
             border-radius: 0.5rem;
             color: #2d3748; /* Dark text for visibility */
             font-size: 1.125rem; /* Larger font size for mobile */
@@ -126,7 +141,7 @@
         <button id="mobile-nav-close" class="absolute top-4 right-4 p-2 rounded-full text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out">
             <i class="fas fa-times text-2xl"></i>
         </button>
-        <div class="flex flex-col space-y-6 w-full items-center">
+        <div class="mobile-nav-content">
             <button onclick="showSection('inventory'); closeMobileMenu()" class="mobile-nav-button">
                 <i class="fas fa-boxes"></i> Inventory
             </button>
@@ -146,8 +161,10 @@
                 <i class="fas fa-history"></i> Audit Logs
             </button>
             <div class="flex flex-col items-center mt-8 w-full">
-                <span id="current-user-display" class="username-display"></span>
-                 <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+                <span id="mobile-current-user-display" class="username-display mb-4">John Doe</span> <!-- Placeholder user -->
+                <button onclick="logout(); closeMobileMenu()" class="mobile-nav-button logout-button">
+                    Logout <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
         </div>
     </nav>
