@@ -1,3 +1,5 @@
+Here's the modified CSS, including adjustments for very small screens (up to 240px width). I've refined the existing media queries and added specific rules to ensure content adapts well to extremely narrow viewports.
+
 /* --- Global Styles & Body --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -598,23 +600,43 @@ tr:hover {
     }
 
     table {
-        min-width: 500px; /* Adjust minimum table width for smaller screens */
+        min-width: 400px; /* Adjusted minimum table width for smaller screens */
     }
 }
 
 @media (max-width: 480px) {
+    .container {
+        margin: 5px; /* Even smaller margin */
+        border-radius: 6px;
+    }
+
     .app-header h1 {
-        font-size: 1.3em;
-        margin-left: 10px;
+        font-size: 1.2em; /* Smaller font for title */
+        margin-left: 5px;
     }
 
     .header-logo {
-        max-width: 40px;
+        max-width: 35px; /* Smaller logo */
+    }
+
+    .menu-toggle {
+        font-size: 1.5em; /* Slightly smaller hamburger */
+        top: 15px;
+        right: 15px;
+    }
+
+    #mobile-nav button {
+        padding: 10px 15px; /* Smaller padding for mobile nav buttons */
+        font-size: 0.9em;
     }
 
     #logout-button {
-        padding: 6px 12px;
-        font-size: 12px;
+        padding: 8px 15px; /* Smaller padding for logout button */
+        font-size: 0.9em;
+    }
+
+    #main-content {
+        padding: 15px; /* Reduced main content padding */
     }
 
     form {
@@ -622,7 +644,8 @@ tr:hover {
     }
 
     form label {
-        font-size: 0.9em; /* Slightly smaller font */
+        font-size: 0.85em; /* Slightly smaller font */
+        margin-bottom: 4px;
     }
 
     form input[type="text"],
@@ -631,42 +654,56 @@ tr:hover {
     form input[type="password"],
     form select {
         padding: 8px; /* Further reduced for very small screens */
-        font-size: 0.9em;
+        font-size: 0.85em;
         margin-bottom: 10px; /* Reduced margin */
     }
 
     form button {
         padding: 8px 15px; /* Further reduced */
-        font-size: 0.95em;
+        font-size: 0.9em;
     }
 
     th, td {
-        padding: 8px; /* Reduced from 10px */
-        font-size: 0.85em; /* Slightly smaller font */
+        padding: 6px; /* Reduced from 8px */
+        font-size: 0.8em; /* Slightly smaller font */
     }
 
     .actions button {
-        padding: 5px 8px; /* Further reduced */
-        font-size: 11px;
-        margin-right: 3px;
+        padding: 4px 6px; /* Further reduced */
+        font-size: 10px;
+        margin-right: 2px;
     }
 
     #login-section {
+        margin-top: 30px; /* Reduced margin top */
         padding: 20px; /* Further reduced for very small screens */
+        width: 95%; /* Take up more width */
+    }
+
+    .login-logo {
+        max-width: 100px; /* Smaller login logo */
+        margin-bottom: 15px;
     }
 
     #login-section h2 {
-        font-size: 1.5em;
+        font-size: 1.3em; /* Smaller login heading */
+        margin-bottom: 15px;
     }
 
     #login-section input {
-        padding: 10px;
-        font-size: 0.95em;
+        padding: 8px;
+        font-size: 0.9em;
+        margin-bottom: 10px;
     }
 
     #login-section button {
-        padding: 10px 20px;
-        font-size: 1em;
+        padding: 8px 18px;
+        font-size: 0.95em;
+    }
+
+    #login-message {
+        font-size: 0.9em;
+        margin-top: 10px;
     }
 
     .filter-controls {
@@ -674,10 +711,14 @@ tr:hover {
         gap: 5px;
     }
 
+    .filter-controls label {
+        font-size: 0.8em;
+    }
+
     .filter-controls input,
     .filter-controls button {
-        padding: 6px;
-        font-size: 0.85em;
+        padding: 5px;
+        font-size: 0.8em;
     }
 
     .pagination-controls {
@@ -686,6 +727,185 @@ tr:hover {
     }
 
     .pagination-controls button {
-        padding: 4px 10px;
+        padding: 4px 8px;
+        font-size: 0.75em;
+    }
+
+    table {
+        min-width: 300px; /* Further adjusted minimum table width */
+    }
+}
+
+/* --- Specific adjustments for 240px screen width --- */
+@media (max-width: 240px) {
+    body {
+        /* Ensure minimal margins on body itself */
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin: 0; /* No margin on container */
+        border-radius: 0; /* No border radius */
+        box-shadow: none; /* No shadow */
+        width: 100%; /* Ensure full width */
+    }
+
+    .app-header {
+        padding: 10px; /* Minimal padding */
+        border-radius: 0;
+    }
+
+    .app-header h1 {
+        font-size: 1em; /* Very small title */
+        margin-left: 0;
+        text-align: center; /* Center align title if space allows */
+        flex-grow: 0; /* Don't let it grow too much */
+        white-space: normal; /* Allow wrapping for very long titles */
+        text-overflow: clip; /* Clip instead of ellipsis for very small screens */
+        width: calc(100% - 40px); /* Account for toggle button */
+    }
+
+    .header-logo {
+        max-width: 30px; /* Even smaller logo */
+    }
+
+    .menu-toggle {
+        font-size: 1.3em; /* Smallest hamburger */
+        top: 10px;
+        right: 10px;
+    }
+
+    #mobile-nav button {
+        padding: 8px 10px; /* Minimal padding for nav buttons */
         font-size: 0.8em;
     }
+
+    #logout-button {
+        padding: 6px 10px; /* Minimal padding for logout */
+        font-size: 0.8em;
+    }
+
+    #main-content {
+        padding: 10px; /* Minimal main content padding */
+    }
+
+    h1, h2, h3 {
+        font-size: 1.2em; /* Smaller headings */
+        padding-bottom: 5px;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    form {
+        padding: 10px; /* Minimal form padding */
+        margin-bottom: 10px;
+        box-shadow: none; /* No shadow on forms */
+        border-radius: 5px;
+    }
+
+    form label {
+        font-size: 0.8em; /* Smallest label font */
+        margin-bottom: 2px;
+    }
+
+    form input[type="text"],
+    form input[type="number"],
+    form input[type="date"],
+    form input[type="password"],
+    form select {
+        padding: 6px; /* Minimal input padding */
+        font-size: 0.8em;
+        margin-bottom: 8px;
+        width: calc(100% - 12px); /* Full width minus padding */
+    }
+
+    form button {
+        padding: 6px 10px; /* Minimal button padding */
+        font-size: 0.85em;
+    }
+
+    .table-responsive {
+        margin-top: 15px;
+        margin-bottom: 15px;
+        box-shadow: none; /* No shadow on table container */
+        border-radius: 5px;
+    }
+
+    table {
+        min-width: 220px; /* Allow table to be very narrow, rely on overflow-x */
+    }
+
+    th, td {
+        padding: 4px; /* Minimal table cell padding */
+        font-size: 0.75em; /* Smallest table font */
+    }
+
+    .actions button {
+        padding: 3px 5px; /* Smallest action buttons */
+        font-size: 9px;
+        margin-right: 1px;
+    }
+
+    #login-section {
+        margin-top: 10px; /* Very small margin top */
+        padding: 15px; /* Minimal login section padding */
+        width: 100%; /* Full width */
+        box-shadow: none; /* No shadow */
+        border-radius: 0;
+    }
+
+    .login-logo {
+        max-width: 80px; /* Smallest login logo */
+        margin-bottom: 10px;
+    }
+
+    #login-section h2 {
+        font-size: 1.1em; /* Smallest login heading */
+        margin-bottom: 10px;
+    }
+
+    #login-section input {
+        padding: 6px;
+        font-size: 0.85em;
+        margin-bottom: 8px;
+    }
+
+    #login-section button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+
+    #login-message {
+        font-size: 0.85em;
+        margin-top: 8px;
+    }
+
+    .filter-controls {
+        padding: 8px;
+        gap: 3px;
+        border-radius: 5px;
+    }
+
+    .filter-controls label {
+        font-size: 0.75em;
+    }
+
+    .filter-controls input,
+    .filter-controls button {
+        padding: 4px;
+        font-size: 0.75em;
+    }
+
+    .pagination-controls {
+        padding: 3px;
+        gap: 3px;
+        border-radius: 5px;
+    }
+
+    .pagination-controls button {
+        padding: 3px 6px;
+        font-size: 0.7em;
+    }
+}
+
