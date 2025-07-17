@@ -42,7 +42,6 @@ body {
   right: 0;
 }
 
-
 /* Style the mobile nav links */
 #mobile-nav a {
   color: #fff;
@@ -50,49 +49,6 @@ body {
   font-size: 20px;
   text-decoration: none;
   display: block;
-}
-
-/* Hide mobile-nav on desktop */
-#mobile-nav {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  /* Show mobile-nav on small screens */
-  #mobile-nav {
-    display: block;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 75%;
-    height: 100%;
-    background: #fff;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    z-index: 1000;
-    padding: 1rem;
-  }
-
-  #mobile-nav.active {
-    transform: translateX(0);
-  }
-
-  .mobile-nav-buttons button,
-  .mobile-user-controls {
-    display: block;
-    width: 100%;
-    margin: 0.5rem 0;
-  }
-
-  .menu-toggle {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-  }
 }
 
 /* Show the toggle only on small screens */
