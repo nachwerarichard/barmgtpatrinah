@@ -8,7 +8,19 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    .header-right {
+    /* ... other styles ... */
+    max-height: 0; /* Initially hidden */
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+}
 
+.header-right.active {
+    max-height: 500px; /* Max height to reveal content */
+    margin-top: 15px; /* Space from header-left */
+}
+</style>
 </head>
 <body>
     <div id="login-section">
@@ -298,6 +310,43 @@
     </div>
         <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="script.js"></script>
-    
+    <script>// ... existing script.js content ...
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Other initializations for your sections (if any)
+    showSection('inventory'); // Ensure inventory is shown by default on load
+
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainNav = document.getElementById('main-nav');
+    const headerRight = document.querySelector('.header-right'); // Target the parent container
+
+    if (menuToggle && headerRight) {
+        menuToggle.addEventListener('click', () => {
+            headerRight.classList.toggle('active');
+        });
+
+        // Optional: Close menu when a navigation item is clicked (for better UX on mobile)
+        mainNav.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                if (window.innerWidth <= 768) { // Only close if on mobile
+                    headerRight.classList.remove('active');
+                }
+            });
+        });
+
+        // Optional: Close menu when logout is clicked
+        const logoutButton = document.getElementById('logout-button');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => {
+                if (window.innerWidth <= 768) { // Only close if on mobile
+                    headerRight.classList.remove('active');
+                }
+            });
+        });
+    }
+});
+
+// ... rest of your script.js functions (login, showSection, fetchInventory, etc.) ...</script>
 </body>
 </html>
