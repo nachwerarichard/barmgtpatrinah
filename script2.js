@@ -1,4 +1,4 @@
- <script>
+  <script>
         // Basic JavaScript for section display and menu toggle
         function showSection(sectionId) {
             // Remove 'active' from all sections
