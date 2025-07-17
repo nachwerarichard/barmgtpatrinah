@@ -24,6 +24,7 @@ body {
 
 /* Mobile menu base (hidden by default) */
 #mobile-nav {
+    display:none;
   position: fixed;
   top: 0;
   right: -100%; /* Hide off screen */
