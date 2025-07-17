@@ -14,9 +14,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            transform: translateX(100%); /* Initially hidden off-screen */
+            transform: translateX(-100%); /* Initially hidden off-screen */
             transition: transform 0.3s ease-in-out;
-            background-color:gray;
+            background-color: #ffffff;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             z-index: 50; /* Ensure it's above other content */
             display: flex; /* Use flexbox for centering content */
@@ -32,29 +32,50 @@
             transform: translateX(0); /* Slide into view */
         }
 
+        /* Mobile navigation close button */
+        #mobile-nav-close {
+            position: absolute;
+            top: 1rem; /* Equivalent to Tailwind's top-4 */
+            right: 1rem; /* Equivalent to Tailwind's right-4 */
+            padding: 0.5rem; /* Equivalent to Tailwind's p-2 */
+            border-radius: 50%; /* Equivalent to Tailwind's rounded-full */
+            color: #4a5568; /* Equivalent to Tailwind's text-gray-700 */
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        #mobile-nav-close:hover {
+            background-color: #f7fafc; /* Equivalent to Tailwind's bg-gray-100 */
+        }
+
+        #mobile-nav-close:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #4299e1; /* Equivalent to Tailwind's focus:ring-2 focus:ring-blue-500 */
+        }
+
+        #mobile-nav-close i {
+            font-size: 1.5rem; /* Equivalent to Tailwind's text-2xl */
+        }
+
         /* Custom CSS for the mobile navigation content container */
         .mobile-nav-content {
             display: flex;
             flex-direction: column;
             width: 100%;
             align-items: center;
-            color:black;
-            /* Equivalent to space-y-6 for direct children */
-            /* This targets all direct children except the first */
-            /* The margin-bottom on mobile-nav-button also contributes */
         }
 
         .mobile-nav-content > *:not(:last-child) {
             margin-bottom: 1.5rem; /* Equivalent to Tailwind's space-y-6 */
         }
 
-
         .mobile-nav-button {
             display: flex;
             align-items: center;
             justify-content: center; /* Center content horizontally */
             padding: 1rem 1.5rem;
-            /* margin-bottom: 1rem; Removed as space-y-6 handles spacing */
             border-radius: 0.5rem;
             color: #2d3748; /* Dark text for visibility */
             font-size: 1.125rem; /* Larger font size for mobile */
@@ -79,28 +100,47 @@
             font-size: 1.25rem;
         }
 
-        /* Responsive adjustments using Tailwind's breakpoints */
+        /* Custom CSS for the inner div containing user display and logout button */
+        .mobile-user-controls-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem; /* Equivalent to Tailwind's mt-8 */
+            width: 100%; /* Equivalent to Tailwind's w-full */
+        }
+
+        .mobile-user-controls-container .username-display {
+            margin-bottom: 1rem; /* Equivalent to Tailwind's mb-4 */
+        }
+
+        /* Responsive adjustments */
+        /* Hide menu toggle and show desktop nav on screens larger than 767px */
         @media (min-width: 768px) { /* md breakpoint */
             #menu-toggle {
                 display: none; /* Hide toggle button on desktop */
             }
             #main-nav {
-                display: flex !important; /* Ensure desktop nav is visible */
+                display: flex; /* Ensure desktop nav is visible */
             }
             .header-user-controls {
-                display: flex !important; /* Ensure desktop user controls are visible */
+                display: flex; /* Ensure desktop user controls are visible */
             }
             #mobile-nav {
                 display: none; /* Hide mobile nav on desktop */
             }
         }
 
+        /* Hide desktop nav and user controls on screens smaller than 768px */
         @media (max-width: 767px) { /* Below md breakpoint */
             #main-nav {
                 display: none; /* Hide desktop nav on mobile */
             }
             .header-user-controls {
                 display: none; /* Hide desktop user controls on mobile */
+            }
+            /* Ensure the mobile toggle is visible on mobile */
+            .menu-toggle {
+                display: block;
             }
         }
     </style>
@@ -137,10 +177,10 @@
             </div>
         </header>
         <!-- Mobile Navigation Overlay - Hidden on desktop -->
-      <nav id="mobile-nav" class="fixed top-0 left-0 w-full h-full bg-white z-50 flex flex-col items-center justify-center transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+     <nav id="mobile-nav">
         <!-- Close button for mobile menu -->
-        <button id="mobile-nav-close" class="absolute top-4 right-4 p-2 rounded-full text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out">
-            <i class="fas fa-times text-2xl"></i>
+        <button id="mobile-nav-close">
+            <i class="fas fa-times"></i>
         </button>
         <div class="mobile-nav-content">
             <button onclick="showSection('inventory'); closeMobileMenu()" class="mobile-nav-button">
@@ -161,8 +201,8 @@
             <button onclick="showSection('audit-logs'); closeMobileMenu()" class="mobile-nav-button">
                 <i class="fas fa-history"></i> Audit Logs
             </button>
-            <div class="flex flex-col items-center mt-8 w-full">
-                <span id="mobile-current-user-display" class="username-display mb-4">John Doe</span> <!-- Placeholder user -->
+            <div class="mobile-user-controls-container">
+                <span id="mobile-current-user-display" class="username-display">John Doe</span> <!-- Placeholder user -->
                 <button onclick="logout(); closeMobileMenu()" class="mobile-nav-button logout-button">
                     Logout <i class="fas fa-sign-out-alt"></i>
                 </button>
