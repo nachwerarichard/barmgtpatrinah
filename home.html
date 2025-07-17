@@ -319,8 +319,55 @@
                 document.getElementById('header-right').classList.remove('active');
             }
         }
+
+        // Dummy login function (replace with actual authentication)
+        /*function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginMessage = document.getElementById('login-message');
+
+            if (username === 'admin' && password === 'password') { // Example credentials
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('main-container').style.display = 'block';
+                document.getElementById('current-user-display').textContent = `Logged in as: ${username}`;
+                showSection('inventory'); // Show inventory section by default and set its nav button active
+            } else {
+                loginMessage.textContent = 'Invalid username or password.';
+            }
+        }
+
+        /*function logout() {
+            document.getElementById('login-section').style.display = 'flex'; // Changed to flex for centering
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('login-message').textContent = '';
+            // Remove active class from nav buttons on logout
+            document.querySelectorAll('#main-nav button').forEach(button => {
+                button.classList.remove('active-nav');
+            });
+        }
+
+        // Toggle mobile navigation
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('header-right').classList.toggle('active');
+        });
+
+        // Initialize display and default active section
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initially hide the main container and show login
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('login-section').style.display = 'flex';
+        });
+
+        // Placeholder functions for data fetching and form submission
+        function fetchInventory() { console.log('Fetching inventory...'); }
+        function fetchSales() { console.log('Fetching sales...'); }
+        function fetchExpenses() { console.log('Fetching expenses...'); }
+        function fetchCashJournal() { console.log('Fetching cash journal...'); }
+        function generateReports() { console.log('Generating reports...'); }
+        // ... (You'll have more detailed JavaScript in script.js)
     </script>
-    
    
     <script>
      function exportTableToExcelSheetJS(tableID, filename = 'excel_data') {
