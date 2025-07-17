@@ -41,6 +41,12 @@
                 </div>
             </div>
         </header>
+        <nav id="mobile-nav">
+  <a href="#">Home</a>
+  <a href="#">Rooms</a>
+  <a href="#">Gallery</a>
+  <a href="#">Contact</a>
+</nav>
         <div id="main-content">
             <div id="inventory-section" class="section active">
                 <h2>Inventory Management</h2>
@@ -277,5 +283,21 @@
     </div>
         <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="script.js"></script>
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+const mobileNav = document.getElementById('mobile-nav');
+
+menuToggle.addEventListener('click', function () {
+  mobileNav.classList.toggle('active');
+  
+  // Toggle menu icon between hamburger and X
+  if (mobileNav.classList.contains('active')) {
+    menuToggle.innerHTML = '&times;'; // X
+  } else {
+    menuToggle.innerHTML = '&#9776;'; // Hamburger
+  }
+});
+
+    </script>
 </body>
 </html>
