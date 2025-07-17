@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patrinah Hotel Management System</title>
-    <link rel="stylesheet" href="styles.css"/>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <!-- Link to your custom styles -->
+    <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+    <!-- Login Section -->
     <div id="login-section">
-        <img src="patrinah.png" alt="Patrinah Hotel Logo" class="login-logo">
+        <img src="https://placehold.co/150x150/E0E0E0/333333?text=Patrinah+Logo" alt="Patrinah Hotel Logo" class="login-logo">
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
@@ -20,55 +20,38 @@
         <p id="login-message"></p>
     </div>
 
+    <!-- Main Application Container (initially hidden) -->
     <div id="main-container" class="container" style="display: none;">
-       
- <header class="app-header">
+        <!-- Application Header -->
+        <header class="app-header">
             <div class="header-left">
-                <img src="patrina.png" alt="Patrinah Hotel Logo" class="header-logo">
+                <img src="https://placehold.co/50x50/E0E0E0/333333?text=Logo" alt="Patrinah Hotel Logo" class="header-logo">
+                <!-- Menu toggle button for mobile, always visible -->
+                <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
             </div>
             <div class="header-right">
-                <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
+                <!-- Close button for mobile navigation, only visible when menu is open -->
+                <button id="close-mobile-nav" class="close-mobile-nav"><i class="fas fa-times"></i></button>
+                <!-- Main Navigation -->
                 <nav id="main-nav">
-                    <button id="nav-inventory" onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
-                    <button id="nav-sales" onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
-                    <button id="nav-expenses" onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
-                    <button id="nav-cash-management" onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
-                    <button id="nav-reports" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
-                    <button id="nav-audit-logs" onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
+                    <button id="nav-inventory" onclick="showSection('inventory'); toggleMobileNav()"><i class="fas fa-boxes"></i> Inventory</button>
+                    <button id="nav-sales" onclick="showSection('sales'); toggleMobileNav()"><i class="fas fa-chart-line"></i> Sales</button>
+                    <button id="nav-expenses" onclick="showSection('expenses'); toggleMobileNav()"><i class="fas fa-money-bill-wave"></i> Expenses</button>
+                    <button id="nav-cash-management" onclick="showSection('cash-management'); toggleMobileNav()"><i class="fas fa-wallet"></i> Cash Management</button>
+                    <button id="nav-reports" onclick="showSection('reports'); toggleMobileNav()"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
+                    <button id="nav-audit-logs" onclick="showSection('audit-logs'); toggleMobileNav()"><i class="fas fa-history"></i> Audit Logs</button>
                 </nav>
+                <!-- User Controls -->
                 <div class="header-user-controls">
                     <span id="current-user-display" class="username-display"></span>
                     <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
-     <nav id="mobile-nav">
-            <!-- Close button for mobile navigation -->
-            <button id="close-mobile-nav">
-                <i class="fas fa-times"></i>
-            </button>
-            <!-- Mobile navigation buttons (same as desktop for consistency) -->
-            <button onclick="showSection('inventory'); toggleMobileNav()" class="mobile-nav-button">
-                <i class="fas fa-boxes"></i> <span>Inventory</span>
-            </button>
-            <button onclick="showSection('sales'); toggleMobileNav()" class="mobile-nav-button">
-                <i class="fas fa-chart-line"></i> <span>Sales</span>
-            </button>
-            <button onclick="showSection('expenses'); toggleMobileNav()" class="mobile-nav-button">
-                <i class="fas fa-money-bill-wave"></i> <span>Expenses</span>
-            </button>
-            <button onclick="showSection('cash-management'); toggleMobileNav()" class="mobile-nav-button">
-                <i class="fas fa-wallet"></i> <span>Cash Management</span>
-            </button>
-            <button onclick="showSection('reports'); toggleMobileNav()" class="mobile-nav-button">
-                <i class="fas fa-file-invoice-dollar"></i> <span>Reports</span>
-            </button>
-            <button onclick="showSection('audit-logs'); toggleMobileNav()" class="mobile-nav-button">
-                <i class="fas fa-history"></i> <span>Audit Logs</span>
-            </button>
-        </nav>
         </header>
 
+        <!-- Main Content Area -->
         <div id="main-content">
+            <!-- Inventory Section -->
             <div id="inventory-section" class="section active">
                 <h2>Inventory Management</h2>
 
@@ -112,9 +95,9 @@
                     </table>
                 </div>
                 <div id="pagination" class="pagination-controls"></div>
-
             </div>
 
+            <!-- Sales Section -->
             <div id="sales-section" class="section">
                 <h2>Sales Management</h2>
 
@@ -138,7 +121,7 @@
                     <input type="date" id="sales-date-filter">
                     <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
                 </div>
-                    <button class="export-button" onclick="exportTableToExcelSheetJS('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
+                <button class="export-button" onclick="exportTableToExcelSheetJS('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
 
                 <div class="table-responsive">
                     <table id="sales-table" class="sales-table">
@@ -157,9 +140,9 @@
                     </table>
                 </div>
                 <div id="sales-pagination" class="pagination-controls"></div>
-
             </div>
 
+            <!-- Expenses Section -->
             <div id="expenses-section" class="section">
                 <h2>Expenses Management</h2>
 
@@ -203,9 +186,9 @@
                     </table>
                 </div>
                 <div id="expenses-pagination" class="pagination-controls"></div>
-
             </div>
 
+            <!-- Cash Management Section -->
             <div id="cash-management-section" class="section">
                 <h2>Cash Management</h2>
 
@@ -251,6 +234,7 @@
                 </div>
             </div>
 
+            <!-- Reports Section -->
             <div id="reports-section" class="section">
                 <h2>Financial Reports</h2>
 
@@ -262,23 +246,23 @@
                     <button onclick="generateReports()"><i class="fas fa-chart-pie"></i> Generate Reports</button>
                 </div>
 
-                <h3>Department  Totals</h3>
-                 <button class="export-button" onclick="exportTableToExcel('department-table', 'Department_Report')">Export Department Report</button>
+                <h3>Department Totals</h3>
+                <button class="export-button" onclick="exportTableToExcel('department-table', 'Department_Report')">Export Department Report</button>
                 <div class="table-responsive">
-                   <table id="department-table">
-                     <thead >
-                         <tr>
-                            <th>Department</th>
-                             <th>Sales</th>
-                             <th>Expenses</th>
-                             <th>Balance</th>
-                           </tr>
-                     </thead>
-                      <tbody id="department-report-tbody"></tbody>
-                   </table>
+                    <table id="department-table">
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th>Sales</th>
+                                <th>Expenses</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="department-report-tbody"></tbody>
+                    </table>
 
-                  <h3> Overall sales</h3>
-                  <button class="export-button" onclick="exportTableToExcel('overall-reports-table', 'Overall_Summary_Report')">Export Overall Summary</button>
+                    <h3> Overall sales</h3>
+                    <button class="export-button" onclick="exportTableToExcel('overall-reports-table', 'Overall_Summary_Report')">Export Overall Summary</button>
                     <table id="overall-reports-table">
                         <thead>
                             <tr>
@@ -298,6 +282,7 @@
                 </div>
             </div>
 
+            <!-- Audit Logs Section -->
             <div id="audit-logs-section" class="section">
                 <h2>Audit Logs</h2>
                 <div class="search-container">
@@ -321,7 +306,9 @@
             </div>
         </div>
     </div>
-        <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <!-- Your custom JavaScript -->
     <script src="script.js"></script>
-    </body>
+</body>
 </html>
