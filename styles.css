@@ -1,5 +1,3 @@
-Here's the modified CSS, including adjustments for very small screens (up to 240px width). I've refined the existing media queries and added specific rules to ensure content adapts well to extremely narrow viewports.
-
 /* --- Global Styles & Body --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -908,4 +906,3 @@ tr:hover {
         font-size: 0.7em;
     }
 }
-
