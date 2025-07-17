@@ -40,7 +40,37 @@
                 </div>
             </div>
         </header>
-
+        <!-- Mobile Navigation Overlay - Hidden on desktop -->
+      <nav id="mobile-nav" class="fixed top-0 left-0 w-full h-full bg-white z-50 flex flex-col items-center justify-center transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+        <!-- Close button for mobile menu -->
+        <button id="mobile-nav-close" class="absolute top-4 right-4 p-2 rounded-full text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out">
+            <i class="fas fa-times text-2xl"></i>
+        </button>
+        <div class="flex flex-col space-y-6 w-full items-center">
+            <button onclick="showSection('inventory'); closeMobileMenu()" class="mobile-nav-button">
+                <i class="fas fa-boxes"></i> Inventory
+            </button>
+            <button onclick="showSection('sales'); closeMobileMenu()" class="mobile-nav-button">
+                <i class="fas fa-chart-line"></i> Sales
+            </button>
+            <button onclick="showSection('expenses'); closeMobileMenu()" class="mobile-nav-button">
+                <i class="fas fa-money-bill-wave"></i> Expenses
+            </button>
+            <button onclick="showSection('cash-management'); closeMobileMenu()" class="mobile-nav-button">
+                <i class="fas fa-wallet"></i> Cash Management
+            </button>
+            <button onclick="showSection('reports'); closeMobileMenu()" class="mobile-nav-button">
+                <i class="fas fa-file-invoice-dollar"></i> Reports
+            </button>
+            <button onclick="showSection('audit-logs'); closeMobileMenu()" class="mobile-nav-button">
+                <i class="fas fa-history"></i> Audit Logs
+            </button>
+            <div class="flex flex-col items-center mt-8 w-full">
+                <span id="current-user-display" class="username-display"></span>
+                 <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
         <div id="main-content">
             <div id="inventory-section" class="section active">
                 <h2>Inventory Management</h2>
@@ -298,7 +328,37 @@
         <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 
     <script src="script.js"></script>
+<script>// Get references to DOM elements
+const menuToggle = document.getElementById('menu-toggle');
+const mobileNav = document.getElementById('mobile-nav');
+const mobileNavClose = document.getElementById('mobile-nav-close');
+const menuToggleIcon = menuToggle.querySelector('i');
+const currentUserDisplay = document.getElementById('current-user-display');
+const mobileCurrentUserDisplay = document.getElementById('mobile-current-user-display');
 
+// Function to toggle the mobile menu visibility
+function toggleMobileMenu() {
+    document.body.classList.toggle('mobile-menu-open'); // Toggles the class on the body
+    // Change the icon based on menu state
+    if (document.body.classList.contains('mobile-menu-open')) {
+        menuToggleIcon.classList.remove('fa-bars');
+        menuToggleIcon.classList.add('fa-times');
+    } else {
+        menuToggleIcon.classList.remove('fa-times');
+        menuToggleIcon.classList.add('fa-bars');
+    }
+}
+
+// Function to close the mobile menu
+function closeMobileMenu() {
+    document.body.classList.remove('mobile-menu-open');
+    menuToggleIcon.classList.remove('fa-times');
+    menuToggleIcon.classList.add('fa-bars');
+}
+
+// Event listeners for menu toggle and close buttons
+menuToggle.addEventListener('click', toggleMobileMenu);
+mobileNavClose.addEventListener('click', closeMobileMenu);</script>
 
 </body>
 </html>
