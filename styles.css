@@ -11,6 +11,64 @@ body {
     min-height: 100vh;
     overflow-x: hidden; /* Prevent horizontal scroll */
 }
+/* Toggle button styles */
+.menu-toggle {
+  display: none;
+  font-size: 28px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  z-index: 1001;
+}
+
+/* Mobile menu base (hidden by default) */
+#mobile-nav {
+  position: fixed;
+  top: 0;
+  right: -100%; /* Hide off screen */
+  width: 80%;
+  height: 100vh;
+  background-color: #161616;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: right 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+/* Show menu when active */
+#mobile-nav.active {
+  right: 0;
+}
+
+/* Style the mobile nav links */
+#mobile-nav a {
+  color: #fff;
+  padding: 16px;
+  font-size: 20px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Show the toggle only on small screens */
+@media screen and (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+
+  .header-right {
+    display: none;
+  }
+
+  #mobile-nav {
+    display: flex;
+  }
+}
+
 
 /* Default (desktop) */
 .desktop-nav,
