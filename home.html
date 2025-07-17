@@ -8,7 +8,6 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Mobile navigation specific styles */
         #mobile-nav {
             position: fixed; /* Use fixed to cover the whole viewport */
             top: 0;
@@ -17,7 +16,7 @@
             height: 100%;
             transform: translateX(100%); /* Initially hidden off-screen */
             transition: transform 0.3s ease-in-out;
-            background-color: ggray;
+            background-color:gray;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             z-index: 50; /* Ensure it's above other content */
             display: flex; /* Use flexbox for centering content */
@@ -88,8 +87,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             cursor: pointer;
-            min-height: 48px; /* Ensure a minimum height for touch target and visibility */
-            box-sizing: border-box; /* Ensure padding is included in height */
         }
 
         .mobile-nav-button:hover {
@@ -124,12 +121,9 @@
             }
             #main-nav {
                 display: flex; /* Ensure desktop nav is visible */
-                gap: 1rem; /* Equivalent to space-x-4 */
             }
             .header-user-controls {
                 display: flex; /* Ensure desktop user controls are visible */
-                align-items: center; /* Equivalent to items-center */
-                gap: 1rem; /* Equivalent to space-x-4 */
             }
             #mobile-nav {
                 display: none; /* Hide mobile nav on desktop */
@@ -147,55 +141,7 @@
             /* Ensure the mobile toggle is visible on mobile */
             .menu-toggle {
                 display: block;
-                padding: 0.5rem; /* Equivalent to p-2 */
-                border-radius: 50%; /* Equivalent to rounded-full */
-                color: #4a5568; /* Equivalent to text-gray-700 */
-                background-color: transparent;
-                border: none;
-                cursor: pointer;
-                transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             }
-            .menu-toggle:hover {
-                background-color: #f7fafc; /* Equivalent to hover:bg-gray-100 */
-            }
-            .menu-toggle:focus {
-                outline: none;
-                box-shadow: 0 0 0 2px #4299e1; /* Equivalent to focus:ring-2 focus:ring-blue-500 */
-            }
-            .menu-toggle i {
-                font-size: 1.25rem; /* Equivalent to text-xl */
-            }
-        }
-
-        /* Main content area styling */
-        main {
-            padding: 1rem; /* Equivalent to p-4 */
-        }
-
-        @media (min-width: 768px) {
-            main {
-                padding: 2rem; /* Equivalent to md:p-8 */
-            }
-        }
-
-        /* Content section styling */
-        .content-section {
-            padding: 1.5rem; /* Equivalent to p-6 */
-            background-color: #ffffff; /* Equivalent to bg-white */
-            border-radius: 0.5rem; /* Equivalent to rounded-lg */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-md */
-            margin-bottom: 1.5rem; /* Equivalent to mb-6 */
-        }
-
-        .content-section h2 {
-            font-size: 1.5rem; /* Equivalent to text-2xl */
-            font-weight: bold; /* Equivalent to font-bold */
-            color: #2d3748; /* Equivalent to text-gray-800 */
-            margin-bottom: 1rem; /* Equivalent to mb-4 */
-        }
-
-        .content-section p {
-            color: #4a5568; /* Equivalent to text-gray-600 */
         }
     </style>
 </head>
