@@ -52,6 +52,14 @@ body {
   display: block;
 }
 
+#mobile-nav span {
+  color: #fff;
+  padding: 16px;
+  font-size: 20px;
+  text-decoration: none;
+  display: block;
+}
+
 /* Show the toggle only on small screens */
 @media screen and (max-width: 768px) {
   .menu-toggle {
