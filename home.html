@@ -8,6 +8,229 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            margin: 0;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: #1f2937; /* bg-gray-800 */
+            color: #ffffff; /* text-white */
+            padding: 1rem; /* p-4 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            border-bottom-left-radius: 0.5rem; /* rounded-b-lg */
+            border-bottom-right-radius: 0.5rem; /* rounded-b-lg */
+        }
+
+        .header-logo {
+            border-radius: 9999px; /* rounded-full */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            width: 60px; /* Equivalent to w-15, h-15 if used, otherwise fixed */
+            height: 60px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem; /* space-x-4 */
+        }
+
+        /* Desktop Navigation */
+        #main-nav {
+            display: none; /* hidden */
+            gap: 0.5rem; /* space-x-2 */
+        }
+
+        @media (min-width: 1024px) { /* lg:flex */
+            #main-nav {
+                display: flex;
+            }
+        }
+
+        .nav-button {
+            background-color: #374151; /* bg-gray-700 */
+            padding: 0.5rem 1rem; /* px-4 py-2 */
+            border-radius: 0.375rem; /* rounded-md */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* space-x-2 */
+            transition-property: background-color; /* transition */
+            transition-duration: 300ms; /* duration-300 */
+            transition-timing-function: ease-in-out; /* ease-in-out */
+            border: none;
+            cursor: pointer;
+            color: inherit; /* Inherit text color from parent (white) */
+        }
+
+        .nav-button:hover {
+            background-color: #4b5563; /* hover:bg-gray-600 */
+        }
+
+        /* Menu Toggle Button */
+        #menu-toggle {
+            display: block; /* Shown on small screens */
+            font-size: 1.5rem; /* text-2xl */
+            outline: none; /* focus:outline-none */
+            color: #ffffff; /* text-white */
+            padding: 0.5rem; /* p-2 */
+            border-radius: 0.375rem; /* rounded-md */
+            transition-property: background-color; /* transition */
+            transition-duration: 300ms; /* duration-300 */
+            transition-timing-function: ease-in-out; /* ease-in-out */
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (min-width: 1024px) { /* lg:hidden */
+            #menu-toggle {
+                display: none; /* Hidden on large screens */
+            }
+        }
+
+        #menu-toggle:hover {
+            background-color: #374151; /* hover:bg-gray-700 */
+        }
+
+        .header-user-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* space-x-2 */
+        }
+
+        .username-display {
+            color: #d1d5db; /* text-gray-300 */
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 500; /* font-medium */
+        }
+
+        #logout-button {
+            background-color: #dc2626; /* bg-red-600 */
+            padding: 0.5rem 1rem; /* px-4 py-2 */
+            border-radius: 0.375rem; /* rounded-md */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* space-x-2 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            transition-property: background-color; /* transition */
+            transition-duration: 300ms; /* duration-300 */
+            transition-timing-function: ease-in-out; /* ease-in-out */
+            border: none;
+            cursor: pointer;
+            color: inherit; /* Inherit text color from parent (white) */
+        }
+
+        #logout-button:hover {
+            background-color: #b91c1c; /* hover:bg-red-700 */
+        }
+
+        /* Mobile Navigation */
+        #mobile-nav {
+            display: none; /* hidden */
+            position: fixed;
+            inset: 0; /* top-0 right-0 bottom-0 left-0 */
+            background-color: rgba(17, 24, 39, 0.95); /* bg-gray-900 bg-opacity-95 */
+            z-index: 50;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem; /* space-y-6 */
+        }
+
+        @media (min-width: 1024px) { /* lg:hidden */
+            #mobile-nav {
+                display: none; /* Ensure it's hidden on large screens even if JS toggles it */
+            }
+        }
+
+        #close-mobile-nav {
+            position: absolute;
+            top: 1.5rem; /* top-6 */
+            right: 1.5rem; /* right-6 */
+            color: #ffffff; /* text-white */
+            font-size: 2.25rem; /* text-4xl */
+            outline: none; /* focus:outline-none */
+            transition-property: color; /* transition */
+            transition-duration: 300ms; /* duration-300 */
+            transition-timing-function: ease-in-out; /* ease-in-out */
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        #close-mobile-nav:hover {
+            color: #d1d5db; /* hover:text-gray-300 */
+        }
+
+        .mobile-nav-button {
+            color: #ffffff; /* text-white */
+            font-size: 1.875rem; /* text-3xl */
+            padding-top: 0.75rem; /* py-3 */
+            padding-bottom: 0.75rem; /* py-3 */
+            width: 100%; /* w-full */
+            max-width: 20rem; /* max-w-xs */
+            border-radius: 0.5rem; /* rounded-lg */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem; /* space-x-4 */
+            transition-property: background-color; /* transition */
+            transition-duration: 300ms; /* duration-300 */
+            transition-timing-function: ease-in-out; /* ease-in-out */
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .mobile-nav-button:hover {
+            background-color: #374151; /* hover:bg-gray-700 */
+        }
+
+        /* Main content area */
+        main {
+            flex-grow: 1; /* flex-grow */
+            padding: 1.5rem; /* p-6 */
+        }
+
+        h1 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #1f2937; /* text-gray-800 */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+
+        p {
+            color: #374151; /* text-gray-700 */
+        }
+
+        .section {
+            display: none; /* hidden */
+            background-color: #ffffff; /* bg-white */
+            padding: 1.5rem; /* p-6 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            margin-top: 1.5rem; /* mt-6 */
+        }
+
+        .section h2 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            color: #1f2937; /* text-gray-800 */
+        }
+
+        .section p {
+            margin-top: 0.5rem; /* mt-2 */
+            color: #4b5563; /* text-gray-600 */
+        }
+    </style>
 </head>
 <body>
     <div id="login-section">
