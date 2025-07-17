@@ -728,3 +728,95 @@ tr:hover {
         font-size: 0.8em;
     }
 }
+
+
+    
+
+ @media (max-width: 240px) {
+    .app-header h1 {
+        font-size: 1em; /* Further reduced */
+        margin-left: 5px; /* Further reduced */
+    }
+
+    .header-logo {
+        max-width: 30px; /* Further reduced */
+    }
+
+    #logout-button {
+        padding: 4px 8px; /* Further reduced */
+        font-size: 10px; /* Further reduced */
+    }
+
+    form {
+        padding: 10px; /* Significantly reduced */
+    }
+
+    form label {
+        font-size: 0.8em; /* Further reduced */
+    }
+
+    form input[type="text"],
+    form input[type="number"],
+    form input[type="date"],
+    form input[type="password"],
+    form select {
+        padding: 6px; /* Significantly reduced */
+        font-size: 0.8em; /* Further reduced */
+        margin-bottom: 8px; /* Further reduced */
+    }
+
+    form button {
+        padding: 6px 10px; /* Significantly reduced */
+        font-size: 0.85em; /* Further reduced */
+    }
+
+    th, td {
+        padding: 5px; /* Significantly reduced */
+        font-size: 0.75em; /* Further reduced */
+    }
+
+    .actions button {
+        padding: 3px 6px; /* Significantly reduced */
+        font-size: 10px; /* Further reduced */
+        margin-right: 2px; /* Further reduced */
+    }
+
+    #login-section {
+        padding: 15px; /* Further reduced */
+    }
+
+    #login-section h2 {
+        font-size: 1.2em; /* Further reduced */
+    }
+
+    #login-section input {
+        padding: 8px; /* Further reduced */
+        font-size: 0.85em; /* Further reduced */
+    }
+
+    #login-section button {
+        padding: 8px 15px; /* Further reduced */
+        font-size: 0.9em; /* Further reduced */
+    }
+
+    .filter-controls {
+        padding: 5px; /* Significantly reduced */
+        gap: 3px; /* Further reduced */
+    }
+
+    .filter-controls input,
+    .filter-controls button {
+        padding: 4px; /* Significantly reduced */
+        font-size: 0.75em; /* Further reduced */
+    }
+
+    .pagination-controls {
+        padding: 3px; /* Significantly reduced */
+        gap: 3px; /* Further reduced */
+    }
+
+    .pagination-controls button {
+        padding: 3px 8px; /* Significantly reduced */
+        font-size: 0.7em; /* Further reduced */
+    }
+}
