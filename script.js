@@ -185,7 +185,7 @@ function applyBarStaffUIRestrictions(sectionId) {
  */
 function updateUIForUserRole() {
     const userDisplay = document.getElementById('current-user-display');
-    const useDisplay = document.getElementById('mobile-nav');
+    const useDisplay = document.getElementById('mobil-nav');
     const mainContent = document.getElementById('main-content');
     const loginSection = document.getElementById('login-section');
     const mainContainer = document.getElementById('main-container');
