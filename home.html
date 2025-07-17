@@ -7,75 +7,7 @@
     <link rel="stylesheet" href="styles.css"/>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-      /* Hide mobile nav on larger screens */
-
-
-/* Show only on screens <= 768px */
-@media screen and (max-width: 768px) {
-    .mobile-nav {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        max-width: 300px;
-        height: 100%;
-        background-color: #fff;
-        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
-        transition: right 0.3s ease;
-        z-index: 1000;
-        display: block;
-        padding: 1rem;
-    }
-
-    .mobile-nav.open {
-        right: 0;
-    }
-
-    .mobile-nav-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .mobile-menu-toggle {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
-    .mobile-nav-content {
-        margin-top: 2rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .mobile-nav-content button {
-        background: none;
-        border: none;
-        text-align: left;
-        font-size: 1rem;
-        padding: 0.5rem 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        cursor: pointer;
-    }
-
-    .mobile-nav-content hr {
-        margin: 1rem 0;
-    }
-
-    /* Hide desktop nav on mobile */
-    .app-header .header-right,
-    .header-user-controls {
-        display: none;
-    }
-}
-
-    </style>
+   
 </head>
 <body>
     <div id="login-section">
@@ -108,27 +40,7 @@
                 </div>
             </div>
         </header>
-        <!-- Mobile Navigation Overlay - Hidden on desktop -->
-     <!-- Mobile Navigation Overlay -->
-<nav id="mobile-nav" class="mobile-nav">
-    <div class="mobile-nav-header">
-        <img src="patrina.png" alt="Patrinah Hotel Logo" class="header-logo">
-        <button id="menu-toggle" class="mobile-menu-toggle">
-            <i class="fas fa-bars"></i>
-        </button>
-    </div>
-    <div class="mobile-nav-content">
-        <button onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
-        <button onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
-        <button onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
-        <button onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
-        <button onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
-        <button onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
-        <hr>
-        <span id="mobile-user-display" class="username-display"></span>
-        <button onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
-    </div>
-</nav>
+
 
         <div id="main-content">
             <div id="inventory-section" class="section active">
@@ -380,35 +292,10 @@
                     </table>
                 </div>
                 <div id="audit-pagination" class="pagination-controls"></div>
-
             </div>
         </div>
     </div>
         <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-
     <script src="script.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const toggleBtn = document.getElementById('menu-toggle');
-    const mobileNav = document.getElementById('mobile-nav');
-    const icon = toggleBtn.querySelector('i');
-
-    toggleBtn.addEventListener('click', () => {
-        mobileNav.classList.toggle('open');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-times');
-    });
-});
-    // Sync username to mobile view on load
-document.addEventListener('DOMContentLoaded', () => {
-    const desktopUser = document.getElementById('current-user-display');
-    const mobileUser = document.getElementById('mobile-user-display');
-    if (desktopUser && mobileUser) {
-        mobileUser.textContent = desktopUser.textContent;
-    }
-});
-
-</script>
-    
 </body>
 </html>
