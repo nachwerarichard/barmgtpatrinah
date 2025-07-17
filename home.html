@@ -310,5 +310,29 @@
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <!-- Your custom JavaScript -->
     <script src="script.js"></script>
+    <script>function toggleMobileNav() {
+    const headerRight = document.querySelector('.app-header .header-right');
+    if (headerRight) {
+        headerRight.classList.remove('active'); // Simply close the menu
+    }
+
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeMobileNav = document.getElementById('close-mobile-nav');
+    const headerRight = document.querySelector('.app-header .header-right');
+
+    if (menuToggle && headerRight) {
+        menuToggle.addEventListener('click', () => {
+            headerRight.classList.add('active');
+        });
+    }
+
+    if (closeMobileNav && headerRight) {
+        closeMobileNav.addEventListener('click', () => {
+            headerRight.classList.remove('active');
+        });
+    }
+
+}</script>
 </body>
 </html>
