@@ -409,19 +409,6 @@
 
     <script src="script.js"></script>
 <script>
-     function showSection(sectionId) {
-            // Hide all content sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            // Show the selected section
-            const selectedSection = document.getElementById(sectionId);
-            if (selectedSection) {
-                selectedSection.style.display = 'block';
-            }
-            console.log(`Navigating to section: ${sectionId}`);
-        }
-    
     
     // Get references to DOM elements
 const menuToggle = document.getElementById('menu-toggle');
