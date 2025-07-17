@@ -12,6 +12,65 @@ body {
     overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
+/* Default (desktop) */
+.desktop-nav,
+.desktop-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.mobile-nav-container {
+  display: none; /* Hidden by default */
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  .desktop-nav,
+  .desktop-controls {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .mobile-nav-container {
+    position: fixed;
+    top: 0;
+    right: -250px;
+    width: 250px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+    padding: 20px;
+    display: block;
+  }
+
+  .mobile-nav-container.active {
+    right: 0;
+  }
+
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .mobile-nav .header-user-controls {
+    margin-top: 2rem;
+  }
+}
+
 /* --- Main Application Container --- */
 .container {
     width: 100%;
@@ -79,12 +138,11 @@ h1, h2, h3 {
     gap: 20px;
     flex-grow: 1; /* Allow right section to grow */
     justify-content: flex-end; /* Push content to the right */
-    /* Mobile specific styles for header-right will be applied in media query */
 }
 
 /* Hamburger menu toggle - hidden on desktop */
 .menu-toggle {
-    display: none; /* Hidden by default, shown on mobile */
+    display: none;
     background: none;
     border: none;
     color: white;
@@ -92,15 +150,14 @@ h1, h2, h3 {
     cursor: pointer;
 }
 
-/* Desktop Navigation (Horizontal) */
-#desktop-nav {
-    display: flex; /* Visible on desktop */
+/* Main Navigation (Horizontal) */
+#main-nav {
+    display: flex;
     gap: 10px; /* Space between nav buttons */
     flex-wrap: wrap; /* Allow nav items to wrap */
 }
 
-#desktop-nav button,
-#mobile-nav button {
+#main-nav button {
     padding: 10px 20px;
     border: none;
     background-color: transparent;
@@ -114,32 +171,21 @@ h1, h2, h3 {
     gap: 8px;
 }
 
-#desktop-nav button:hover,
-#mobile-nav button:hover {
+#main-nav button:hover {
     background-color: #acaabe; /* Light Gray - from new palette */
     transform: translateY(-2px);
 }
 
-#desktop-nav button.active-nav,
-#mobile-nav button.active-nav {
+#main-nav button.active-nav {
     background-color: #acaabe; /* Light Gray - from new palette */
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* Mobile Navigation (Vertical) */
-#mobile-nav {
-    display: none; /* Hidden by default, shown on mobile when active */
-    flex-direction: column;
-    width: 100%;
-    margin-top: 15px; /* Space from header-left */
 }
 
 .header-user-controls {
     display: flex;
     align-items: center;
     gap: 15px;
-    /* Mobile specific styles will be applied in media query */
 }
 
 .username-display {
@@ -185,7 +231,7 @@ form {
     background-color: #ffffff; /* White */
     padding: 20px; /* Reduced from 30px */
     border-radius: 10px;
-    width: 200px; /* This will be overridden by responsive styles */
+    width:200px;
     margin-bottom: 20px; /* Reduced from 30px */
     border: 1px solid #e3e3e9; /* Pale Gray */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
@@ -204,7 +250,7 @@ form input[type="number"],
 form input[type="date"],
 form input[type="password"],
 form select {
-    width: calc(100% - 24px); /* Full width minus padding */
+    width: calc(100% - 24px);
     padding: 10px; /* Reduced from 12px */
     margin-bottom: 15px; /* Reduced from 20px */
     border: 1px solid #c7c7d4; /* Cool Gray */
@@ -416,6 +462,7 @@ tr:hover {
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
+/* If your filter controls are in a flex container, you might also want to adjust that */
 .filter-controls {
     display: flex;
     flex-wrap: wrap; /* Allow items to wrap to the next line on smaller screens */
@@ -498,21 +545,6 @@ tr:hover {
         margin-left: 15px; /* Space from logo */
     }
 
-    /* Show hamburger menu on mobile */
-    .menu-toggle {
-        display: block;
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        z-index: 1001;
-    }
-
-    /* Hide desktop nav on mobile */
-    #desktop-nav {
-        display: none;
-    }
-
-    /* Header Right (contains mobile nav and user controls) */
     .header-right {
         flex-direction: column; /* Stack nav and user controls */
         align-items: flex-start; /* Align to the left */
@@ -528,21 +560,27 @@ tr:hover {
         margin-top: 15px; /* Space from header-left */
     }
 
-    /* Mobile Nav (now visible when header-right is active) */
-    #mobile-nav {
-        display: flex; /* Display as column when active */
-        flex-direction: column;
+    .menu-toggle {
+        display: block; /* Show hamburger menu */
+        position: absolute; /* Position independently */
+        top: 20px;
+        right: 20px;
+        z-index: 1001; /* Ensure it's on top */
+    }
+
+    #main-nav {
+        flex-direction: column; /* Stack nav buttons vertically */
         width: 100%;
         margin-bottom: 15px;
     }
 
-    #mobile-nav button {
+    #main-nav button {
         width: 100%; /* Full width buttons */
         padding: 12px 20px;
         border-radius: 0; /* No border radius for stacked buttons */
     }
-    #mobile-nav button:hover,
-    #mobile-nav button.active-nav {
+    #main-nav button:hover,
+    #main-nav button.active-nav {
         background-color: #7a7891; /* Darker hover for mobile nav */
     }
 
@@ -689,3 +727,4 @@ tr:hover {
         padding: 4px 10px;
         font-size: 0.8em;
     }
+}
