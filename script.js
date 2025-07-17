@@ -1423,7 +1423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Dummy login function (replace with actual authentication)
-        /*function login() {
+        function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const loginMessage = document.getElementById('login-message');
@@ -1438,7 +1438,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        /*function logout() {
+        function logout() {
             document.getElementById('login-section').style.display = 'flex'; // Changed to flex for centering
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('username').value = '';
