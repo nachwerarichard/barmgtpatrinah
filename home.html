@@ -42,22 +42,34 @@
             </div>
         </header>
         <nav id="mobile-nav">
-            <div class="header-right">
-                <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
-                <nav id="main-nav">
-                    <button id="nav-inventory" onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
-                    <button id="nav-sales" onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
-                    <button id="nav-expenses" onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
-                    <button id="nav-cash-management" onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
-                    <button id="nav-reports" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
-                    <button id="nav-audit-logs" onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
-                </nav>
-                <div class="header-user-controls">
-                    <span id="current-user-display" class="username-display"></span>
-                    <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
-                </div>
-            </div>
-        </nav>
+  <!-- Existing mobile links -->
+  <a href="#">Home</a>
+  <a href="#">Rooms</a>
+  <a href="#">Gallery</a>
+  <a href="#">Contact</a>
+
+  <!-- Menu toggle button -->
+  <button id="menu-toggle" class="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Mobile-specific nav buttons (cloned from header-right) -->
+  <div class="mobile-nav-buttons">
+    <button id="nav-inventory" onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
+    <button id="nav-sales" onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
+    <button id="nav-expenses" onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
+    <button id="nav-cash-management" onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
+    <button id="nav-reports" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
+    <button id="nav-audit-logs" onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
+  </div>
+
+  <!-- User controls on mobile -->
+  <div class="mobile-user-controls">
+    <span id="current-user-display" class="username-display"></span>
+    <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+  </div>
+</nav>
+
         <div id="main-content">
             <div id="inventory-section" class="section active">
                 <h2>Inventory Management</h2>
