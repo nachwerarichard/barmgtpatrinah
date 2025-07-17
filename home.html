@@ -35,25 +35,15 @@
                     <button id="nav-reports" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
                     <button id="nav-audit-logs" onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
                 </nav>
-                 <nav id="mobile-nav">
-                    <button id="nav-inventory-mobile" onclick="showSection('inventory', this)"><i class="fas fa-boxes"></i> Inventory</button>
-                    <button id="nav-sales-mobile" onclick="showSection('sales', this)"><i class="fas fa-chart-line"></i> Sales</button>
-                    <button id="nav-expenses-mobile" onclick="showSection('expenses', this)"><i class="fas fa-money-bill-wave"></i> Expenses</button>
-                    <button id="nav-cash-management-mobile" onclick="showSection('cash-management', this)"><i class="fas fa-wallet"></i> Cash Management</button>
-                    <button id="nav-reports-mobile" onclick="showSection('reports', this)"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
-                    <button id="nav-audit-logs-mobile" onclick="showSection('audit-logs', this)"><i class="fas fa-history"></i> Audit Logs</button>
-                </nav>
                 <div class="header-user-controls">
                     <span id="current-user-display" class="username-display"></span>
                     <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
         </header>
-
         <div id="main-content">
             <div id="inventory-section" class="section active">
                 <h2>Inventory Management</h2>
-
                 <h3>Add/Update Inventory Item</h3>
                 <form id="inventory-form">
                     <input type="hidden" id="inventory-id">
@@ -69,7 +59,6 @@
                     <input type="number" id="spoilage" min="0" required>
                     <button type="submit"><i class="fas fa-save"></i> Save Inventory</button>
                 </form>
-
                 <h3>Current Inventory</h3>
                 <div class="filter-controls">
                     <input type="text" id="search-inventory-item" placeholder="Search by item name">
@@ -94,12 +83,9 @@
                     </table>
                 </div>
                 <div id="pagination" class="pagination-controls"></div>
-
             </div>
-
             <div id="sales-section" class="section">
                 <h2>Sales Management</h2>
-
                 <h3>Record New Sale</h3>
                 <form id="sale-form">
                     <input type="hidden" id="sale-id">
@@ -113,7 +99,6 @@
                     <input type="number" id="sale-sp" step="0.01" min="0" required>
                     <button type="submit"><i class="fas fa-plus-circle"></i> Record Sale</button>
                 </form>
-
                 <h3 class="sales-records-heading">Sales Records</h3>
                 <div class="filter-controls sales-filter-controls">
                     <label for="sales-date-filter" style="margin-bottom:0;">Filter by Date:</label>
@@ -121,7 +106,6 @@
                     <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
                 </div>
                     <button class="export-button" onclick="exportTableToExcelSheetJS('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
-
                 <div class="table-responsive">
                     <table id="sales-table" class="sales-table">
                         <thead>
@@ -139,12 +123,9 @@
                     </table>
                 </div>
                 <div id="sales-pagination" class="pagination-controls"></div>
-
             </div>
-
             <div id="expenses-section" class="section">
                 <h2>Expenses Management</h2>
-
                 <h3>Record New Expense</h3>
                 <form id="expense-form">
                     <input type="hidden" id="expense-id">
@@ -160,7 +141,6 @@
                     <input type="text" id="expense-responsible">
                     <button type="submit"><i class="fas fa-plus-circle"></i> Record Expense</button>
                 </form>
-
                 <h3 class="expenses-records-heading">Expense Records</h3>
                 <div class="filter-controls expenses-filter-controls">
                     <label for="expenses-date-filter" style="margin-bottom:0;">Filter by Date:</label>
@@ -185,12 +165,9 @@
                     </table>
                 </div>
                 <div id="expenses-pagination" class="pagination-controls"></div>
-
             </div>
-
             <div id="cash-management-section" class="section">
                 <h2>Cash Management</h2>
-
                 <h3>Record Cash Movement</h3>
                 <form id="cash-journal-form">
                     <input type="hidden" id="cash-journal-id">
@@ -206,7 +183,6 @@
                     <input type="date" id="cash-date" required>
                     <button type="submit"><i class="fas fa-money-check-alt"></i> Save Cash Entry</button>
                 </form>
-
                 <h3 class="cash-header">Cash Records</h3>
                 <div class="filter-controls">
                     <label for="cash-filter-date">Filter by Date:</label>
@@ -232,10 +208,8 @@
                     </table>
                 </div>
             </div>
-
             <div id="reports-section" class="section">
                 <h2>Financial Reports</h2>
-
                 <div class="filter-controls">
                     <label for="report-start-date">Start Date:</label>
                     <input type="date" id="report-start-date">
@@ -243,7 +217,6 @@
                     <input type="date" id="report-end-date">
                     <button onclick="generateReports()"><i class="fas fa-chart-pie"></i> Generate Reports</button>
                 </div>
-
                 <h3>Department  Totals</h3>
                  <button class="export-button" onclick="exportTableToExcel('department-table', 'Department_Report')">Export Department Report</button>
                 <div class="table-responsive">
@@ -279,7 +252,6 @@
                     </table>
                 </div>
             </div>
-
             <div id="audit-logs-section" class="section">
                 <h2>Audit Logs</h2>
                 <div class="search-container">
@@ -305,7 +277,5 @@
     </div>
         <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="script.js"></script>
-
-
 </body>
 </html>
