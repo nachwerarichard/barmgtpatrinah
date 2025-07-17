@@ -1,4 +1,4 @@
-  <script>
+  
         // Basic JavaScript for section display and menu toggle
         function showSection(sectionId) {
             // Remove 'active' from all sections
@@ -67,9 +67,9 @@
         function fetchCashJournal() { console.log('Fetching cash journal...'); }
         function generateReports() { console.log('Generating reports...'); }
         // ... (You'll have more detailed JavaScript in script.js)
-    </script>
+    
    
-    <script>
+    
      function exportTableToExcelSheetJS(tableID, filename = 'excel_data') {
             const table = document.getElementById(tableID);
             const ws = XLSX.utils.table_to_sheet(table); // Convert HTML table to worksheet
@@ -108,4 +108,4 @@
     document.body.removeChild(downloadLink);
 }
 
-    </script>
+    
