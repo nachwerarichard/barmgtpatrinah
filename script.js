@@ -185,6 +185,7 @@ function applyBarStaffUIRestrictions(sectionId) {
  */
 function updateUIForUserRole() {
     const userDisplay = document.getElementById('current-user-display');
+    const useDisplay = document.getElementById('mobile-nav');
     const mainContent = document.getElementById('main-content');
     const loginSection = document.getElementById('login-section');
     const mainContainer = document.getElementById('main-container');
@@ -195,7 +196,7 @@ function updateUIForUserRole() {
 
     if (authToken && currentUserRole) {
         userDisplay.textContent = `${currentUserRole}`;
-
+        useDisplay.textContent = `${currentUserRole}`;
         // --- Hide Login Section, Show Main Container ---
         loginSection.style.display = 'none';
         mainContainer.style.display = 'block';
