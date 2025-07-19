@@ -61,7 +61,6 @@ function showConfirm(message, onConfirm, onCancel = null) {
     const confirmButton = document.getElementById('confirm-button');
     const cancelButton = document.getElementById('cancel-button');
 
-    modal.classList.remove('hidden'); // Show the modal
 
     const handleConfirm = () => {
         modal.classList.add('hidden');
