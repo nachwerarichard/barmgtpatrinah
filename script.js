@@ -723,8 +723,6 @@ function calculateAndSaveSale(item, number, bp, sp, date) {
 // const newSaleRecord = calculateAndSaveSale(newItem, newNumber, newBp, newSp, newDate);
 // Then, you would add newSaleRecord to your 'sales' array and re-render the table.
 
-// ... (previous code)
-
 async function submitSaleForm(event) {
     event.preventDefault();
     // Roles allowed to record sales
@@ -739,27 +737,8 @@ async function submitSaleForm(event) {
     const number = parseInt(document.getElementById('sale-number').value);
     const bp = parseFloat(document.getElementById('sale-bp').value);
     const sp = parseFloat(document.getElementById('sale-sp').value);
-    const date = document.getElementById('sales-date-filter').value; // Assuming you're using the filter date for the sale date, or have a dedicated input for it. If not, use new Date().toISOString().split('T')[0];
 
-    // --- Calculate Profit and Percentage Profit Here ---
-    const totalBuyingPrice = bp * number;
-    const totalSellingPrice = sp * number;
-    const profit = totalSellingPrice - totalBuyingPrice;
-    let percentageProfit = 0;
-    if (totalBuyingPrice !== 0) {
-        percentageProfit = (profit / totalBuyingPrice) * 100;
-    }
-    // --- End Calculation ---
-
-    const saleData = {
-        item,
-        number,
-        bp,
-        sp,
-        profit: profit,               // Add calculated profit
-        percentageprofit: percentageProfit, // Add calculated percentage profit
-        date                      // Ensure the date is included
-    };
+    const saleData = { item, number, bp, sp };
 
     try {
         let response;
@@ -771,12 +750,12 @@ async function submitSaleForm(event) {
             }
             response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
                 method: 'PUT',
-                body: JSON.stringify(saleData) // Send the updated saleData with calculated values
+                body: JSON.stringify(saleData)
             });
-        } else { // New entry creation (all allowed roles)
+        } else { // New sale creation (all allowed roles)
             response = await authenticatedFetch(`${API_BASE_URL}/sales`, {
                 method: 'POST',
-                body: JSON.stringify(saleData) // Send the saleData with calculated values
+                body: JSON.stringify(saleData)
             });
         }
         if (response) {
@@ -784,17 +763,14 @@ async function submitSaleForm(event) {
             showMessage('Sale recorded successfully!');
             document.getElementById('sale-form').reset();
             document.getElementById('sale-id').value = '';
-            // It's good to reset the responsible person if it's set for new entries
-            // document.getElementById('responsible-person-sales').value = ''; // Assuming you have an input for this
             fetchSales(); // Re-fetch to update table after successful operation
         }
     } catch (error) {
-        console.error('Error saving sale entry:', error);
-        showMessage('Failed to save sale entry: ' + error.message);
+        console.error('Error recording sale:', error);
+        showMessage('Failed to record sale: ' + error.message);
     }
 }
 
-// ... (rest of your code)
 function populateSaleForm(sale) {
     document.getElementById('sale-id').value = sale._id;
     document.getElementById('sale-item').value = sale.item;
