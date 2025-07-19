@@ -707,11 +707,10 @@ function renderSalesPagination(current, totalPages) {
 
 function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
-    if (!tbody) return; // Exit if tbody not found
+    if (!tbody) return;
 
-    // Only render table if not Martha/Joshua, as per new requirement
     if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>'; // Adjusted colspan
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
         return;
     }
 
@@ -719,26 +718,36 @@ function renderSalesTable(sales) {
     if (sales.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
-        cell.colSpan = 8; // Adjusted colspan to match new columns
+        cell.colSpan = 8;
         cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
         cell.style.textAlign = 'center';
         return;
     }
 
     sales.forEach(sale => {
+        // Calculate profit and percentageprofit if they are missing from the fetched sale object
+        if (sale.profit === undefined || sale.percentageprofit === undefined) {
+            const totalBuyingPrice = sale.bp * sale.number;
+            const totalSellingPrice = sale.sp * sale.number;
+            sale.profit = totalSellingPrice - totalBuyingPrice;
+            sale.percentageprofit = 0;
+            if (totalBuyingPrice !== 0) {
+                sale.percentageprofit = (sale.profit / totalBuyingPrice) * 100;
+            }
+        }
+
         const row = tbody.insertRow();
         row.insertCell().textContent = sale.item;
         row.insertCell().textContent = sale.number;
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
-        // These values should already be calculated and stored in the sale object
-        row.insertCell().textContent = sale.profit !== undefined ? sale.profit.toFixed(2) : 'N/A'; // Handle undefined profit
-        row.insertCell().textContent = sale.percentageprofit !== undefined ? sale.percentageprofit.toFixed(2) + '%' : 'N/A'; // Handle undefined percentageprofit
+        // Now 'sale.profit' and 'sale.percentageprofit' will always be defined
+        row.insertCell().textContent = sale.profit.toFixed(2);
+        row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        // Only Nachwera Richard, Nelson, Florence can edit/delete sales
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
