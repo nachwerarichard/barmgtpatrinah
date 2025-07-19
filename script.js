@@ -335,7 +335,6 @@ function showSection(sectionId) {
         if (endInput && !endInput.value) {
             endInput.value = today.toISOString().split('T')[0];
         }
-        generateReports();
     } else if (sectionId === 'audit-logs') {
         fetchAuditLogs();
     }
