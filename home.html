@@ -118,20 +118,20 @@
                 </div>
                     <button class="export-button" onclick="exportTableToExcel('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
                 <div class="table-responsive">
-                    <table id="sales-table" class="sales-table">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Number</th>
-                                <th>BP</th>
-                                <th>SP</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <table id="sales-table">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Number</th>
+            <th>BP (UGX)</th>
+            <th>SP (UGX)</th>
+            <th>Profit (UGX)</th> <th>Profit %</th>     <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        </tbody>
+</table>
                 </div>
                 <div id="sales-pagination" class="pagination-controls"></div>
             </div>
