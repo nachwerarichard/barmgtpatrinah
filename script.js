@@ -636,7 +636,7 @@ function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
     // Only render table if not Martha/Joshua, as per new requirement
     if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>'; // Adjusted colspan
         return;
     }
 
@@ -644,7 +644,7 @@ function renderSalesTable(sales) {
     if (sales.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
-        cell.colSpan = 6;
+        cell.colSpan = 8; // Adjusted colspan to match new columns
         cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
         cell.style.textAlign = 'center';
         return;
@@ -656,8 +656,9 @@ function renderSalesTable(sales) {
         row.insertCell().textContent = sale.number;
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
-        row.insertCell().textContent = sale.profit;
-        row.insertCell().textContent = sale.percentageprofit;
+        // These values should already be calculated and stored in the sale object
+        row.insertCell().textContent = sale.profit.toFixed(2); // Format to 2 decimal places
+        row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%'; // Format and add % sign
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
@@ -681,6 +682,46 @@ function renderSalesTable(sales) {
         }
     });
 }
+
+// This is a conceptual example of where you'd calculate these values,
+// likely within a function that handles adding or updating a sale.
+
+function calculateAndSaveSale(item, number, bp, sp, date) {
+    const totalBuyingPrice = bp * number;
+    const totalSellingPrice = sp * number;
+
+    const profit = totalSellingPrice - totalBuyingPrice; // Total profit for the number of items sold
+    let percentageProfit = 0;
+    if (bp !== 0) { // Avoid division by zero
+        percentageProfit = (profit / totalBuyingPrice) * 100;
+    }
+
+    const sale = {
+        item: item,
+        number: number,
+        bp: bp,
+        sp: sp,
+        profit: profit, // Store the calculated profit
+        percentageprofit: percentageProfit, // Store the calculated percentage profit
+        date: date // Assuming date is also captured
+    };
+
+    // Now, you would typically save this 'sale' object to your sales array or database
+    // For example: sales.push(sale); or send it to your backend API
+    console.log("Calculated Sale:", sale);
+    return sale; // Return the sale object with calculated values
+}
+
+// How you would use it when a new sale is recorded (e.g., from a form submission)
+// Assuming you get item, number, bp, sp, and date from your form
+// const newItem = document.getElementById('item-input').value;
+// const newNumber = parseFloat(document.getElementById('number-input').value);
+// const newBp = parseFloat(document.getElementById('bp-input').value);
+// const newSp = parseFloat(document.getElementById('sp-input').value);
+// const newDate = new Date().toISOString(); // Or from a date picker
+
+// const newSaleRecord = calculateAndSaveSale(newItem, newNumber, newBp, newSp, newDate);
+// Then, you would add newSaleRecord to your 'sales' array and re-render the table.
 
 async function submitSaleForm(event) {
     event.preventDefault();
