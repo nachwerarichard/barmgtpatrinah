@@ -656,6 +656,8 @@ function renderSalesTable(sales) {
         row.insertCell().textContent = sale.number;
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
+        row.insertCell().textContent = sale.profit;
+        row.insertCell().textContent = sale.percentageprofit;
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
