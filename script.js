@@ -56,38 +56,12 @@ function showMessage(message, callback = null) {
  * @param {function} [onCancel] Optional callback function if user cancels.
  */
 function showConfirm(message, onConfirm, onCancel = null) {
-    const modal = document.getElementById('confirm-modal');
-    const confirmText = document.getElementById('confirm-text');
-    const confirmButton = document.getElementById('confirm-button');
-    const cancelButton = document.getElementById('cancel-button');
-
-
-    const handleConfirm = () => {
-        modal.classList.add('hidden');
-        confirmButton.removeEventListener('click', handleConfirm);
-        cancelButton.removeEventListener('click', handleCancel);
+    const userConfirmed = window.confirm(message);
+    if (userConfirmed) {
         onConfirm();
-    };
-
-    const handleCancel = () => {
-        modal.classList.add('hidden');
-        confirmButton.removeEventListener('click', handleConfirm);
-        cancelButton.removeEventListener('click', handleCancel);
-        if (onCancel) {
-            onCancel();
-        }
-    };
-
-    confirmButton.addEventListener('click', handleConfirm);
-    cancelButton.addEventListener('click', handleCancel);
-
-    // Close if clicking outside
-    modal.addEventListener('click', function outsideClick(event) {
-        if (event.target === modal) {
-            handleCancel(); // Treat outside click as cancel
-            modal.removeEventListener('click', outsideClick);
-        }
-    });
+    } else if (onCancel) {
+        onCancel();
+    }
 }
 
 
