@@ -27,12 +27,21 @@ function showMessage(message, callback = null) {
     const messageText = document.getElementById('message-text');
     const closeButton = document.getElementById('message-close-button');
 
+    // Ensure elements exist before trying to manipulate them
+    if (!modal || !messageText || !closeButton) {
+        console.error("Message modal elements not found. Falling back to alert().");
+        alert(message);
+        if (callback) callback();
+        return;
+    }
+
     messageText.textContent = message;
     modal.classList.remove('hidden'); // Show the modal
 
     const handleClose = () => {
         modal.classList.add('hidden'); // Hide the modal
         closeButton.removeEventListener('click', handleClose);
+        modal.removeEventListener('click', outsideClick); // Remove outside click listener
         if (callback) {
             callback();
         }
@@ -40,12 +49,12 @@ function showMessage(message, callback = null) {
     closeButton.addEventListener('click', handleClose);
 
     // Also close if clicking outside the message box (optional, but good UX)
-    modal.addEventListener('click', function outsideClick(event) {
+    function outsideClick(event) {
         if (event.target === modal) {
             handleClose();
-            modal.removeEventListener('click', outsideClick);
         }
-    });
+    }
+    modal.addEventListener('click', outsideClick);
 }
 
 /**
@@ -56,6 +65,7 @@ function showMessage(message, callback = null) {
  * @param {function} [onCancel] Optional callback function if user cancels.
  */
 function showConfirm(message, onConfirm, onCancel = null) {
+    // For simplicity, using native confirm. For a custom UI, you'd implement a modal similar to showMessage.
     const userConfirmed = window.confirm(message);
     if (userConfirmed) {
         onConfirm();
@@ -99,7 +109,7 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (salesFilter) salesFilter.style.display = 'none';
             if (salesTable) salesTable.style.display = 'none';
             if (excelbtnTable) excelbtnTable.style.display = 'none';
-           if (paginationControl) paginationControl.style.display = 'none';
+            if (paginationControl) paginationControl.style.display = 'none';
         } else {
             // Ensure these are visible if not in sales section (e.g., if a different admin role switches to sales)
             if (salesHeading) salesHeading.style.display = 'block';
@@ -107,7 +117,6 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (salesTable) salesTable.style.display = 'table';
             if (excelbtnTable) excelbtnTable.style.display = 'block';
             if (paginationControl) paginationControl.style.display = 'block';
-
         }
 
         if (sectionId === 'cash-management') {
@@ -125,7 +134,6 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (expensesFilter) expensesFilter.style.display = 'none';
             if (expensesTable) expensesTable.style.display = 'none';
             if (expensePag) expensePag.style.display = 'none';
-
         } else {
             // Ensure these are visible if not in expenses section
             if (expensesHeading) expensesHeading.style.display = 'block';
@@ -139,10 +147,12 @@ function applyBarStaffUIRestrictions(sectionId) {
         if (salesFilter) salesFilter.style.display = 'flex';
         if (salesTable) salesTable.style.display = 'table';
         if (excelbtnTable) excelbtnTable.style.display = 'block';
+        if (paginationControl) paginationControl.style.display = 'block';
 
         if (expensesHeading) expensesHeading.style.display = 'block';
         if (expensesFilter) expensesFilter.style.display = 'flex';
         if (expensesTable) expensesTable.style.display = 'table';
+        if (expensePag) expensePag.style.display = 'block';
 
         if (cashHeading) cashHeading.style.display = 'block';
         if (cashFilter) cashFilter.style.display = 'flex';
@@ -157,7 +167,7 @@ function applyBarStaffUIRestrictions(sectionId) {
  */
 function updateUIForUserRole() {
     const userDisplay = document.getElementById('current-user-display');
-    const useDisplay = document.getElementById('mobil-nav');
+    const useDisplay = document.getElementById('mobil-nav'); // Assuming this is for a mobile nav display
     const mainContent = document.getElementById('main-content');
     const loginSection = document.getElementById('login-section');
     const mainContainer = document.getElementById('main-container');
@@ -167,12 +177,14 @@ function updateUIForUserRole() {
     console.log('Current User Role:', currentUserRole);
 
     if (authToken && currentUserRole) {
-        userDisplay.textContent = `${currentUserRole}`;
-        useDisplay.textContent = `${currentUserRole}`;
+        if (userDisplay) userDisplay.textContent = `${currentUserRole}`;
+        if (useDisplay) useDisplay.textContent = `${currentUserRole}`;
+
         // --- Hide Login Section, Show Main Container ---
-        loginSection.style.display = 'none';
-        mainContainer.style.display = 'block';
-        mainContent.style.display = 'block';
+        if (loginSection) loginSection.style.display = 'none';
+        if (mainContainer) mainContainer.style.display = 'block';
+        if (mainContent) mainContent.style.display = 'block';
+
 
         // --- Manage Navigation Button Visibility based on role ---
         navButtons.forEach(button => {
@@ -188,9 +200,9 @@ function updateUIForUserRole() {
         }
         // Bar staff roles (Martha, Joshua)
         else if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-            document.getElementById('nav-sales').style.display = 'inline-block';
-            document.getElementById('nav-expenses').style.display = 'inline-block';
-            document.getElementById('nav-cash-management').style.display = 'inline-block';
+            if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
+            if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
+            if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
         }
 
         // Show default section based on role
@@ -202,10 +214,15 @@ function updateUIForUserRole() {
 
     } else {
         // Not logged in: Show login section, hide main container
-        userDisplay.textContent = '';
-        mainContent.style.display = 'none';
-        mainContainer.style.display = 'none';
-        loginSection.style.display = 'block';
+        if (userDisplay) userDisplay.textContent = '';
+        if (mainContent) mainContent.style.display = 'none';
+        if (mainContainer) mainContainer.style.display = 'none';
+        if (loginSection) loginSection.style.display = 'block';
+
+        // Hide all nav buttons if not logged in
+        navButtons.forEach(button => {
+            button.style.display = 'none';
+        });
     }
     console.log('End of updateUIForUserRole.');
 }
@@ -222,7 +239,7 @@ function showSection(sectionId) {
         'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-        'Martha': [ 'sales', 'expenses', 'cash-management'],
+        'Martha': ['sales', 'expenses', 'cash-management'],
         'Joshua': ['sales', 'expenses', 'cash-management']
     };
 
@@ -243,7 +260,14 @@ function showSection(sectionId) {
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
     });
-    document.getElementById(`${sectionId}-section`).classList.add('active');
+    const targetSection = document.getElementById(`${sectionId}-section`);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    } else {
+        console.warn(`Section with ID ${sectionId}-section not found.`);
+        return; // Exit if section doesn't exist
+    }
+
 
     // --- Apply Bar Staff UI Restrictions (Headings, Filters, Tables) ---
     applyBarStaffUIRestrictions(sectionId);
@@ -255,13 +279,15 @@ function showSection(sectionId) {
     } else if (sectionId === 'sales') {
         if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
             // For bar staff, clear the table and show a message to prompt filtering.
-            document.querySelector('#sales-table tbody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
+            const salesTbody = document.querySelector('#sales-table tbody');
+            if (salesTbody) salesTbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>'; // Adjusted colspan
             // Ensure the date filter is set to today for convenience if they click "Apply Filters" (though filters are hidden)
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
-            document.getElementById('sales-date-filter').value = `${yyyy}-${mm}-${dd}`;
+            const salesDateFilter = document.getElementById('sales-date-filter');
+            if (salesDateFilter) salesDateFilter.value = `${yyyy}-${mm}-${dd}`;
         } else {
             // For administrators, auto-fetch sales
             fetchSales();
@@ -269,13 +295,15 @@ function showSection(sectionId) {
     } else if (sectionId === 'expenses') {
         if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
             // For bar staff, clear the table and show a message to prompt recording.
-            document.querySelector('#expenses-table tbody').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>';
+            const expensesTbody = document.querySelector('#expenses-table tbody');
+            if (expensesTbody) expensesTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>'; // Adjusted colspan
             // Ensure the date filter is set to today for convenience
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
-            document.getElementById('expenses-date-filter').value = `${yyyy}-${mm}-${dd}`;
+            const expensesDateFilter = document.getElementById('expenses-date-filter');
+            if (expensesDateFilter) expensesDateFilter.value = `${yyyy}-${mm}-${dd}`;
         } else {
             // For administrators, auto-fetch expenses
             fetchExpenses();
@@ -287,8 +315,10 @@ function showSection(sectionId) {
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
         const todayString = `${yyyy}-${mm}-${dd}`;
-        document.getElementById('cash-date').value = todayString; // For the form
-        document.getElementById('cash-filter-date').value = todayString; // For the filter
+        const cashDate = document.getElementById('cash-date');
+        const cashFilterDate = document.getElementById('cash-filter-date');
+        if (cashDate) cashDate.value = todayString; // For the form
+        if (cashFilterDate) cashFilterDate.value = todayString; // For the filter
         fetchCashJournal();
     } else if (sectionId === 'reports') {
         // Set default dates for reports (last 30 days)
@@ -299,10 +329,10 @@ function showSection(sectionId) {
         const startInput = document.getElementById('report-start-date');
         const endInput = document.getElementById('report-end-date');
 
-        if (!startInput.value) {
+        if (startInput && !startInput.value) {
             startInput.value = thirtyDaysAgo.toISOString().split('T')[0];
         }
-        if (!endInput.value) {
+        if (endInput && !endInput.value) {
             endInput.value = today.toISOString().split('T')[0];
         }
         generateReports();
@@ -351,9 +381,17 @@ async function authenticatedFetch(url, options = {}) {
 
 // --- Login/Logout ---
 async function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
     const loginMessage = document.getElementById('login-message');
+
+    if (!usernameInput || !passwordInput || !loginMessage) {
+        console.error("Login form elements not found.");
+        return;
+    }
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
 
     loginMessage.textContent = 'Logging in...';
 
@@ -405,19 +443,18 @@ async function login() {
 async function logout() {
     try {
         // Optionally notify backend of logout for audit logging
-        // Using authenticatedFetch here, but it will fail if authToken is already cleared.
-        // So, it's better to clear locally first, then try to notify.
-        // If the backend requires auth for logout, you might need to send the token before clearing.
-        // For simplicity, we'll just clear locally and then try to hit the logout endpoint.
+        // Send token before clearing it, to allow backend to process if needed
         await fetch(`${API_BASE_URL}/logout`, {
             method: 'POST',
             headers: {
-                'Authorization': `Basic ${authToken}`, // Send token before clearing it
+                'Authorization': `Basic ${authToken}`,
                 'Content-Type': 'application/json'
             }
         });
     } catch (error) {
-        console.warn('Error notifying backend of logout (may be due to already cleared token or network issues):', error);
+        // This catch handles network errors or if the backend doesn't exist
+        // or doesn't require auth for logout, which is acceptable.
+        console.warn('Error notifying backend of logout (may be due to network issues or no backend endpoint):', error);
     }
 
     authToken = '';
@@ -425,16 +462,19 @@ async function logout() {
     currentUserRole = '';
     localStorage.clear(); // Clear all stored user data
     updateUIForUserRole(); // Reset UI to login state
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
-    document.getElementById('login-message').textContent = '';
+    if (document.getElementById('username')) document.getElementById('username').value = '';
+    if (document.getElementById('password')) document.getElementById('password').value = '';
+    if (document.getElementById('login-message')) document.getElementById('login-message').textContent = '';
 }
 
 // --- Inventory Functions ---
 async function fetchInventory() {
     try {
-        const itemFilter = document.getElementById('search-inventory-item').value;
-        const lowFilter = document.getElementById('search-inventory-low').value;
+        const itemFilterInput = document.getElementById('search-inventory-item');
+        const lowFilterInput = document.getElementById('search-inventory-low');
+
+        const itemFilter = itemFilterInput ? itemFilterInput.value : '';
+        const lowFilter = lowFilterInput ? lowFilterInput.value : '';
 
         let url = `${API_BASE_URL}/inventory`;
         const params = new URLSearchParams();
@@ -459,6 +499,7 @@ async function fetchInventory() {
 
 function renderPagination(current, totalPages) {
     const container = document.getElementById('pagination');
+    if (!container) return; // Exit if container not found
     container.innerHTML = '';
 
     for (let i = 1; i <= totalPages; i++) {
@@ -476,6 +517,8 @@ function renderPagination(current, totalPages) {
 
 function renderInventoryTable(inventory) {
     const tbody = document.querySelector('#inventory-table tbody');
+    if (!tbody) return; // Exit if tbody not found
+
     tbody.innerHTML = '';
     if (inventory.length === 0) {
         const row = tbody.insertRow();
@@ -524,12 +567,30 @@ async function submitInventoryForm(event) {
         showMessage('Permission Denied: Only administrators can add/update inventory.');
         return;
     }
-    const id = document.getElementById('inventory-id').value;
-    const item = document.getElementById('item').value;
-    const opening = parseInt(document.getElementById('opening').value);
-    const purchases = parseInt(document.getElementById('purchases').value);
-    const sales = parseInt(document.getElementById('inventory-sales').value);
-    const spoilage = parseInt(document.getElementById('spoilage').value);
+    const idInput = document.getElementById('inventory-id');
+    const itemInput = document.getElementById('item');
+    const openingInput = document.getElementById('opening');
+    const purchasesInput = document.getElementById('purchases');
+    const inventorySalesInput = document.getElementById('inventory-sales');
+    const spoilageInput = document.getElementById('spoilage');
+
+    if (!idInput || !itemInput || !openingInput || !purchasesInput || !inventorySalesInput || !spoilageInput) {
+        showMessage('Inventory form elements are missing.');
+        return;
+    }
+
+    const id = idInput.value;
+    const item = itemInput.value;
+    const opening = parseInt(openingInput.value);
+    const purchases = parseInt(purchasesInput.value);
+    const sales = parseInt(inventorySalesInput.value);
+    const spoilage = parseInt(spoilageInput.value);
+
+    // Basic validation
+    if (!item || isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage)) {
+        showMessage('Please fill in all inventory fields correctly with valid numbers.');
+        return;
+    }
 
     const inventoryData = { item, opening, purchases, sales, spoilage };
 
@@ -547,10 +608,11 @@ async function submitInventoryForm(event) {
             });
         }
         if (response) {
-            await response.json();
+            await response.json(); // Consume the response body
             showMessage('Inventory item saved successfully!');
-            document.getElementById('inventory-form').reset();
-            document.getElementById('inventory-id').value = '';
+            const inventoryForm = document.getElementById('inventory-form');
+            if (inventoryForm) inventoryForm.reset();
+            if (idInput) idInput.value = ''; // Clear ID after submission
             fetchInventory();
         }
     } catch (error) {
@@ -560,12 +622,19 @@ async function submitInventoryForm(event) {
 }
 
 function populateInventoryForm(item) {
-    document.getElementById('inventory-id').value = item._id;
-    document.getElementById('item').value = item.item;
-    document.getElementById('opening').value = item.opening;
-    document.getElementById('purchases').value = item.purchases;
-    document.getElementById('inventory-sales').value = item.sales;
-    document.getElementById('spoilage').value = item.spoilage;
+    const idInput = document.getElementById('inventory-id');
+    const itemInput = document.getElementById('item');
+    const openingInput = document.getElementById('opening');
+    const purchasesInput = document.getElementById('purchases');
+    const inventorySalesInput = document.getElementById('inventory-sales');
+    const spoilageInput = document.getElementById('spoilage');
+
+    if (idInput) idInput.value = item._id;
+    if (itemInput) itemInput.value = item.item;
+    if (openingInput) openingInput.value = item.opening;
+    if (purchasesInput) purchasesInput.value = item.purchases;
+    if (inventorySalesInput) inventorySalesInput.value = item.sales;
+    if (spoilageInput) spoilageInput.value = item.spoilage;
 }
 
 async function deleteInventory(id) {
@@ -597,7 +666,9 @@ async function deleteInventory(id) {
 // --- Sales Functions ---
 async function fetchSales() {
     try {
-        const dateFilter = document.getElementById('sales-date-filter').value;
+        const dateFilterInput = document.getElementById('sales-date-filter');
+        const dateFilter = dateFilterInput ? dateFilterInput.value : '';
+
         let url = `${API_BASE_URL}/sales`;
         const params = new URLSearchParams();
         if (dateFilter) params.append('date', dateFilter);
@@ -616,8 +687,10 @@ async function fetchSales() {
         showMessage('Failed to fetch sales: ' + error.message);
     }
 }
+
 function renderSalesPagination(current, totalPages) {
     const container = document.getElementById('sales-pagination');
+    if (!container) return; // Exit if container not found
     container.innerHTML = '';
 
     for (let i = 1; i <= totalPages; i++) {
@@ -634,6 +707,8 @@ function renderSalesPagination(current, totalPages) {
 
 function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
+    if (!tbody) return; // Exit if tbody not found
+
     // Only render table if not Martha/Joshua, as per new requirement
     if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>'; // Adjusted colspan
@@ -657,8 +732,8 @@ function renderSalesTable(sales) {
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
         // These values should already be calculated and stored in the sale object
-        row.insertCell().textContent = sale.profit.toFixed(2); // Format to 2 decimal places
-        row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%'; // Format and add % sign
+        row.insertCell().textContent = sale.profit !== undefined ? sale.profit.toFixed(2) : 'N/A'; // Handle undefined profit
+        row.insertCell().textContent = sale.percentageprofit !== undefined ? sale.percentageprofit.toFixed(2) + '%' : 'N/A'; // Handle undefined percentageprofit
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
@@ -683,9 +758,9 @@ function renderSalesTable(sales) {
     });
 }
 
-// This is a conceptual example of where you'd calculate these values,
-// likely within a function that handles adding or updating a sale.
-
+// The 'calculateAndSaveSale' conceptual example is no longer strictly needed as a separate function,
+// as the logic is integrated directly into submitSaleForm.
+// Kept for reference but not called explicitly from the main flow.
 function calculateAndSaveSale(item, number, bp, sp, date) {
     const totalBuyingPrice = bp * number;
     const totalSellingPrice = sp * number;
@@ -705,23 +780,10 @@ function calculateAndSaveSale(item, number, bp, sp, date) {
         percentageprofit: percentageProfit, // Store the calculated percentage profit
         date: date // Assuming date is also captured
     };
-
-    // Now, you would typically save this 'sale' object to your sales array or database
-    // For example: sales.push(sale); or send it to your backend API
-    console.log("Calculated Sale:", sale);
+    console.log("Calculated Sale (conceptual):", sale);
     return sale; // Return the sale object with calculated values
 }
 
-// How you would use it when a new sale is recorded (e.g., from a form submission)
-// Assuming you get item, number, bp, sp, and date from your form
-// const newItem = document.getElementById('item-input').value;
-// const newNumber = parseFloat(document.getElementById('number-input').value);
-// const newBp = parseFloat(document.getElementById('bp-input').value);
-// const newSp = parseFloat(document.getElementById('sp-input').value);
-// const newDate = new Date().toISOString(); // Or from a date picker
-
-// const newSaleRecord = calculateAndSaveSale(newItem, newNumber, newBp, newSp, newDate);
-// Then, you would add newSaleRecord to your 'sales' array and re-render the table.
 
 async function submitSaleForm(event) {
     event.preventDefault();
@@ -732,13 +794,54 @@ async function submitSaleForm(event) {
         return;
     }
 
-    const id = document.getElementById('sale-id').value;
-    const item = document.getElementById('sale-item').value;
-    const number = parseInt(document.getElementById('sale-number').value);
-    const bp = parseFloat(document.getElementById('sale-bp').value);
-    const sp = parseFloat(document.getElementById('sale-sp').value);
+    const idInput = document.getElementById('sale-id');
+    const itemInput = document.getElementById('sale-item');
+    const numberInput = document.getElementById('sale-number');
+    const bpInput = document.getElementById('sale-bp');
+    const spInput = document.getElementById('sale-sp');
+    const salesDateFilterInput = document.getElementById('sales-date-filter'); // Assuming this is used for the sale date
 
-    const saleData = { item, number, bp, sp };
+    if (!idInput || !itemInput || !numberInput || !bpInput || !spInput || !salesDateFilterInput) {
+        showMessage('Sales form elements are missing.');
+        return;
+    }
+
+    const id = idInput.value;
+    const item = itemInput.value;
+    const number = parseInt(numberInput.value);
+    const bp = parseFloat(bpInput.value);
+    const sp = parseFloat(spInput.value);
+    const date = salesDateFilterInput.value; // Use the value from the date filter as the sale date
+
+    // Basic validation
+    if (!item || isNaN(number) || isNaN(bp) || isNaN(sp) || !date) {
+        showMessage('Please fill in all sales fields correctly with valid numbers and date.');
+        return;
+    }
+    if (number <= 0 || bp <= 0 || sp <= 0) {
+        showMessage('Number, Buying Price, and Selling Price must be positive values.');
+        return;
+    }
+
+    // --- Calculate Profit and Percentage Profit Here ---
+    const totalBuyingPrice = bp * number;
+    const totalSellingPrice = sp * number;
+    const profit = totalSellingPrice - totalBuyingPrice;
+    let percentageProfit = 0;
+    if (totalBuyingPrice !== 0) { // Avoid division by zero
+        percentageProfit = (profit / totalBuyingPrice) * 100;
+    }
+    // --- End Calculation ---
+
+    const saleData = {
+        item,
+        number,
+        bp,
+        sp,
+        profit: profit,               // Add calculated profit
+        percentageprofit: percentageProfit, // Add calculated percentage profit
+        date
+    };
 
     try {
         let response;
@@ -752,39 +855,57 @@ async function submitSaleForm(event) {
                 method: 'PUT',
                 body: JSON.stringify(saleData)
             });
-        } else { // New sale creation (all allowed roles)
+        } else { // New entry creation (all allowed roles)
             response = await authenticatedFetch(`${API_BASE_URL}/sales`, {
                 method: 'POST',
                 body: JSON.stringify(saleData)
             });
         }
         if (response) {
-            await response.json();
+            await response.json(); // Consume response body
             showMessage('Sale recorded successfully!');
-            document.getElementById('sale-form').reset();
-            document.getElementById('sale-id').value = '';
+            const saleForm = document.getElementById('sale-form');
+            if (saleForm) saleForm.reset();
+            if (idInput) idInput.value = ''; // Clear ID after submission
+            // Re-set the date filter to today after successful submission for convenience
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            if (salesDateFilterInput) salesDateFilterInput.value = `${yyyy}-${mm}-${dd}`;
             fetchSales(); // Re-fetch to update table after successful operation
         }
     } catch (error) {
-        console.error('Error recording sale:', error);
-        showMessage('Failed to record sale: ' + error.message);
+        console.error('Error saving sale entry:', error);
+        showMessage('Failed to save sale entry: ' + error.message);
     }
 }
 
 function populateSaleForm(sale) {
-    document.getElementById('sale-id').value = sale._id;
-    document.getElementById('sale-item').value = sale.item;
-    document.getElementById('sale-number').value = sale.number;
-    document.getElementById('sale-bp').value = sale.bp;
-    document.getElementById('sale-sp').value = sale.sp;
+    const idInput = document.getElementById('sale-id');
+    const itemInput = document.getElementById('sale-item');
+    const numberInput = document.getElementById('sale-number');
+    const bpInput = document.getElementById('sale-bp');
+    const spInput = document.getElementById('sale-sp');
+    const salesDateFilterInput = document.getElementById('sales-date-filter');
+
+    if (idInput) idInput.value = sale._id;
+    if (itemInput) itemInput.value = sale.item;
+    if (numberInput) numberInput.value = sale.number;
+    if (bpInput) bpInput.value = sale.bp;
+    if (spInput) spInput.value = sale.sp;
+    if (salesDateFilterInput && sale.date) {
+        salesDateFilterInput.value = new Date(sale.date).toISOString().split('T')[0];
+    }
 }
 
 async function deleteSale(id) {
     const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
     if (!adminRoles.includes(currentUserRole)) {
-        showMessage('Permission Denied: Only administrators can delete sales.');
+        showMessage('Permission Denied: Only administrators can delete sales records.');
         return;
     }
+
     showConfirm('Are you sure you want to delete this sale record?', async () => {
         try {
             const response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
@@ -792,7 +913,7 @@ async function deleteSale(id) {
             });
             if (response && response.status === 204) {
                 showMessage('Sale record deleted successfully!');
-                fetchSales(); // Re-fetch to update table after successful operation
+                fetchSales();
             } else if (response) {
                 const errorData = await response.json();
                 showMessage('Failed to delete sale record: ' + errorData.error);
@@ -804,17 +925,20 @@ async function deleteSale(id) {
     });
 }
 
-// --- Expenses Functions ---
+// --- Expenses Functions (Provided in snippet, assuming it's complete) ---
+// Note: No explicit fetchExpenses or renderExpensesTable was provided in the second snippet,
+// so I'm providing placeholders or assuming they are in the missing part of the first snippet.
 async function fetchExpenses() {
     try {
-        const dateFilter = document.getElementById('expenses-date-filter').value;
-        const params = new URLSearchParams();
+        const dateFilterInput = document.getElementById('expenses-date-filter');
+        const dateFilter = dateFilterInput ? dateFilterInput.value : '';
 
+        let url = `${API_BASE_URL}/expenses`;
+        const params = new URLSearchParams();
         if (dateFilter) params.append('date', dateFilter);
         params.append('page', currentExpensesPage);
         params.append('limit', expensesPerPage);
-
-        const url = `${API_BASE_URL}/expenses?${params.toString()}`;
+        url += `?${params.toString()}`;
 
         const response = await authenticatedFetch(url);
         if (!response) return;
@@ -830,6 +954,7 @@ async function fetchExpenses() {
 
 function renderExpensesPagination(current, totalPages) {
     const container = document.getElementById('expenses-pagination');
+    if (!container) return;
     container.innerHTML = '';
 
     for (let i = 1; i <= totalPages; i++) {
@@ -844,9 +969,10 @@ function renderExpensesPagination(current, totalPages) {
     }
 }
 
-
 function renderExpensesTable(expenses) {
     const tbody = document.querySelector('#expenses-table tbody');
+    if (!tbody) return;
+
     // Only render table if not Martha/Joshua, as per new requirement
     if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>';
@@ -866,15 +992,14 @@ function renderExpensesTable(expenses) {
     expenses.forEach(expense => {
         const row = tbody.insertRow();
         row.insertCell().textContent = expense.description;
-        row.insertCell().textContent = expense.amount;
+        row.insertCell().textContent = expense.amount.toFixed(2);
+        row.insertCell().textContent = expense.category;
+        row.insertCell().textContent = expense.source || 'N/A'; // Assuming source might be optional
+        row.insertCell().textContent = expense.recordedBy || 'N/A'; // Assuming recordedBy might be optional
         row.insertCell().textContent = new Date(expense.date).toLocaleDateString();
-        row.insertCell().textContent = expense.receiptId || 'N/A';
-        row.insertCell().textContent = expense.source || 'N/A';
-        row.insertCell().textContent = expense.responsible || 'N/A';
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        // Only Nachwera Richard, Nelson, Florence can edit/delete expenses
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
@@ -894,26 +1019,45 @@ function renderExpensesTable(expenses) {
     });
 }
 
+// Assuming a submitExpenseForm, populateExpenseForm, deleteExpense are present in your HTML/backend.
 async function submitExpenseForm(event) {
     event.preventDefault();
-    // Roles allowed to record expenses
     const allowedToRecordExpenses = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordExpenses.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record expenses.');
         return;
     }
-    const id = document.getElementById('expense-id').value;
-    const description = document.getElementById('expense-description').value;
-    const amount = parseFloat(document.getElementById('expense-amount').value);
-    const receiptId = document.getElementById('expense-receiptId').value;
-    const source = document.getElementById('expense-source').value;
-    const responsible = document.getElementById('expense-responsible').value;
 
-    const expenseData = { description, amount, receiptId, source, responsible };
+    const idInput = document.getElementById('expense-id');
+    const descriptionInput = document.getElementById('expense-description');
+    const amountInput = document.getElementById('expense-amount');
+    const categoryInput = document.getElementById('expense-category');
+    const sourceInput = document.getElementById('expense-source');
+    const expenseDateInput = document.getElementById('expenses-date-filter'); // Using this as the date input
+
+    if (!idInput || !descriptionInput || !amountInput || !categoryInput || !sourceInput || !expenseDateInput) {
+        showMessage('Expense form elements are missing.');
+        return;
+    }
+
+    const id = idInput.value;
+    const description = descriptionInput.value;
+    const amount = parseFloat(amountInput.value);
+    const category = categoryInput.value;
+    const source = sourceInput.value;
+    const date = expenseDateInput.value;
+    const recordedBy = currentUsername; // Automatically record who made the entry
+
+    if (!description || isNaN(amount) || amount <= 0 || !category || !date) {
+        showMessage('Please fill in all expense fields correctly.');
+        return;
+    }
+
+    const expenseData = { description, amount, category, source, date, recordedBy };
 
     try {
         let response;
-        if (id) { // Edit operation (Nachwera Richard, Nelson, Florence only)
+        if (id) {
             const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
             if (!adminRoles.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit expenses.');
@@ -923,7 +1067,7 @@ async function submitExpenseForm(event) {
                 method: 'PUT',
                 body: JSON.stringify(expenseData)
             });
-        } else { // New expense creation (all allowed roles)
+        } else {
             response = await authenticatedFetch(`${API_BASE_URL}/expenses`, {
                 method: 'POST',
                 body: JSON.stringify(expenseData)
@@ -932,23 +1076,38 @@ async function submitExpenseForm(event) {
         if (response) {
             await response.json();
             showMessage('Expense recorded successfully!');
-            document.getElementById('expense-form').reset();
-            document.getElementById('expense-id').value = '';
-            fetchExpenses(); // Re-fetch to update table after successful operation
+            const expenseForm = document.getElementById('expense-form');
+            if (expenseForm) expenseForm.reset();
+            if (idInput) idInput.value = '';
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            if (expenseDateInput) expenseDateInput.value = `${yyyy}-${mm}-${dd}`;
+            fetchExpenses();
         }
     } catch (error) {
-        console.error('Error recording expense:', error);
-        showMessage('Failed to record expense: ' + error.message);
+        console.error('Error saving expense:', error);
+        showMessage('Failed to save expense: ' + error.message);
     }
 }
 
 function populateExpenseForm(expense) {
-    document.getElementById('expense-id').value = expense._id;
-    document.getElementById('expense-description').value = expense.description;
-    document.getElementById('expense-amount').value = expense.amount;
-    document.getElementById('expense-receiptId').value = expense.receiptId || '';
-    document.getElementById('expense-source').value = expense.source || '';
-    document.getElementById('expense-responsible').value = expense.responsible || '';
+    const idInput = document.getElementById('expense-id');
+    const descriptionInput = document.getElementById('expense-description');
+    const amountInput = document.getElementById('expense-amount');
+    const categoryInput = document.getElementById('expense-category');
+    const sourceInput = document.getElementById('expense-source');
+    const expenseDateInput = document.getElementById('expenses-date-filter');
+
+    if (idInput) idInput.value = expense._id;
+    if (descriptionInput) descriptionInput.value = expense.description;
+    if (amountInput) amountInput.value = expense.amount;
+    if (categoryInput) categoryInput.value = expense.category;
+    if (sourceInput) sourceInput.value = expense.source;
+    if (expenseDateInput && expense.date) {
+        expenseDateInput.value = new Date(expense.date).toISOString().split('T')[0];
+    }
 }
 
 async function deleteExpense(id) {
@@ -957,6 +1116,7 @@ async function deleteExpense(id) {
         showMessage('Permission Denied: Only administrators can delete expenses.');
         return;
     }
+
     showConfirm('Are you sure you want to delete this expense record?', async () => {
         try {
             const response = await authenticatedFetch(`${API_BASE_URL}/expenses/${id}`, {
@@ -964,7 +1124,7 @@ async function deleteExpense(id) {
             });
             if (response && response.status === 204) {
                 showMessage('Expense record deleted successfully!');
-                fetchExpenses(); // Re-fetch to update table after successful operation
+                fetchExpenses();
             } else if (response) {
                 const errorData = await response.json();
                 showMessage('Failed to delete expense record: ' + errorData.error);
@@ -976,11 +1136,15 @@ async function deleteExpense(id) {
     });
 }
 
+
 // --- Cash Management Functions ---
 async function fetchCashJournal() {
     try {
-        const dateFilter = document.getElementById('cash-filter-date').value;
-        const responsibleFilter = document.getElementById('cash-filter-responsible').value;
+        const dateFilterInput = document.getElementById('cash-filter-date');
+        const responsibleFilterInput = document.getElementById('cash-filter-responsible');
+
+        const dateFilter = dateFilterInput ? dateFilterInput.value : '';
+        const responsibleFilter = responsibleFilterInput ? responsibleFilterInput.value : '';
 
         let url = `${API_BASE_URL}/cash-journal`;
         const params = new URLSearchParams();
@@ -1003,6 +1167,7 @@ async function fetchCashJournal() {
 
 function renderCashJournalTable(records) {
     const tbody = document.querySelector('#cash-journal-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
     if (records.length === 0) {
         const row = tbody.insertRow();
@@ -1051,12 +1216,30 @@ async function submitCashJournalForm(event) {
         showMessage('Permission Denied: You do not have permission to record cash entries.');
         return;
     }
-    const id = document.getElementById('cash-journal-id').value;
-    const cashAtHand = parseFloat(document.getElementById('cash-at-hand').value);
-    const cashBanked = parseFloat(document.getElementById('cash-banked').value);
-    const bankReceiptId = document.getElementById('bank-receipt-id').value;
-    const responsiblePerson = document.getElementById('responsible-person').value;
-    const date = document.getElementById('cash-date').value;
+    const idInput = document.getElementById('cash-journal-id');
+    const cashAtHandInput = document.getElementById('cash-at-hand');
+    const cashBankedInput = document.getElementById('cash-banked');
+    const bankReceiptIdInput = document.getElementById('bank-receipt-id');
+    const responsiblePersonInput = document.getElementById('responsible-person');
+    const cashDateInput = document.getElementById('cash-date');
+
+    if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput || !responsiblePersonInput || !cashDateInput) {
+        showMessage('Cash journal form elements are missing.');
+        return;
+    }
+
+    const id = idInput.value;
+    const cashAtHand = parseFloat(cashAtHandInput.value);
+    const cashBanked = parseFloat(cashBankedInput.value);
+    const bankReceiptId = bankReceiptIdInput.value;
+    const responsiblePerson = responsiblePersonInput.value;
+    const date = cashDateInput.value;
+
+    // Basic validation
+    if (isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !responsiblePerson || !date) {
+        showMessage('Please fill in all cash entry fields correctly.');
+        return;
+    }
 
     const cashData = { cashAtHand, cashBanked, bankReceiptId, responsiblePerson, date };
 
@@ -1081,13 +1264,15 @@ async function submitCashJournalForm(event) {
         if (response) {
             await response.json();
             showMessage('Cash entry saved successfully!');
-            document.getElementById('cash-journal-form').reset();
-            document.getElementById('cash-journal-id').value = '';
+            const cashJournalForm = document.getElementById('cash-journal-form');
+            if (cashJournalForm) cashJournalForm.reset();
+            if (idInput) idInput.value = '';
+            // Re-set default date for new entry form after submission
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
-            document.getElementById('cash-date').value = `${yyyy}-${mm}-${dd}`;
+            if (cashDateInput) cashDateInput.value = `${yyyy}-${mm}-${dd}`;
             fetchCashJournal(); // Re-fetch to update table after successful operation
         }
     } catch (error) {
@@ -1097,12 +1282,21 @@ async function submitCashJournalForm(event) {
 }
 
 function populateCashJournalForm(record) {
-    document.getElementById('cash-journal-id').value = record._id;
-    document.getElementById('cash-at-hand').value = record.cashAtHand;
-    document.getElementById('cash-banked').value = record.cashBanked;
-    document.getElementById('bank-receipt-id').value = record.bankReceiptId;
-    document.getElementById('responsible-person').value = record.responsiblePerson;
-    document.getElementById('cash-date').value = new Date(record.date).toISOString().split('T')[0];
+    const idInput = document.getElementById('cash-journal-id');
+    const cashAtHandInput = document.getElementById('cash-at-hand');
+    const cashBankedInput = document.getElementById('cash-banked');
+    const bankReceiptIdInput = document.getElementById('bank-receipt-id');
+    const responsiblePersonInput = document.getElementById('responsible-person');
+    const cashDateInput = document.getElementById('cash-date');
+
+    if (idInput) idInput.value = record._id;
+    if (cashAtHandInput) cashAtHandInput.value = record.cashAtHand;
+    if (cashBankedInput) cashBankedInput.value = record.cashBanked;
+    if (bankReceiptIdInput) bankReceiptIdInput.value = record.bankReceiptId;
+    if (responsiblePersonInput) responsiblePersonInput.value = record.responsiblePerson;
+    if (cashDateInput && record.date) {
+        cashDateInput.value = new Date(record.date).toISOString().split('T')[0];
+    }
 }
 
 async function deleteCashJournal(id) {
@@ -1142,8 +1336,16 @@ function getDepartmentFromText(text) {
 }
 
 async function generateReports() {
-    const startDateString = document.getElementById('report-start-date').value;
-    const endDateString = document.getElementById('report-end-date').value;
+    const startDateInput = document.getElementById('report-start-date');
+    const endDateInput = document.getElementById('report-end-date');
+
+    if (!startDateInput || !endDateInput) {
+        showMessage('Report date inputs not found.');
+        return;
+    }
+
+    const startDateString = startDateInput.value;
+    const endDateString = endDateInput.value;
 
     if (!startDateString || !endDateString) {
         showMessage('Please select both start and end dates for the report.');
@@ -1158,6 +1360,10 @@ async function generateReports() {
     let allSales = [];
 
     const tbody = document.getElementById('department-report-tbody');
+    if (!tbody) {
+        console.error('Department report tbody not found.');
+        return;
+    }
     tbody.innerHTML = ''; // Clear any existing rows
 
     try {
@@ -1171,7 +1377,7 @@ async function generateReports() {
                     return saleDate >= startDate && saleDate <= endDate;
                 });
             } else {
-                console.warn('API /sales did not return an array:', salesData);
+                console.warn('API /sales did not return an array for data property:', salesData);
                 allSales = [];
             }
         }
@@ -1186,7 +1392,7 @@ async function generateReports() {
                     return expenseDate >= startDate && expenseDate <= endDate;
                 });
             } else {
-                console.warn('API /expenses did not return an array:', expensesData);
+                console.warn('API /expenses did not return an array for data property:', expensesData);
                 allExpenses = [];
             }
         }
@@ -1216,12 +1422,18 @@ async function generateReports() {
             departmentReports[department].expenses += expense.amount;
         });
 
-        document.getElementById('overall-sales').textContent = overallSales.toFixed(2);
-        document.getElementById('overall-expenses').textContent = overallExpenses.toFixed(2);
-        const overallBalance = overallSales - overallExpenses;
+        const overallSalesElement = document.getElementById('overall-sales');
+        const overallExpensesElement = document.getElementById('overall-expenses');
         const overallBalanceElement = document.getElementById('overall-balance');
-        overallBalanceElement.textContent = overallBalance.toFixed(2);
-        overallBalanceElement.className = overallBalance >= 0 ? 'positive' : 'negative';
+
+        if (overallSalesElement) overallSalesElement.textContent = overallSales.toFixed(2);
+        if (overallExpensesElement) overallExpensesElement.textContent = overallExpenses.toFixed(2);
+        const overallBalance = overallSales - overallExpenses;
+        if (overallBalanceElement) {
+            overallBalanceElement.textContent = overallBalance.toFixed(2);
+            overallBalanceElement.className = overallBalance >= 0 ? 'positive' : 'negative';
+        }
+
 
         const sortedDepartments = Object.keys(departmentReports).sort();
         if (sortedDepartments.length === 0) {
@@ -1241,7 +1453,9 @@ async function generateReports() {
                 row.insertCell().textContent = dept;
                 row.insertCell().textContent = deptSales.toFixed(2);
                 row.insertCell().textContent = deptExpenses.toFixed(2);
-                row.insertCell().textContent = deptBalance.toFixed(2);
+                const balanceCell = row.insertCell();
+                balanceCell.textContent = deptBalance.toFixed(2);
+                balanceCell.className = deptBalance >= 0 ? 'positive' : 'negative'; // Apply class based on balance
             });
         }
 
@@ -1269,7 +1483,8 @@ async function fetchAuditLogs() {
         params.append('page', currentAuditPage);
         params.append('limit', auditLogsPerPage);
 
-        const searchQuery = document.getElementById('audit-search-input').value.trim();
+        const auditSearchInput = document.getElementById('audit-search-input');
+        const searchQuery = auditSearchInput ? auditSearchInput.value.trim() : '';
         if (searchQuery) {
             params.append('search', searchQuery); // Add search query parameter
         }
@@ -1289,6 +1504,7 @@ async function fetchAuditLogs() {
 // Function to render pagination (no change needed here)
 function renderAuditPagination(current, totalPages) {
     const container = document.getElementById('audit-pagination');
+    if (!container) return;
     container.innerHTML = ''; // Clear existing buttons
 
     // Create "Prev" button
@@ -1323,6 +1539,7 @@ function renderAuditPagination(current, totalPages) {
 // Function to render audit logs table (no change needed here)
 function renderAuditLogsTable(logs) {
     const tbody = document.querySelector('#audit-logs-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
     if (logs.length === 0) {
         const row = tbody.insertRow();
@@ -1343,83 +1560,33 @@ function renderAuditLogsTable(logs) {
     });
 }
 
-// Initialize the search functionality
-document.addEventListener('DOMContentLoaded', () => {
-    const auditSearchInput = document.getElementById('audit-search-input');
-    // Debounce the fetchAuditLogs call to avoid too many requests
-    const debouncedFetchAuditLogs = debounce(() => {
-        currentAuditPage = 1; // Reset to the first page when a new search is initiated
-        fetchAuditLogs();
-    }, 300); // 300ms debounce delay
-
-    auditSearchInput.addEventListener('input', debouncedFetchAuditLogs);
-
-    // Initial fetch of audit logs when the page loads
-    fetchAuditLogs();
-});
-
-// Placeholder for authenticatedFetch and showMessage if they are not defined in your snippets
-
-function showMessage(message) {
-    // Implement your message display logic (e.g., a toast notification)
-    console.log("Message:", message);
-}
-// --- Initial Setup and Event Listeners ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Check authentication status on page load
-    updateUIForUserRole();
-
-    // Attach form submission handlers
-    document.getElementById('inventory-form').addEventListener('submit', submitInventoryForm);
-    document.getElementById('sale-form').addEventListener('submit', submitSaleForm);
-    document.getElementById('expense-form').addEventListener('submit', submitExpenseForm);
-    document.getElementById('cash-journal-form').addEventListener('submit', submitCashJournalForm);
-
-    // Set initial date filters for various sections
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const todayString = `${yyyy}-${mm}-${dd}`;
-
-    document.getElementById('sales-date-filter').value = todayString;
-    document.getElementById('expenses-date-filter').value = todayString;
-    document.getElementById('cash-date').value = todayString;
-    document.getElementById('cash-filter-date').value = todayString;
-
-    // For reports, set default to last 30 days
-    const thirtyDaysAgo = new Date(today);
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-    document.getElementById('report-start-date').value = thirtyDaysAgo.toISOString().split('T')[0];
-    document.getElementById('report-end-date').value = todayString;
-
-    // Attach event listeners for login/logout
-    document.getElementById('login-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        login();
-    });
-    document.getElementById('logout-button').addEventListener('click', logout);
-
-    // Attach event listeners for navigation buttons
-    document.getElementById('nav-inventory').addEventListener('click', () => showSection('inventory'));
-    document.getElementById('nav-sales').addEventListener('click', () => showSection('sales'));
-    document.getElementById('nav-expenses').addEventListener('click', () => showSection('expenses'));
-    document.getElementById('nav-cash-management').addEventListener('click', () => showSection('cash-management'));
-    document.getElementById('nav-reports').addEventListener('click', () => showSection('reports'));
-    document.getElementById('nav-audit-logs').addEventListener('click', () => showSection('audit-logs'));
-
-    // Attach event listeners for filter buttons
-    document.getElementById('apply-inventory-filter').addEventListener('click', fetchInventory);
-    document.getElementById('apply-sales-filter').addEventListener('click', fetchSales);
-    document.getElementById('apply-expenses-filter').addEventListener('click', fetchExpenses);
-    document.getElementById('apply-cash-filter').addEventListener('click', fetchCashJournal);
-    document.getElementById('generate-report-button').addEventListener('click', generateReports);
-});
-
+// Function to export tables to Excel
 function exportTableToExcel(tableID, filename = '') {
     const dataType = 'application/vnd.ms-excel';
     const tableSelect = document.getElementById(tableID);
-    const tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+    if (!tableSelect) {
+        showMessage(`Table with ID "${tableID}" not found for export.`);
+        return;
+    }
+
+    // Clone the table to avoid modifying the live DOM, and remove action cells
+    const clonedTable = tableSelect.cloneNode(true);
+    clonedTable.querySelectorAll('.actions').forEach(cell => {
+        cell.remove();
+    });
+
+    // Remove the 'Actions' header if it exists
+    const headerRow = clonedTable.querySelector('thead tr');
+    if (headerRow) {
+        const actionHeader = headerRow.querySelector('th:last-child');
+        if (actionHeader && actionHeader.textContent.trim() === 'Actions') {
+            actionHeader.remove();
+        }
+    }
+
+
+    const tableHTML = clonedTable.outerHTML.replace(/ /g, '%20');
 
     // Default filename
     filename = filename ? filename + '.xls' : 'excel_data.xls';
@@ -1444,6 +1611,139 @@ function exportTableToExcel(tableID, filename = '') {
 }
 
 
-   
-       
-    
+// --- Initial Setup and Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Check authentication status on page load
+    updateUIForUserRole();
+
+    // Attach form submission handlers
+    const inventoryForm = document.getElementById('inventory-form');
+    if (inventoryForm) inventoryForm.addEventListener('submit', submitInventoryForm);
+
+    const saleForm = document.getElementById('sale-form');
+    if (saleForm) saleForm.addEventListener('submit', submitSaleForm);
+
+    const expenseForm = document.getElementById('expense-form');
+    if (expenseForm) expenseForm.addEventListener('submit', submitExpenseForm);
+
+    const cashJournalForm = document.getElementById('cash-journal-form');
+    if (cashJournalForm) cashJournalForm.addEventListener('submit', submitCashJournalForm);
+
+    // Set initial date filters for various sections
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayString = `${yyyy}-${mm}-${dd}`;
+
+    const salesDateFilter = document.getElementById('sales-date-filter');
+    if (salesDateFilter) salesDateFilter.value = todayString;
+
+    const expensesDateFilter = document.getElementById('expenses-date-filter');
+    if (expensesDateFilter) expensesDateFilter.value = todayString;
+
+    const cashDate = document.getElementById('cash-date');
+    if (cashDate) cashDate.value = todayString;
+
+    const cashFilterDate = document.getElementById('cash-filter-date');
+    if (cashFilterDate) cashFilterDate.value = todayString;
+
+
+    // For reports, set default to last 30 days
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    const reportStartDate = document.getElementById('report-start-date');
+    if (reportStartDate) reportStartDate.value = thirtyDaysAgo.toISOString().split('T')[0];
+
+    const reportEndDate = document.getElementById('report-end-date');
+    if (reportEndDate) reportEndDate.value = todayString;
+
+    // Attach event listeners for login/logout
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            login();
+        });
+    }
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) logoutButton.addEventListener('click', logout);
+
+    // Attach event listeners for navigation buttons
+    const navInventory = document.getElementById('nav-inventory');
+    if (navInventory) navInventory.addEventListener('click', () => showSection('inventory'));
+
+    const navSales = document.getElementById('nav-sales');
+    if (navSales) navSales.addEventListener('click', () => showSection('sales'));
+
+    const navExpenses = document.getElementById('nav-expenses');
+    if (navExpenses) navExpenses.addEventListener('click', () => showSection('expenses'));
+
+    const navCashManagement = document.getElementById('nav-cash-management');
+    if (navCashManagement) navCashManagement.addEventListener('click', () => showSection('cash-management'));
+
+    const navReports = document.getElementById('nav-reports');
+    if (navReports) navReports.addEventListener('click', () => showSection('reports'));
+
+    const navAuditLogs = document.getElementById('nav-audit-logs');
+    if (navAuditLogs) navAuditLogs.addEventListener('click', () => showSection('audit-logs'));
+
+    // Attach event listeners for filter buttons
+    const applyInventoryFilter = document.getElementById('apply-inventory-filter');
+    if (applyInventoryFilter) applyInventoryFilter.addEventListener('click', fetchInventory);
+
+    const applySalesFilter = document.getElementById('apply-sales-filter');
+    if (applySalesFilter) applySalesFilter.addEventListener('click', fetchSales);
+
+    const applyExpensesFilter = document.getElementById('apply-expenses-filter');
+    if (applyExpensesFilter) applyExpensesFilter.addEventListener('click', fetchExpenses);
+
+    const applyCashFilter = document.getElementById('apply-cash-filter');
+    if (applyCashFilter) applyCashFilter.addEventListener('click', fetchCashJournal);
+
+    const generateReportButton = document.getElementById('generate-report-button');
+    if (generateReportButton) generateReportButton.addEventListener('click', generateReports);
+
+    // Initialise the audit log search functionality
+    const auditSearchInput = document.getElementById('audit-search-input');
+    // Debounce the fetchAuditLogs call to avoid too many requests
+    const debouncedFetchAuditLogs = debounce(() => {
+        currentAuditPage = 1; // Reset to the first page when a new search is initiated
+        fetchAuditLogs();
+    }, 300); // 300ms debounce delay
+
+    if (auditSearchInput) {
+        auditSearchInput.addEventListener('input', debouncedFetchAuditLogs);
+    }
+
+    // Event listener for Sales Export button
+    const salesExportButton = document.getElementById('export-sales-excel');
+    if (salesExportButton) {
+        salesExportButton.addEventListener('click', () => exportTableToExcel('sales-table', 'Sales_Data'));
+    }
+
+    // Event listener for Expenses Export button
+    const expensesExportButton = document.getElementById('export-expenses-excel');
+    if (expensesExportButton) {
+        expensesExportButton.addEventListener('click', () => exportTableToExcel('expenses-table', 'Expenses_Data'));
+    }
+
+    // Event listener for Cash Journal Export button
+    const cashExportButton = document.getElementById('export-cash-journal-excel');
+    if (cashExportButton) {
+        cashExportButton.addEventListener('click', () => exportTableToExcel('cash-journal-table', 'Cash_Journal_Data'));
+    }
+
+    // Event listener for Reports Export button
+    const reportsExportButton = document.getElementById('export-reports-excel');
+    if (reportsExportButton) {
+        reportsExportButton.addEventListener('click', () => exportTableToExcel('department-report-table', 'Department_Reports'));
+    }
+
+    // Event listener for Audit Logs Export button
+    const auditLogsExportButton = document.getElementById('export-audit-logs-excel');
+    if (auditLogsExportButton) {
+        auditLogsExportButton.addEventListener('click', () => exportTableToExcel('audit-logs-table', 'Audit_Logs'));
+    }
+
+});
