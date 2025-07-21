@@ -933,6 +933,101 @@ async function deleteSale(id) {
     });
 }
 
+// Define a constant object for buying prices
+const BUYING_PRICES = {
+    "bar- greek salad": 9000,
+    "bar- toasted salad": 7500,
+    "bar- potato salad": 6700,
+    "bar- mushroom soup": 9200,
+    "bar- tomato soup": 8500,
+    "bar- pumpkin soup": 8500,
+    "bar- chicken clear soup": 7400,
+    "bar- chicken stew": 15000,
+    "bar- chicken stir fry": 13200,
+    "bar- chicken cubes": 12900,
+    "bar- grilled whole chicken": 27200,
+    "bar- chicken drum stick": 17500,
+    "bar- beef stew": 10100,
+    "bar- beef curry": 10500,
+    "bar- navarine goat": 11200,
+    "bar- goat muchomo": 11800,
+    "bar- steak": 11600,
+    "bar- panfried pork": 11000,
+    "bar- pork ribs": 10300,
+    "bar- pork chops": 11100,
+    "bar- fish curry": 11800,
+    "bar- vegetable curry": 9600,
+    "bar- beef samosa": 19200,
+    "bar- chicken spring rolls": 22300,
+    "bar- chicken wing": 12600,
+    "bar- french fries": 5800,
+    "bar- chips masala": 7000,
+    "bar- pan fried fish fillet": 18100,
+    "bar- deep fried whole fish": 19800,
+    "bar- stir fried beef": 20000,
+    "bar- stir fried ox liver": 6900,
+    "bar- fish finger": 9200,
+    "bar- chicken party (burgar)": 8500,
+    "bar- beef burgar": 14400,
+    "bar- vegetable burgar": 10400,
+    "bar- beef sandwich": 12200,
+    "bar- chicken sandwich": 7400,
+    "bar- tomato sandwich": 5600,
+    "bar- vegetable sandwich": 7900,
+    "bar- club sandwich": 12700,
+    "bar- african tea": 4300,
+    "bar- african coffee": 4100,
+    "bar- english tea": 5200,
+    "bar- african spiced tea": 5000,
+    "bar- lemon tea": 2900,
+    "bar- milk plane": 4000,
+    "bar- black tea": 3300,
+    "bar- black coffee": 3400,
+    "bar- dhawa tea": 5300,
+    "bar- passion juice(l)": 4400,
+    "bar- pineapple juice": 3100,
+    "bar- water melon juice": 3000,
+    "bar- lemon juice": 2400,
+    "bar- cocotail juice": 4500,
+    "bar- pineapple (dessert)": 2700,
+    "bar- fruit salad": 3400,
+    "bar- fruit platta": 2200,
+    "bar- spagetti napolitan": 8000,
+    "bar- spagetti bolognaise": 7700,
+    "bar- margarita pizza": 7700,
+    "bar- chicken polo pizza": 9400,
+    "bar- strombolli pizza": 10600,
+    "bar- hawaii pizza": 8000
+};
+
+/**
+ * Automatically populates the buying price based on the selected item.
+ */
+function populateBuyingPrice() {
+    const itemInput = document.getElementById('sale-item');
+    const bpInput = document.getElementById('sale-bp');
+
+    if (itemInput && bpInput) {
+        const item = itemInput.value.toLowerCase().trim(); // Convert to lowercase and trim for case-insensitive matching
+        const buyingPrice = BUYING_PRICES[item];
+
+        if (buyingPrice !== undefined) {
+            bpInput.value = buyingPrice;
+        } else {
+            // Optionally clear the BP field if the item doesn't have a predefined price
+            // Or you can leave it as is for manual entry
+            bpInput.value = '';
+        }
+    }
+}
+
+// Add an event listener to the item input field
+document.addEventListener('DOMContentLoaded', () => {
+    const itemInput = document.getElementById('sale-item');
+    if (itemInput) {
+        itemInput.addEventListener('input', populateBuyingPrice);
+    }
+});
 // --- Expenses Functions (Provided in snippet, assuming it's complete) ---
 // Note: No explicit fetchExpenses or renderExpensesTable was provided in the second snippet,
 // so I'm providing placeholders or assuming they are in the missing part of the first snippet.
