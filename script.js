@@ -1044,7 +1044,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-const SELLING_PRICES = {
+const ELLING_pRICES = {
     "rest- greek salad": 9000,
     "rest- toasted salad": 7500,
     "rest- potato salad": 6700,
