@@ -22,6 +22,20 @@ const auditLogsPerPage = 20;
  * @param {string} message The message to display.
  * @param {function} [callback] Optional callback function to execute after the message is dismissed.
  */
+const menuToggle = document.getElementById('menu-toggle');
+const mobileNav = document.getElementById('mobile-nav');
+
+menuToggle.addEventListener('click', function () {
+  mobileNav.classList.toggle('active');
+  
+  // Toggle menu icon between hamburger and X
+  if (mobileNav.classList.contains('active')) {
+    menuToggle.innerHTML = '&times;'; // X
+  } else {
+    menuToggle.innerHTML = '&#9776;'; // Hamburger
+  }
+});
+
 function showMessage(message, callback = null) {
     const modal = document.getElementById('message-modal');
     const messageText = document.getElementById('message-text');
