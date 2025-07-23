@@ -1043,6 +1043,101 @@ document.addEventListener('DOMContentLoaded', () => {
         itemInput.addEventListener('input', populateBuyingPrice);
     }
 });
+
+const SELLING_PRICES = {
+    "rest- greek salad": 9000,
+    "rest- toasted salad": 7500,
+    "rest- potato salad": 6700,
+    "rest- mushroom soup": 9200,
+    "rest- tomato soup": 8500,
+    "rest- pumpkin soup": 8500,
+    "rest- chicken clear soup": 7400,
+    "rest- chicken stew": 15000,
+    "rest- chicken stir fry": 13200,
+    "rest- chicken cubes": 12900,
+    "rest- grilled whole chicken": 27200,
+    "rest- chicken drum stick": 17500,
+    "rest- beef stew": 10100,
+    "rest- beef curry": 10500,
+    "rest- navarine goat": 11200,
+    "rest- goat muchomo": 11800,
+    "rest- steak": 11600,
+    "rest- panfried pork": 11000,
+    "rest- pork ribs": 10300,
+    "rest- pork chops": 11100,
+    "rest- fish curry": 11800,
+    "rest- vegetable curry": 9600,
+    "rest- beef samosa": 19200,
+    "rest- chicken spring rolls": 22300,
+    "rest- chicken wing": 12600,
+    "rest- french fries": 5800,
+    "rest- chips masala": 7000,
+    "rest- pan fried fish fillet": 18100,
+    "rest- deep fried whole fish": 19800,
+    "rest- stir fried beef": 20000,
+    "rest- stir fried ox liver": 6900,
+    "rest- fish finger": 9200,
+    "rest- chicken party (burgar)": 8500,
+    "rest- beef burgar": 14400,
+    "rest- vegetable burgar": 10400,
+    "rest- beef sandwich": 12200,
+    "rest- chicken sandwich": 7400,
+    "rest- tomato sandwich": 5600,
+    "rest- vegetable sandwich": 7900,
+    "rest- club sandwich": 12700,
+    "rest- african tea": 4300,
+    "rest- african coffee": 4100,
+    "rest- english tea": 5200,
+    "rest- african spiced tea": 5000,
+    "rest- lemon tea": 2900,
+    "rest- milk plane": 4000,
+    "rest- black tea": 3300,
+    "rest- black coffee": 3400,
+    "rest- dhawa tea": 5300,
+    "rest- passion juice(l)": 4400,
+    "rest- pineapple juice": 3100,
+    "rest- water melon juice": 3000,
+    "rest- lemon juice": 2400,
+    "rest- cocotail juice": 4500,
+    "rest- pineapple (dessert)": 2700,
+    "rest- fruit salad": 3400,
+    "rest- fruit platta": 2200,
+    "rest- spagetti napolitan": 8000,
+    "rest- spagetti bolognaise": 7700,
+    "rest- margarita pizza": 7700,
+    "rest- chicken polo pizza": 9400,
+    "rest- strombolli pizza": 10600,
+    "rest- hawaii pizza": 8000
+};
+
+/**
+ * Automatically populates the buying price based on the selected item.
+ */
+function populateSellingPrice() {
+    const itemInput = document.getElementById('sale-item');
+    const spInput = document.getElementById('sale-sp');
+
+    if (itemInput && bpInput) {
+        const item = itemInput.value.toLowerCase().trim(); // Convert to lowercase and trim for case-insensitive matching
+        const sellingPrice = SELLING_PRICES[item];
+
+        if (sellingPrice !== undefined) {
+            spInput.value = sellingPrice;
+        } else {
+            // Optionally clear the BP field if the item doesn't have a predefined price
+            // Or you can leave it as is for manual entry
+            spInput.value = '';
+        }
+    }
+}
+
+// Add an event listener to the item input field
+document.addEventListener('DOMContentLoaded', () => {
+    const itemInput = document.getElementById('sale-item');
+    if (itemInput) {
+        itemInput.addEventListener('input', populateSellingPrice);
+    }
+});
 // --- Expenses Functions (Provided in snippet, assuming it's complete) ---
 // Note: No explicit fetchExpenses or renderExpensesTable was provided in the second snippet,
 // so I'm providing placeholders or assuming they are in the missing part of the first snippet.
