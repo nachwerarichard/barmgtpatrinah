@@ -1117,7 +1117,7 @@ function populateSellingPrice() {
     const itemInput = document.getElementById('sale-item');
     const spInput = document.getElementById('sale-sp');
 
-    if (itemInput && bpInput) {
+    if (itemInput && spInput) {
         const item = itemInput.value.toLowerCase().trim(); // Convert to lowercase and trim for case-insensitive matching
         const sellingPrice = SELLING_PRICES[item];
 
