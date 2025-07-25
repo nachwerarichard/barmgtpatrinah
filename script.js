@@ -1012,7 +1012,18 @@ const BUYING_PRICES = {
     "rest- margarita pizza": 7700,
     "rest- chicken polo pizza": 9400,
     "rest- strombolli pizza": 10600,
-    "rest- hawaii pizza": 8000
+    "rest- hawaii pizza": 8000,
+    "bar - Mountain dew": 800,
+    "bar -mirinda fruity ": 800,
+    "bar - Mirinda fanta": 800,
+    "bar - Novida": 800,
+    "bar-pepsi": 800,
+    "bar-mirinda apple":800,
+    "bar-cocacola":800,
+    "bar-stoney":800,
+    "bar-fanta":800,
+    "bar-cocacola":800,
+    "bar-fanta":800
 };
 
 /**
