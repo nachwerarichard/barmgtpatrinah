@@ -1023,27 +1023,21 @@ function populateBuyingPrice() {
     const bpInput = document.getElementById('sale-bp');
 
     if (itemInput && bpInput) {
-        const item = itemInput.value.toLowerCase().trim(); // Convert to lowercase and trim for case-insensitive matching
+        // No need to convert to lowercase for exact match from datalist
+        const item = itemInput.value.trim(); 
         const buyingPrice = BUYING_PRICES[item];
 
         if (buyingPrice !== undefined) {
             bpInput.value = buyingPrice;
         } else {
-            // Optionally clear the BP field if the item doesn't have a predefined price
-            // Or you can leave it as is for manual entry
             bpInput.value = '';
         }
     }
 }
 
-// Add an event listener to the item input field
-document.addEventListener('DOMContentLoaded', () => {
-    const itemInput = document.getElementById('sale-item');
-    if (itemInput) {
-        itemInput.addEventListener('input', populateBuyingPrice);
-    }
-});
-
+/**
+ * Populates the datalist with items from BUYING_PRICES.
+ */
 function populateDatalist() {
     const datalist = document.getElementById('item-suggestions');
     if (datalist) {
@@ -1055,6 +1049,15 @@ function populateDatalist() {
     }
 }
 
+// Add event listeners when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    populateDatalist(); // Populate the datalist on page load
+
+    const itemInput = document.getElementById('sale-item');
+    if (itemInput) {
+        itemInput.addEventListener('input', populateBuyingPrice);
+    }
+});
 
 const ELLING_pRICES = {
     "rest- greek salad": 9000,
