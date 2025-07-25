@@ -1044,6 +1044,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function populateDatalist() {
+    const datalist = document.getElementById('item-suggestions');
+    if (datalist) {
+        for (const item in BUYING_PRICES) {
+            const option = document.createElement('option');
+            option.value = item;
+            datalist.appendChild(option);
+        }
+    }
+}
+
+
 const ELLING_pRICES = {
     "rest- greek salad": 9000,
     "rest- toasted salad": 7500,
