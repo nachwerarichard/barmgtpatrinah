@@ -96,46 +96,48 @@
                 <div id="pagination" class="pagination-controls"></div>
             </div>
             <div id="sales-section" class="section">
-                <h2>Sales Management</h2>
-                <h3>Record New Sale</h3>
-                <form id="sale-form">
-                    <input type="hidden" id="sale-id">
-                    <label for="sale-item">Item:</label>
-                     <input type="text" id="sale-item" list="item-suggestions" required>
-                    <datalist id="item-suggestions"></datalist>
-                    <label for="sale-number">Number Sold:</label>
-                    <input type="number" id="sale-number" min="1" required>
-                    <label for="sale-bp">Buying Price (BP):</label>
-                    <input type="number" id="sale-bp" step="0.01" min="0" required>
-                    <label for="sale-sp">Selling Price (SP):</label>
-                    <input type="number" id="sale-sp" step="0.01" min="0" required>
-                    <button type="submit"><i class="fas fa-plus-circle"></i> Record Sale</button>
-                </form>
-                <h3 class="sales-records-heading">Sales Records</h3>
-                <div class="filter-controls sales-filter-controls">
-                    <label for="sales-date-filter" style="margin-bottom:0;">Filter by Date:</label>
-                    <input type="date" id="sales-date-filter">
-                    <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
-                </div>
-                    <button class="export-button" onclick="exportTableToExcel('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
-                <div class="table-responsive">
-                    <table id="sales-table">
-    <thead>
-        <tr>
-            <th>Item</th>
-            <th>Number</th>
-            <th>BP (UGX)</th>
-            <th>SP (UGX)</th>
-            <th>Profit (UGX)</th> <th>%Profit </th>     <th>Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        </tbody>
-</table>
-                </div>
-                <div id="sales-pagination" class="pagination-controls"></div>
-            </div>
+    <h2>Sales Management</h2>
+    <h3>Record New Sale</h3>
+    <form id="sale-form">
+        <input type="hidden" id="sale-id">
+        <label for="sale-item">Item:</label>
+        <input type="text" id="sale-item" list="item-suggestions" required>
+        <datalist id="item-suggestions"></datalist>
+        <label for="sale-number">Number Sold:</label>
+        <input type="number" id="sale-number" min="1" required>
+        <label for="sale-bp">Buying Price (BP):</label>
+        <input type="number" id="sale-bp" step="0.01" min="0" required>
+        <label for="sale-sp">Selling Price (SP):</label>
+        <input type="number" id="sale-sp" step="0.01" min="0" required>
+        <button type="submit"><i class="fas fa-plus-circle"></i> Record Sale</button>
+    </form>
+    <h3 class="sales-records-heading">Sales Records</h3>
+    <div class="filter-controls sales-filter-controls">
+        <label for="sales-date-filter" style="margin-bottom:0;">Filter by Date:</label>
+        <input type="date" id="sales-date-filter">
+        <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
+    </div>
+    <button class="export-button" onclick="exportTableToExcel('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
+    <div class="table-responsive">
+        <table id="sales-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Number</th>
+                    <th>BP (UGX)</th>
+                    <th>SP (UGX)</th>
+                    <th>Profit (UGX)</th>
+                    <th>%Profit</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="sales-pagination" class="pagination-controls"></div>
+</div>
             <div id="expenses-section" class="section">
                 <h2>Expenses Management</h2>
                 <h3>Record New Expense</h3>
