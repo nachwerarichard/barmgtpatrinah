@@ -1299,7 +1299,7 @@ async function submitExpenseForm(event) {
     const amountInput = document.getElementById('expense-amount');
     const categoryInput = document.getElementById('expense-category');
     const sourceInput = document.getElementById('expense-source');
-    const expenseDateInput = document.getElementById('expenses-date-filter'); // Using this as the date input
+    const expenseDateInput = document.getElementById('expenses-date'); // Using this as the date input
 
     if (!idInput || !descriptionInput || !amountInput || !categoryInput || !sourceInput || !expenseDateInput) {
         showMessage('Expense form elements are missing.');
