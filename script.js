@@ -394,6 +394,66 @@ async function authenticatedFetch(url, options = {}) {
 
 // --- Login/Logout ---
 
+async function login() {
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginMessage = document.getElementById('login-message');
+
+    if (!usernameInput || !passwordInput || !loginMessage) {
+        console.error("Login form elements not found.");
+        return;
+    }
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+
+    loginMessage.textContent = 'Logging in...';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // For hardcoded auth, the token is derived from the plain credentials
+            authToken = btoa(`${username}:${password}`);
+            currentUsername = data.username;
+            currentUserRole = data.role;
+
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('username', currentUsername);
+            localStorage.setItem('userRole', currentUserRole);
+
+            loginMessage.textContent = '';
+            console.log('Login successful, calling updateUIForUserRole...');
+            updateUIForUserRole(); // Update UI based on new role
+
+        } else {
+            const errorData = await response.json();
+            loginMessage.textContent = errorData.error || 'Invalid username or password.';
+            authToken = '';
+            currentUsername = '';
+            currentUserRole = '';
+            localStorage.clear();
+            console.log('Login failed.');
+            updateUIForUserRole(); // Ensure UI resets to login form
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        loginMessage.textContent = 'Network error or server unavailable.';
+        authToken = '';
+        currentUsername = '';
+        currentUserRole = '';
+        localStorage.clear();
+        updateUIForUserRole();
+    }
+}
+
 async function logout() {
     try {
         // Optionally notify backend of logout for audit logging
