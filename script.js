@@ -1299,6 +1299,7 @@ async function submitExpenseForm(event) {
     const amountInput = document.getElementById('expense-amount');
     const receiptIdInput = document.getElementById('expense-receiptId');
     const sourceInput = document.getElementById('expense-source');
+    const responsible = document.getElementById('expense-responsible');
     const expenseDateInput = document.getElementById('expenses-date-filter'); // Using this as the date input
 
     if (!idInput || !descriptionInput || !amountInput || !receiptIdInput || !sourceInput || !expenseDateInput) {
