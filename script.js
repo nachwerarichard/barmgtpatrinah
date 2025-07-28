@@ -1260,7 +1260,7 @@ function renderExpensesTable(expenses) {
         row.insertCell().textContent = expense.description;
         row.insertCell().textContent = expense.amount.toFixed(2);
         row.insertCell().textContent = new Date(expense.date).toLocaleDateString();
-        row.insertCell().textContent = expense.category;
+        row.insertCell().textContent = expense.receiptId;
         row.insertCell().textContent = expense.source || 'N/A'; // Assuming source might be optional
         row.insertCell().textContent = expense.recordedBy; // Assuming recordedBy might be optional
         const actionsCell = row.insertCell();
@@ -1297,11 +1297,11 @@ async function submitExpenseForm(event) {
     const idInput = document.getElementById('expense-id');
     const descriptionInput = document.getElementById('expense-description');
     const amountInput = document.getElementById('expense-amount');
-    const categoryInput = document.getElementById('expense-category');
+    const receiptIdInput = document.getElementById('expense-receiptId');
     const sourceInput = document.getElementById('expense-source');
     const expenseDateInput = document.getElementById('expenses-date-filter'); // Using this as the date input
 
-    if (!idInput || !descriptionInput || !amountInput || !categoryInput || !sourceInput || !expenseDateInput) {
+    if (!idInput || !descriptionInput || !amountInput || !receiptIdInput || !sourceInput || !expenseDateInput) {
         showMessage('Expense form elements are missing.');
         return;
     }
@@ -1309,17 +1309,17 @@ async function submitExpenseForm(event) {
     const id = idInput.value;
     const description = descriptionInput.value;
     const amount = parseFloat(amountInput.value);
-    const category = categoryInput.value;
+    const receiptId = receiptIdInput.value;
     const source = sourceInput.value;
     const date = expenseDateInput.value;
     const recordedBy = currentUsername; // Automatically record who made the entry
 
-    if (!description || isNaN(amount) || amount <= 0 || !category || !date) {
+    if (!description || isNaN(amount) || amount <= 0 || !receiptId || !date) {
         showMessage('Please fill in all expense fields correctly.');
         return;
     }
 
-    const expenseData = { description, amount, category, source, date, recordedBy };
+    const expenseData = { description, amount, receiptId, source, date, recordedBy };
 
     try {
         let response;
@@ -1362,14 +1362,14 @@ function populateExpenseForm(expense) {
     const idInput = document.getElementById('expense-id');
     const descriptionInput = document.getElementById('expense-description');
     const amountInput = document.getElementById('expense-amount');
-    const categoryInput = document.getElementById('expense-category');
+    const receiptIdInput = document.getElementById('expense-receiptId');
     const sourceInput = document.getElementById('expense-source');
     const expenseDateInput = document.getElementById('expenses-date-filter');
 
     if (idInput) idInput.value = expense._id;
     if (descriptionInput) descriptionInput.value = expense.description;
     if (amountInput) amountInput.value = expense.amount;
-    if (categoryInput) categoryInput.value = expense.category;
+    if (receiptIdInput) receiptIdInput.value = expense.receiptId;
     if (sourceInput) sourceInput.value = expense.source;
     if (expenseDateInput && expense.date) {
         expenseDateInput.value = new Date(expense.date).toISOString().split('T')[0];
