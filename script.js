@@ -1259,10 +1259,10 @@ function renderExpensesTable(expenses) {
         const row = tbody.insertRow();
         row.insertCell().textContent = expense.description;
         row.insertCell().textContent = expense.amount.toFixed(2);
+        row.insertCell().textContent = new Date(expense.date).toLocaleDateString();
         row.insertCell().textContent = expense.category;
         row.insertCell().textContent = expense.source || 'N/A'; // Assuming source might be optional
-        row.insertCell().textContent = expense.recordedBy || 'N/A'; // Assuming recordedBy might be optional
-        row.insertCell().textContent = new Date(expense.date).toLocaleDateString();
+        row.insertCell().textContent = expense.recordedBy; // Assuming recordedBy might be optional
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
