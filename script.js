@@ -1013,8 +1013,8 @@ const BUYING_PRICES = {
     "rest chicken polo pizza": 9400,
     "rest strombolli pizza": 10600,
     "rest hawaii pizza": 8000,
-    "bar  Mountain dew": 800,
-    "bar mirinda fruity ": 800,
+    "bar  Mountain dew": 771,
+    "bar mirinda fruity ": 771,
     "bar  Mirinda fanta": 771,
     "bar  Novida": 771,
     "bar pepsi": 771,
@@ -1024,14 +1024,15 @@ const BUYING_PRICES = {
     "bar fanta":771,
     "bar cocacola":771,
     "bar fanta":771,
-    "bar Nile":5000,
-    "bar club":5000,
-    "bar guiness":5000,
-    "bar Uganda waragi":5000,
-    "bar Gilbey's":5000,
-    "bar tusker lite":5000,
-    "bar water":5000,
-    "bar castle lite":5000
+    "bar Nile":3,335,
+    "bar club":2,925,
+    "bar Guiness Foreign Extra":2,800,
+    "bar Guiness Rich $ Smooth":2,800,
+    "bar Uganda waragi":7000,
+    "bar Gilbey's":7800,
+    "bar tusker lite":2,860,
+    "bar water":1000,
+    "bar castle lite":2860
 };
 
 /**
@@ -1156,8 +1157,8 @@ const SELLING_PRICES = {
     "bar Nile":5000,
     "bar club":5000,
     "bar guiness":5000,
-    "bar Uganda waragi":5000,
-    "bar Gilbey's":5000,
+    "bar Uganda Waragi":13000,
+    "bar Gilbey's":15000,
     "bar tusker lite":5000,
     "bar water":5000,
     "bar castle lite":5000
