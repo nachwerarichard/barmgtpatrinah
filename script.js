@@ -1031,7 +1031,7 @@ const BUYING_PRICES = {
     "bar Guiness Rich $ Smooth":2800,
     "bar Uganda waragi":7000,
     "bar Gilbey's":7800,
-    "bar tusker lite":2,860,
+    "bar tusker lite":2860,
     "bar water":1000,
     "bar castle lite":2860
 };
