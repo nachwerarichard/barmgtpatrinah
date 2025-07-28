@@ -1024,7 +1024,7 @@ const BUYING_PRICES = {
     "bar fanta":771,
     "bar cocacola":771,
     "bar fanta":771,
-    "bar Nile":3,335,
+    "bar Nile":3335,
     "bar club":2,925,
     "bar Guiness Foreign Extra":2,800,
     "bar Guiness Rich $ Smooth":2,800,
