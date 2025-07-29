@@ -1452,7 +1452,6 @@ function renderCashJournalTable(records) {
         row.insertCell().textContent = record.cashAtHand.toFixed(2);
         row.insertCell().textContent = record.cashBanked.toFixed(2);
         row.insertCell().textContent = record.bankReceiptId;
-        row.insertCell().textContent = record.responsiblePerson;
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
@@ -1488,7 +1487,6 @@ async function submitCashJournalForm(event) {
     const cashAtHandInput = document.getElementById('cash-at-hand');
     const cashBankedInput = document.getElementById('cash-banked');
     const bankReceiptIdInput = document.getElementById('bank-receipt-id');
-    const responsiblePersonInput = document.getElementById('responsible-person');
     const cashDateInput = document.getElementById('cash-date');
 
     if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput  || !cashDateInput) {
@@ -1500,16 +1498,15 @@ async function submitCashJournalForm(event) {
     const cashAtHand = parseFloat(cashAtHandInput.value);
     const cashBanked = parseFloat(cashBankedInput.value);
     const bankReceiptId = bankReceiptIdInput.value;
-    const responsiblePerson = responsiblePersonInput.value;
     const date = cashDateInput.value;
 
     // Basic validation
-    if (isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !responsiblePerson || !date) {
+    if (isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId  || !date) {
         showMessage('Please fill in all cash entry fields correctly.');
         return;
     }
 
-    const cashData = { cashAtHand, cashBanked, bankReceiptId, responsiblePerson, date };
+    const cashData = { cashAtHand, cashBanked, bankReceiptId, date };
 
     try {
         let response;
@@ -1554,14 +1551,12 @@ function populateCashJournalForm(record) {
     const cashAtHandInput = document.getElementById('cash-at-hand');
     const cashBankedInput = document.getElementById('cash-banked');
     const bankReceiptIdInput = document.getElementById('bank-receipt-id');
-    const responsiblePersonInput = document.getElementById('responsible-person');
     const cashDateInput = document.getElementById('cash-date');
 
     if (idInput) idInput.value = record._id;
     if (cashAtHandInput) cashAtHandInput.value = record.cashAtHand;
     if (cashBankedInput) cashBankedInput.value = record.cashBanked;
     if (bankReceiptIdInput) bankReceiptIdInput.value = record.bankReceiptId;
-    if (responsiblePersonInput) responsiblePersonInput.value = record.responsiblePerson;
     if (cashDateInput && record.date) {
         cashDateInput.value = new Date(record.date).toISOString().split('T')[0];
     }
