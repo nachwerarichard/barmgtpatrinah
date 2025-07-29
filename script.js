@@ -1251,7 +1251,7 @@ function renderExpensesTable(expenses) {
     if (expenses.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
-        cell.colSpan = 7;
+        cell.colSpan = 6;
         cell.textContent = 'No expense records found for this date. Try adjusting the filter.';
         cell.style.textAlign = 'center';
         return;
