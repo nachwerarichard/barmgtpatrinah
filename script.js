@@ -1440,7 +1440,7 @@ function renderCashJournalTable(records) {
     if (records.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
-        cell.colSpan = 6;
+        cell.colSpan = 5;
         cell.textContent = 'No cash records found for the selected filters.';
         cell.style.textAlign = 'center';
         return;
