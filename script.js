@@ -1491,7 +1491,7 @@ async function submitCashJournalForm(event) {
     const responsiblePersonInput = document.getElementById('responsible-person');
     const cashDateInput = document.getElementById('cash-date');
 
-    if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput || !responsiblePersonInput || !cashDateInput) {
+    if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput  || !cashDateInput) {
         showMessage('Cash journal form elements are missing.');
         return;
     }
