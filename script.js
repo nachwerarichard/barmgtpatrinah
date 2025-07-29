@@ -1323,7 +1323,7 @@ async function submitExpenseForm(event) {
         return;
     }
 
-    const expenseData = { description, amount, receiptId, source, date, recordedBy };
+    const expenseData = { description, amount, receiptId, source, date,responsible, recordedBy };
 
     try {
         let response;
