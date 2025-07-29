@@ -1,4 +1,3 @@
-// Global Constants and Variables
 const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; // Base URL for API calls
 let authToken = localStorage.getItem('authToken') || ''; // Stores the authentication token
 let currentUsername = localStorage.getItem('username') || ''; // Stores the logged-in username
@@ -25,16 +24,19 @@ const auditLogsPerPage = 20;
 const menuToggle = document.getElementById('menu-toggle');
 const mobileNav = document.getElementById('mobile-nav');
 
-menuToggle.addEventListener('click', function () {
-  mobileNav.classList.toggle('active');
-  
-  // Toggle menu icon between hamburger and X
-  if (mobileNav.classList.contains('active')) {
-    menuToggle.innerHTML = '&times;'; // X
-  } else {
-    menuToggle.innerHTML = '&#9776;'; // Hamburger
-  }
-});
+if (menuToggle && mobileNav) {
+    menuToggle.addEventListener('click', function () {
+        mobileNav.classList.toggle('active');
+
+        // Toggle menu icon between hamburger and X
+        if (mobileNav.classList.contains('active')) {
+            menuToggle.innerHTML = '&times;'; // X
+        } else {
+            menuToggle.innerHTML = '&#9776;'; // Hamburger
+        }
+    });
+}
+
 
 function showMessage(message, callback = null) {
     const modal = document.getElementById('message-modal');
@@ -43,8 +45,8 @@ function showMessage(message, callback = null) {
 
     // Ensure elements exist before trying to manipulate them
     if (!modal || !messageText || !closeButton) {
-        console.error("Message modal elements not found. Falling back to alert().");
-        alert(message);
+        console.error("Message modal elements not found. Falling back to console log.");
+        console.log("Message:", message); // Fallback to console log instead of alert
         if (callback) callback();
         return;
     }
@@ -72,31 +74,15 @@ function showMessage(message, callback = null) {
 }
 
 /**
- * Displays a custom confirmation dialog to the user.
- * Replaces native confirm() for better UI control.
- * @param {string} message The confirmation message.
- * @param {function} onConfirm Callback function if user confirms.
- * @param {function} [onCancel] Optional callback function if user cancels.
- */
-function showConfirm(message, onConfirm, onCancel = null) {
-    // For simplicity, using native confirm. For a custom UI, you'd implement a modal similar to showMessage.
-    const userConfirmed = window.confirm(message);
-    if (userConfirmed) {
-        onConfirm();
-    } else if (onCancel) {
-        onCancel();
-    }
-}
-
-
-/**
  * Applies specific UI restrictions for 'Martha' and 'Joshua' roles in Sales, Expenses, and Cash Management sections.
  * Hides headings, filters, and tables, showing only the forms for these roles.
  * @param {string} sectionId The ID of the currently active section.
  */
 function applyBarStaffUIRestrictions(sectionId) {
     // Check if the current user is 'Martha' or 'Joshua'
-    const isBarStaff = currentUserRole === 'Martha' || currentUserRole === 'Joshua';
+    const isMartha = currentUserRole === 'Martha';
+    const isJoshua = currentUserRole === 'Joshua';
+    const isBarStaff = isMartha || isJoshua;
 
     // Sales section specific elements
     const salesHeading = document.querySelector('#sales-section .sales-records-heading');
@@ -116,44 +102,63 @@ function applyBarStaffUIRestrictions(sectionId) {
     const cashFilter = document.querySelector('#cash-management-section .filter-controls');
     const cashTable = document.getElementById('cash-journal-table');
 
+    // Inventory section specific elements (for Joshua)
+    const inventoryHeading = document.querySelector('#inventory-section .inventory-records-heading');
+    const inventoryFilter = document.querySelector('#inventory-section .inventory-filter-controls');
+    const inventoryPagination = document.querySelector('#inventory-section .pagination-controls');
+    const inventoryTable = document.getElementById('inventory-table');
+
+
+    // Reset display for all elements initially to ensure proper visibility when roles change
+    [salesHeading, salesFilter, paginationControl, salesTable, excelbtnTable,
+     expensesHeading, expensesFilter, expensePag, expensesTable,
+     cashHeading, cashFilter, cashTable,
+     inventoryHeading, inventoryFilter, inventoryPagination, inventoryTable].forEach(el => {
+        if (el) el.style.display = ''; // Reset to default display
+    });
+
+
     if (isBarStaff) {
-        // Apply restrictions if it's bar staff
+        // Martha: Sales, Expenses, Cash Management (view only tables)
+        // Joshua: Inventory, Sales (view only tables)
+
+        // Sales Section
         if (sectionId === 'sales') {
-            if (salesHeading) salesHeading.style.display = 'none';
-            if (salesFilter) salesFilter.style.display = 'none';
-            if (salesTable) salesTable.style.display = 'none';
-            if (excelbtnTable) excelbtnTable.style.display = 'none';
-            if (paginationControl) paginationControl.style.display = 'none';
-        } else {
-            // Ensure these are visible if not in sales section (e.g., if a different admin role switches to sales)
+            // Tables, filters, headings should be visible for both Martha and Joshua
             if (salesHeading) salesHeading.style.display = 'block';
-            if (salesFilter) salesFilter.style.display = 'flex'; // Use flex for filter controls
+            if (salesFilter) salesFilter.style.display = 'flex';
             if (salesTable) salesTable.style.display = 'table';
             if (excelbtnTable) excelbtnTable.style.display = 'block';
             if (paginationControl) paginationControl.style.display = 'block';
         }
 
+        // Expenses Section (Martha & Joshua)
+        if (sectionId === 'expenses') {
+            if (expensesHeading) expensesHeading.style.display = 'block';
+            if (expensesFilter) expensesFilter.style.display = 'flex';
+            if (expensesTable) expensesTable.style.display = 'table';
+            if (expensePag) expensePag.style.display = 'block';
+        }
+
+        // Cash Management Section (Martha & Joshua)
         if (sectionId === 'cash-management') {
-            if (cashHeading) cashHeading.style.display = 'none';
-            if (cashFilter) cashFilter.style.display = 'none';
-            if (cashTable) cashTable.style.display = 'none';
-        } else {
             if (cashHeading) cashHeading.style.display = 'block';
             if (cashFilter) cashFilter.style.display = 'flex';
             if (cashTable) cashTable.style.display = 'table';
         }
 
-        if (sectionId === 'expenses') {
-            if (expensesHeading) expensesHeading.style.display = 'none';
-            if (expensesFilter) expensesFilter.style.display = 'none';
-            if (expensesTable) expensesTable.style.display = 'none';
-            if (expensePag) expensePag.style.display = 'none';
-        } else {
-            // Ensure these are visible if not in expenses section
-            if (expensesHeading) expensesHeading.style.display = 'block';
-            if (expensesFilter) expensesFilter.style.display = 'flex'; // Use flex for filter controls
-            if (expensesTable) expensesTable.style.display = 'table';
-            if (expensePag) expensePag.style.display = 'block';
+        // Inventory Section (Only for Joshua, Martha doesn't have access to this section)
+        if (sectionId === 'inventory' && isJoshua) {
+            if (inventoryHeading) inventoryHeading.style.display = 'block';
+            if (inventoryFilter) inventoryFilter.style.display = 'flex';
+            if (inventoryPagination) inventoryPagination.style.display = 'block';
+            if (inventoryTable) inventoryTable.style.display = 'table';
+        } else if (sectionId === 'inventory' && isMartha) {
+            // Martha should not see inventory, so hide it
+            if (inventoryHeading) inventoryHeading.style.display = 'none';
+            if (inventoryFilter) inventoryFilter.style.display = 'none';
+            if (inventoryPagination) inventoryPagination.style.display = 'none';
+            if (inventoryTable) inventoryTable.style.display = 'none';
         }
     } else {
         // For Nachwera Richard, Nelson, Florence, or other roles, ensure all elements are visible
@@ -171,6 +176,11 @@ function applyBarStaffUIRestrictions(sectionId) {
         if (cashHeading) cashHeading.style.display = 'block';
         if (cashFilter) cashFilter.style.display = 'flex';
         if (cashTable) cashTable.style.display = 'table';
+
+        if (inventoryHeading) inventoryHeading.style.display = 'block';
+        if (inventoryFilter) inventoryFilter.style.display = 'flex';
+        if (inventoryPagination) inventoryPagination.style.display = 'block';
+        if (inventoryTable) inventoryTable.style.display = 'table';
     }
 }
 
@@ -212,18 +222,28 @@ function updateUIForUserRole() {
                 button.style.display = 'inline-block';
             });
         }
-        // Bar staff roles (Martha, Joshua)
-        else if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
+        // Martha: Sales, Expenses, Cash Management
+        else if (currentUserRole === 'Martha') {
+            if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
+            if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
+            if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
+        }
+        // Joshua: Inventory, Sales, Expenses, Cash Management
+        else if (currentUserRole === 'Joshua') {
+            if (document.getElementById('nav-inventory')) document.getElementById('nav-inventory').style.display = 'inline-block';
             if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
             if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
             if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
         }
 
+
         // Show default section based on role
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admins start with inventory
-        } else if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-            showSection('sales'); // Bar staff start with sales
+        } else if (currentUserRole === 'Martha') {
+            showSection('sales'); // Martha starts with sales
+        } else if (currentUserRole === 'Joshua') {
+            showSection('inventory'); // Joshua starts with inventory
         }
 
     } else {
@@ -253,8 +273,8 @@ function showSection(sectionId) {
         'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-        'Martha': ['sales', 'expenses', 'cash-management'],
-        'Joshua': ['sales', 'expenses', 'cash-management']
+        'Martha': ['sales', 'expenses', 'cash-management'], // Martha can view these
+        'Joshua': ['inventory', 'sales', 'expenses', 'cash-management'] // Joshua can view these
     };
 
     // --- Role-based Access Check ---
@@ -264,8 +284,10 @@ function showSection(sectionId) {
         const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admin default
-        } else if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-            showSection('sales'); // Bar staff default
+        } else if (currentUserRole === 'Martha') {
+            showSection('sales'); // Martha default
+        } else if (currentUserRole === 'Joshua') {
+            showSection('inventory'); // Joshua default
         }
         return; // Prevent further execution for unauthorized access
     }
@@ -282,7 +304,6 @@ function showSection(sectionId) {
         return; // Exit if section doesn't exist
     }
 
-
     // --- Apply Bar Staff UI Restrictions (Headings, Filters, Tables) ---
     applyBarStaffUIRestrictions(sectionId);
 
@@ -291,37 +312,11 @@ function showSection(sectionId) {
     if (sectionId === 'inventory') {
         fetchInventory();
     } else if (sectionId === 'sales') {
-        if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-            // For bar staff, clear the table and show a message to prompt filtering.
-            const salesTbody = document.querySelector('#sales-table tbody');
-            if (salesTbody) salesTbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>'; // Adjusted colspan
-            // Ensure the date filter is set to today for convenience if they click "Apply Filters" (though filters are hidden)
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            const salesDateFilter = document.getElementById('sales-date-filter');
-            if (salesDateFilter) salesDateFilter.value = `${yyyy}-${mm}-${dd}`;
-        } else {
-            // For administrators, auto-fetch sales
-            fetchSales();
-        }
+        // For Martha/Joshua, we now fetch data, but the render function will hide edit/delete buttons
+        fetchSales();
     } else if (sectionId === 'expenses') {
-        if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-            // For bar staff, clear the table and show a message to prompt recording.
-            const expensesTbody = document.querySelector('#expenses-table tbody');
-            if (expensesTbody) expensesTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>'; // Adjusted colspan
-            // Ensure the date filter is set to today for convenience
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            const expensesDateFilter = document.getElementById('expenses-date-filter');
-            if (expensesDateFilter) expensesDateFilter.value = `${yyyy}-${mm}-${dd}`;
-        } else {
-            // For administrators, auto-fetch expenses
-            fetchExpenses();
-        }
+        // For Martha/Joshua, we now fetch data, but the render function will hide edit/delete buttons
+        fetchExpenses();
     } else if (sectionId === 'cash-management') {
         // Set default date for new entry and filter
         const today = new Date();
@@ -554,7 +549,7 @@ function renderInventoryTable(inventory) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        // Only Nachwera Richard, Nelson, Florence can edit/delete inventory
+        // Only Nachwera Richard, Nelson, Florence can edit inventory
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
@@ -562,12 +557,6 @@ function renderInventoryTable(inventory) {
             editButton.className = 'edit';
             editButton.onclick = () => populateInventoryForm(item);
             actionsCell.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'delete';
-            deleteButton.onclick = () => deleteInventory(item._id);
-            actionsCell.appendChild(deleteButton);
         } else {
             actionsCell.textContent = 'View Only';
         }
@@ -651,32 +640,6 @@ function populateInventoryForm(item) {
     if (spoilageInput) spoilageInput.value = item.spoilage;
 }
 
-async function deleteInventory(id) {
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-    if (!adminRoles.includes(currentUserRole)) {
-        showMessage('Permission Denied: Only administrators can delete inventory.');
-        return;
-    }
-
-    showConfirm('Are you sure you want to delete this inventory item?', async () => {
-        try {
-            const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
-                method: 'DELETE'
-            });
-            if (response && response.status === 204) {
-                showMessage('Inventory item deleted successfully!');
-                fetchInventory();
-            } else if (response) {
-                const errorData = await response.json();
-                showMessage('Failed to delete inventory item: ' + errorData.error);
-            }
-        } catch (error) {
-            console.error('Error deleting inventory item:', error);
-            showMessage('Failed to delete inventory item: ' + error.message);
-        }
-    });
-}
-
 // --- Sales Functions ---
 async function fetchSales() {
     try {
@@ -723,11 +686,6 @@ function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
     if (!tbody) return;
 
-    if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #555;">Use the form above to record a new sale.</td></tr>';
-        return;
-    }
-
     tbody.innerHTML = '';
     if (sales.length === 0) {
         const row = tbody.insertRow();
@@ -763,50 +721,18 @@ function renderSalesTable(sales) {
         actionsCell.className = 'actions';
 
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        // Only administrators can edit sales
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
             editButton.onclick = () => populateSaleForm(sale);
             actionsCell.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'delete';
-            deleteButton.onclick = () => deleteSale(sale._id);
-            actionsCell.appendChild(deleteButton);
         } else {
             actionsCell.textContent = 'View Only';
         }
     });
 }
-
-// The 'calculateAndSaveSale' conceptual example is no longer strictly needed as a separate function,
-// as the logic is integrated directly into submitSaleForm.
-// Kept for reference but not called explicitly from the main flow.
-function calculateAndSaveSale(item, number, bp, sp, date) {
-    const totalBuyingPrice = bp * number;
-    const totalSellingPrice = sp * number;
-
-    const profit = totalSellingPrice - totalBuyingPrice; // Total profit for the number of items sold
-    let percentageProfit = 0;
-    if (bp !== 0) { // Avoid division by zero
-        percentageProfit = (profit / totalBuyingPrice) * 100;
-    }
-
-    const sale = {
-        item: item,
-        number: number,
-        bp: bp,
-        sp: sp,
-        profit: profit, // Store the calculated profit
-        percentageprofit: percentageProfit, // Store the calculated percentage profit
-        date: date // Assuming date is also captured
-    };
-    console.log("Calculated Sale (conceptual):", sale);
-    return sale; // Return the sale object with calculated values
-}
-
 
 async function submitSaleForm(event) {
     event.preventDefault();
@@ -861,8 +787,8 @@ async function submitSaleForm(event) {
         number,
         bp,
         sp,
-        profit: profit,               // Add calculated profit
-        percentageprofit: percentageProfit, // Add calculated percentage profit
+        profit: profit,
+        percentageprofit: percentageProfit,
         date
     };
 
@@ -922,34 +848,6 @@ function populateSaleForm(sale) {
     }
 }
 
-async function deleteSale(id) {
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-    if (!adminRoles.includes(currentUserRole)) {
-        showMessage('Permission Denied: Only administrators can delete sales records.');
-        return;
-    }
-
-    showConfirm('Are you sure you want to delete this sale record?', async () => {
-        try {
-            const response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
-                method: 'DELETE'
-            });
-            if (response && response.status === 204) {
-                showMessage('Sale record deleted successfully!');
-                fetchSales();
-            } else if (response) {
-                const errorData = await response.json();
-                showMessage('Failed to delete sale record: ' + errorData.error);
-            }
-        } catch (error) {
-            console.error('Error deleting sale record:', error);
-            showMessage('Failed to delete sale record: ' + error.message);
-        }
-    });
-}
-
-// Define a constant object for buying prices
-// Define a constant object for buying prices
 const BUYING_PRICES = {
     "rest greek salad": 9000,
     "rest toasted salad": 7500,
@@ -1014,10 +912,10 @@ const BUYING_PRICES = {
     "rest chicken polo pizza": 9400,
     "rest strombolli pizza": 10600,
     "rest hawaii pizza": 8000,
-    "bar  Mountain dew": 771,
+    "bar Mountain dew": 771,
     "bar mirinda fruity ": 771,
-    "bar  Mirinda fanta": 771,
-    "bar  Novida": 771,
+    "bar Mirinda fanta": 771,
+    "bar Novida": 771,
     "bar pepsi": 771,
     "bar mirinda apple":771,
     "bar cocacola":771,
@@ -1045,7 +943,7 @@ function populateBuyingPrice() {
 
     if (itemInput && bpInput) {
         // No need to convert to lowercase for exact match from datalist
-        const item = itemInput.value.trim(); 
+        const item = itemInput.value.trim();
         const buyingPrice = BUYING_PRICES[item];
 
         if (buyingPrice !== undefined) {
@@ -1144,10 +1042,10 @@ const SELLING_PRICES = {
     "rest chicken polo pizza": 9400,
     "rest strombolli pizza": 10600,
     "rest hawaii pizza": 8000,
-    "bar  Mountain dew": 2000,
+    "bar Mountain dew": 2000,
     "bar mirinda fruity ": 2000,
-    "bar  Mirinda fanta": 2000,
-    "bar  Novida": 2000,
+    "bar Mirinda fanta": 2000,
+    "bar Novida": 2000,
     "bar pepsi": 2000,
     "bar mirinda apple":2000,
     "bar cocacola":2000,
@@ -1166,7 +1064,7 @@ const SELLING_PRICES = {
 };
 
 /**
- * Automatically populates the buying price based on the selected item.
+ * Automatically populates the selling price based on the selected item.
  */
 function populateSellingPrice() {
     const itemInput = document.getElementById('sale-item');
@@ -1193,9 +1091,7 @@ document.addEventListener('DOMContentLoaded', () => {
         itemInput.addEventListener('input', populateSellingPrice);
     }
 });
-// --- Expenses Functions (Provided in snippet, assuming it's complete) ---
-// Note: No explicit fetchExpenses or renderExpensesTable was provided in the second snippet,
-// so I'm providing placeholders or assuming they are in the missing part of the first snippet.
+// --- Expenses Functions ---
 async function fetchExpenses() {
     try {
         const dateFilterInput = document.getElementById('expenses-date-filter');
@@ -1241,12 +1137,6 @@ function renderExpensesTable(expenses) {
     const tbody = document.querySelector('#expenses-table tbody');
     if (!tbody) return;
 
-    // Only render table if not Martha/Joshua, as per new requirement
-    if (currentUserRole === 'Martha' || currentUserRole === 'Joshua') {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #555;">Use the form above to record a new expense.</td></tr>';
-        return;
-    }
-
     tbody.innerHTML = '';
     if (expenses.length === 0) {
         const row = tbody.insertRow();
@@ -1268,25 +1158,19 @@ function renderExpensesTable(expenses) {
         actionsCell.className = 'actions';
 
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        // Only administrators can edit expenses
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
             editButton.onclick = () => populateExpenseForm(expense);
             actionsCell.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'delete';
-            deleteButton.onclick = () => deleteExpense(expense._id);
-            actionsCell.appendChild(deleteButton);
         } else {
             actionsCell.textContent = 'View Only';
         }
     });
 }
 
-// Assuming a submitExpenseForm, populateExpenseForm, deleteExpense are present in your HTML/backend.
 async function submitExpenseForm(event) {
     event.preventDefault();
     const allowedToRecordExpenses = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
@@ -1377,33 +1261,6 @@ function populateExpenseForm(expense) {
     }
 }
 
-async function deleteExpense(id) {
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-    if (!adminRoles.includes(currentUserRole)) {
-        showMessage('Permission Denied: Only administrators can delete expenses.');
-        return;
-    }
-
-    showConfirm('Are you sure you want to delete this expense record?', async () => {
-        try {
-            const response = await authenticatedFetch(`${API_BASE_URL}/expenses/${id}`, {
-                method: 'DELETE'
-            });
-            if (response && response.status === 204) {
-                showMessage('Expense record deleted successfully!');
-                fetchExpenses();
-            } else if (response) {
-                const errorData = await response.json();
-                showMessage('Failed to delete expense record: ' + errorData.error);
-            }
-        } catch (error) {
-            console.error('Error deleting expense record:', error);
-            showMessage('Failed to delete expense record: ' + error.message);
-        }
-    });
-}
-
-
 // --- Cash Management Functions ---
 async function fetchCashJournal() {
     try {
@@ -1454,7 +1311,7 @@ function renderCashJournalTable(records) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        // Only Nachwera Richard, Nelson, Florence can edit/delete cash entries
+        // Only Nachwera Richard, Nelson, Florence can edit cash entries
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
@@ -1462,12 +1319,6 @@ function renderCashJournalTable(records) {
             editButton.className = 'edit';
             editButton.onclick = () => populateCashJournalForm(record);
             actionsCell.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'delete';
-            deleteButton.onclick = () => deleteCashJournal(record._id);
-            actionsCell.appendChild(deleteButton);
         } else {
             actionsCell.textContent = 'View Only';
         }
@@ -1488,7 +1339,7 @@ async function submitCashJournalForm(event) {
     const bankReceiptIdInput = document.getElementById('bank-receipt-id');
     const cashDateInput = document.getElementById('cash-date');
 
-    if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput  || !cashDateInput) {
+    if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput || !cashDateInput) {
         showMessage('Cash journal form elements are missing.');
         return;
     }
@@ -1500,7 +1351,7 @@ async function submitCashJournalForm(event) {
     const date = cashDateInput.value;
 
     // Basic validation
-    if (isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId  || !date) {
+    if (isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !date) {
         showMessage('Please fill in all cash entry fields correctly.');
         return;
     }
@@ -1559,31 +1410,6 @@ function populateCashJournalForm(record) {
     if (cashDateInput && record.date) {
         cashDateInput.value = new Date(record.date).toISOString().split('T')[0];
     }
-}
-
-async function deleteCashJournal(id) {
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-    if (!adminRoles.includes(currentUserRole)) {
-        showMessage('Permission Denied: Only administrators can delete cash entries.');
-        return;
-    }
-    showConfirm('Are you sure you want to delete this cash journal entry?', async () => {
-        try {
-            const response = await authenticatedFetch(`${API_BASE_URL}/cash-journal/${id}`, {
-                method: 'DELETE'
-            });
-            if (response && response.status === 204) {
-                showMessage('Cash entry deleted successfully!');
-                fetchCashJournal(); // Re-fetch to update table after successful operation
-            } else if (response) {
-                const errorData = await response.json();
-                showMessage('Failed to delete cash entry: ' + errorData.error);
-            }
-        } catch (error) {
-            console.error('Error deleting cash entry:', error);
-            showMessage('Failed to delete cash entry: ' + error.message);
-        }
-    });
 }
 
 // --- Reports Functions ---
