@@ -1301,7 +1301,6 @@ async function submitExpenseForm(event) {
     const amountInput = document.getElementById('expense-amount');
     const receiptIdInput = document.getElementById('expense-receiptId');
     const sourceInput = document.getElementById('expense-source');
-    const responsibleInput = document.getElementById('expense-responsible');
     const expenseDateInput = document.getElementById('expenses-date-filter'); // Using this as the date input
 
     if (!idInput || !descriptionInput || !amountInput || !receiptIdInput || !sourceInput || !expenseDateInput) {
@@ -1315,7 +1314,6 @@ async function submitExpenseForm(event) {
     const receiptId = receiptIdInput.value;
     const source = sourceInput.value;
     const date = expenseDateInput.value;
-    const responsible = responsibleInput.value;
     const recordedBy = currentUsername; // Automatically record who made the entry
 
     if (!description || isNaN(amount) || amount <= 0 || !receiptId || !date) {
@@ -1323,7 +1321,7 @@ async function submitExpenseForm(event) {
         return;
     }
 
-    const expenseData = { description, amount, receiptId, source, date,responsible, recordedBy };
+    const expenseData = { description, amount, receiptId, source, date, recordedBy };
 
     try {
         let response;
