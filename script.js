@@ -1264,7 +1264,6 @@ function renderExpensesTable(expenses) {
         row.insertCell().textContent = new Date(expense.date).toLocaleDateString();
         row.insertCell().textContent = expense.receiptId;
         row.insertCell().textContent = expense.source || 'N/A'; // Assuming source might be optional
-        row.insertCell().textContent = expense.recordedBy; // Assuming recordedBy might be optional
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
