@@ -102,7 +102,7 @@ function applyBarStaffUIRestrictions(sectionId) {
     const cashFilter = document.querySelector('#cash-management-section .filter-controls');
     const cashTable = document.getElementById('cash-journal-table');
 
-    // Inventory section specific elements (for Joshua)
+    // Inventory section specific elements (for Joshua and Martha)
     const inventoryHeading = document.querySelector('#inventory-section .inventory-records-heading');
     const inventoryFilter = document.querySelector('#inventory-section .inventory-filter-controls');
     const inventoryPagination = document.querySelector('#inventory-section .pagination-controls');
@@ -119,12 +119,8 @@ function applyBarStaffUIRestrictions(sectionId) {
 
 
     if (isBarStaff) {
-        // Martha: Sales, Expenses, Cash Management (view only tables)
-        // Joshua: Inventory, Sales (view only tables)
-
         // Sales Section
         if (sectionId === 'sales') {
-            // Tables, filters, headings should be visible for both Martha and Joshua
             if (salesHeading) salesHeading.style.display = 'block';
             if (salesFilter) salesFilter.style.display = 'flex';
             if (salesTable) salesTable.style.display = 'table';
@@ -148,18 +144,12 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (cashTable) cashTable.style.display = 'table';
         }
 
-        // Inventory Section (Only for Joshua, Martha doesn't have access to this section)
-        if (sectionId === 'inventory' && isJoshua) {
+        // Inventory Section (For Joshua and Martha)
+        if (sectionId === 'inventory' && (isJoshua || isMartha)) {
             if (inventoryHeading) inventoryHeading.style.display = 'block';
             if (inventoryFilter) inventoryFilter.style.display = 'flex';
             if (inventoryPagination) inventoryPagination.style.display = 'block';
             if (inventoryTable) inventoryTable.style.display = 'table';
-        } else if (sectionId === 'inventory' && isMartha) {
-            // Martha should not see inventory, so hide it
-            if (inventoryHeading) inventoryHeading.style.display = 'none';
-            if (inventoryFilter) inventoryFilter.style.display = 'none';
-            if (inventoryPagination) inventoryPagination.style.display = 'none';
-            if (inventoryTable) inventoryTable.style.display = 'none';
         }
     } else {
         // For Nachwera Richard, Nelson, Florence, or other roles, ensure all elements are visible
@@ -223,8 +213,9 @@ function updateUIForUserRole() {
                 button.style.display = 'inline-block';
             });
         }
-        // Martha: Sales, Expenses, Cash Management
+        // Martha: Inventory, Sales, Expenses, Cash Management
         else if (currentUserRole === 'Martha') {
+            if (document.getElementById('nav-inventory')) document.getElementById('nav-inventory').style.display = 'inline-block'; // Martha can now see Inventory
             if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
             if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
             if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
@@ -243,7 +234,7 @@ function updateUIForUserRole() {
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admins start with inventory
         } else if (currentUserRole === 'Martha') {
-            showSection('sales'); // Martha starts with sales
+            showSection('inventory'); // Martha now starts with inventory
         } else if (currentUserRole === 'Joshua') {
             showSection('inventory'); // Joshua starts with inventory
         }
@@ -275,7 +266,7 @@ function showSection(sectionId) {
         'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-        'Martha': ['sales', 'expenses', 'cash-management'], // Martha can view these
+        'Martha': ['inventory', 'sales', 'expenses', 'cash-management'], // Martha can now view Inventory
         'Joshua': ['inventory', 'sales'] // Joshua can view these
     };
 
@@ -287,7 +278,7 @@ function showSection(sectionId) {
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admin default
         } else if (currentUserRole === 'Martha') {
-            showSection('sales'); // Martha default
+            showSection('inventory'); // Martha default
         } else if (currentUserRole === 'Joshua') {
             showSection('inventory'); // Joshua default
         }
@@ -552,6 +543,7 @@ function renderInventoryTable(inventory) {
         actionsCell.className = 'actions';
 
         // Only Nachwera Richard, Nelson, Florence can edit inventory
+        // Martha can view but not edit
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
@@ -567,11 +559,11 @@ function renderInventoryTable(inventory) {
 
 async function submitInventoryForm(event) {
     event.preventDefault();
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-    if (!adminRoles.includes(currentUserRole)) {
-        showMessage('Permission Denied: Only administrators can add/update inventory.');
-        return;
-    }
+    // Roles allowed to add new inventory items (POST)
+    const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha'];
+    // Roles allowed to edit existing inventory items (PUT)
+    const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
+
     const idInput = document.getElementById('inventory-id');
     const itemInput = document.getElementById('item');
     const openingInput = document.getElementById('opening');
@@ -601,12 +593,20 @@ async function submitInventoryForm(event) {
 
     try {
         let response;
-        if (id) {
+        if (id) { // This is an edit operation (PUT)
+            if (!allowedToEditInventory.includes(currentUserRole)) {
+                showMessage('Permission Denied: Only administrators can edit inventory.');
+                return;
+            }
             response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify(inventoryData)
             });
-        } else {
+        } else { // This is a new item creation (POST)
+            if (!allowedToAddInventory.includes(currentUserRole)) {
+                showMessage('Permission Denied: You do not have permission to add inventory.');
+                return;
+            }
             response = await authenticatedFetch(`${API_BASE_URL}/inventory`, {
                 method: 'POST',
                 body: JSON.stringify(inventoryData)
@@ -627,6 +627,13 @@ async function submitInventoryForm(event) {
 }
 
 function populateInventoryForm(item) {
+    // Only allow populating for editing if the user has permission to edit
+    const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
+    if (!allowedToEditInventory.includes(currentUserRole)) {
+        showMessage('Permission Denied: You cannot edit inventory items.');
+        return;
+    }
+
     const idInput = document.getElementById('inventory-id');
     const itemInput = document.getElementById('item');
     const openingInput = document.getElementById('opening');
