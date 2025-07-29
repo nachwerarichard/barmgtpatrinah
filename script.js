@@ -89,7 +89,7 @@ function applyBarStaffUIRestrictions(sectionId) {
     const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
     const paginationControl = document.querySelector('#sales-section .pagination-controls');
     const salesTable = document.getElementById('sales-table');
-    const excelbtnTable = document.querySelector('#sales-section .export-button');
+    const excelbtnTable = document.querySelector('#sales-section .export-button'); // Sales Export button
 
     // Expenses section specific elements
     const expensesHeading = document.querySelector('#expenses-section .expenses-records-heading');
@@ -128,8 +128,9 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (salesHeading) salesHeading.style.display = 'block';
             if (salesFilter) salesFilter.style.display = 'flex';
             if (salesTable) salesTable.style.display = 'table';
-            if (excelbtnTable) excelbtnTable.style.display = 'block';
             if (paginationControl) paginationControl.style.display = 'block';
+            // Hide sales export button for Martha and Joshua
+            if (excelbtnTable) excelbtnTable.style.display = 'none';
         }
 
         // Expenses Section (Martha & Joshua)
@@ -165,7 +166,7 @@ function applyBarStaffUIRestrictions(sectionId) {
         if (salesHeading) salesHeading.style.display = 'block';
         if (salesFilter) salesFilter.style.display = 'flex';
         if (salesTable) salesTable.style.display = 'table';
-        if (excelbtnTable) excelbtnTable.style.display = 'block';
+        if (excelbtnTable) excelbtnTable.style.display = 'block'; // Show for full access roles
         if (paginationControl) paginationControl.style.display = 'block';
 
         if (expensesHeading) expensesHeading.style.display = 'block';
@@ -885,7 +886,7 @@ const BUYING_PRICES = {
     "rest chicken spring rolls": 22300,
     "rest chicken wing": 12600,
     "rest french fries": 5800,
-    "rest chips masala": 7000,
+    "resT chips masala": 7000,
     "rest pan fried fish fillet": 18100,
     "rest deep fried whole fish": 19800,
     "rest stir fried beef": 20000,
@@ -1814,34 +1815,57 @@ document.addEventListener('DOMContentLoaded', () => {
         auditSearchInput.addEventListener('input', debouncedFetchAuditLogs);
     }
 
-    // Event listener for Sales Export button
+    // Determine if the current user is Martha or Joshua
+    const isMarthaOrJoshua = ['Martha', 'Joshua'].includes(currentUserRole);
+
+    // Conditionally attach event listeners for Export buttons
     const salesExportButton = document.getElementById('export-sales-excel');
     if (salesExportButton) {
-        salesExportButton.addEventListener('click', () => exportTableToExcel('sales-table', 'Sales_Data'));
+        if (isMarthaOrJoshua) {
+            salesExportButton.style.display = 'none'; // Hide the button
+        } else {
+            salesExportButton.style.display = 'inline-block'; // Ensure visible for other roles
+            salesExportButton.addEventListener('click', () => exportTableToExcel('sales-table', 'Sales_Data'));
+        }
     }
 
-    // Event listener for Expenses Export button
     const expensesExportButton = document.getElementById('export-expenses-excel');
     if (expensesExportButton) {
-        expensesExportButton.addEventListener('click', () => exportTableToExcel('expenses-table', 'Expenses_Data'));
+        if (isMarthaOrJoshua) {
+            expensesExportButton.style.display = 'none';
+        } else {
+            expensesExportButton.style.display = 'inline-block';
+            expensesExportButton.addEventListener('click', () => exportTableToExcel('expenses-table', 'Expenses_Data'));
+        }
     }
 
-    // Event listener for Cash Journal Export button
     const cashExportButton = document.getElementById('export-cash-journal-excel');
     if (cashExportButton) {
-        cashExportButton.addEventListener('click', () => exportTableToExcel('cash-journal-table', 'Cash_Journal_Data'));
+        if (isMarthaOrJoshua) {
+            cashExportButton.style.display = 'none';
+        } else {
+            cashExportButton.style.display = 'inline-block';
+            cashExportButton.addEventListener('click', () => exportTableToExcel('cash-journal-table', 'Cash_Journal_Data'));
+        }
     }
 
-    // Event listener for Reports Export button
     const reportsExportButton = document.getElementById('export-reports-excel');
     if (reportsExportButton) {
-        reportsExportButton.addEventListener('click', () => exportTableToExcel('department-report-table', 'Department_Reports'));
+        if (isMarthaOrJoshua) {
+            reportsExportButton.style.display = 'none';
+        } else {
+            reportsExportButton.style.display = 'inline-block';
+            reportsExportButton.addEventListener('click', () => exportTableToExcel('department-report-table', 'Department_Reports'));
+        }
     }
 
-    // Event listener for Audit Logs Export button
     const auditLogsExportButton = document.getElementById('export-audit-logs-excel');
     if (auditLogsExportButton) {
-        auditLogsExportButton.addEventListener('click', () => exportTableToExcel('audit-logs-table', 'Audit_Logs'));
+        if (isMarthaOrJoshua) {
+            auditLogsExportButton.style.display = 'none';
+        } else {
+            auditLogsExportButton.style.display = 'inline-block';
+            auditLogsExportButton.addEventListener('click', () => exportTableToExcel('audit-logs-table', 'Audit_Logs'));
+        }
     }
-
 });
