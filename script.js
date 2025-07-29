@@ -1,5 +1,5 @@
 // --- Global Constants and Variables ---
-const API_BASE_URL = 'http://localhost:3000/api'; // <--- IMPORTANT: Replace with your actual API base URL
+const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; // <--- IMPORTANT: Replace with your actual API base URL
 let currentUserRole = ''; // This should be set upon successful login, e.g., 'Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence', or 'Guest'
 let currentUsername = ''; // This should be set upon successful login
 
