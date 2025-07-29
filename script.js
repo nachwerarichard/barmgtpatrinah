@@ -1,249 +1,853 @@
-// --- Global Constants and Variables ---
-const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; // <--- IMPORTANT: Replace with your actual API base URL
-let currentUserRole = ''; // This should be set upon successful login, e.g., 'Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence', or 'Guest'
-let currentUsername = ''; // This should be set upon successful login
+const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; // Base URL for API calls
+let authToken = localStorage.getItem('authToken') || ''; // Stores the authentication token
+let currentUsername = localStorage.getItem('username') || ''; // Stores the logged-in username
+let currentUserRole = localStorage.getItem('userRole') || ''; // Stores the logged-in user's role
 
-// Pagination defaults (adjust as needed)
-let currentInventoryPage = 1;
-const inventoryPerPage = 10;
-let currentSalesPage = 1;
-const salesPerPage = 10;
-let currentExpensesPage = 1;
-const expensesPerPage = 10;
-let currentAuditPage = 1;
-const auditLogsPerPage = 10;
+// Pagination variables for different sections
+let currentPage = 1; // For Inventory
+const itemsPerPage = 5;
+let currentSalesPage = 1; // For Sales
+const salesPerPage = 5;
+let currentExpensesPage = 1; // For Expenses
+const expensesPerPage = 5;
+let currentAuditPage = 1; // For Audit Logs
+const auditLogsPerPage = 20;
 
-// Centralized Role Definitions for better maintainability
-const ADMIN_ROLES = ['Nachwera Richard', 'Nelson', 'Florence'];
-const SALES_ENTRY_ROLES = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
-const EXPENSE_ENTRY_ROLES = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
-const CASH_ENTRY_ROLES = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
-const PROFIT_VIEW_ROLES = ['Nachwera Richard', 'Nelson', 'Florence']; // Roles that CAN see profit
-const JOSHUA_ROLE = 'Joshua'; // Specific role for Joshua
+// --- Utility Functions ---
 
-// --- Utility Functions (Placeholders - Replace with your actual implementations) ---
-function showMessage(message, isError = false) {
-    const messageDiv = document.getElementById('message-area'); // Assuming an element with this ID for messages
-    if (messageDiv) {
-        messageDiv.textContent = message;
-        messageDiv.className = isError ? 'message error' : 'message success';
-        messageDiv.style.display = 'block';
-        setTimeout(() => {
-            messageDiv.style.display = 'none';
-        }, 5000);
+/**
+ * Displays a custom alert message to the user.
+ * Replaces native alert() for better UI control in the environment.
+ * @param {string} message The message to display.
+ * @param {function} [callback] Optional callback function to execute after the message is dismissed.
+ */
+const menuToggle = document.getElementById('menu-toggle');
+const mobileNav = document.getElementById('mobile-nav');
+
+if (menuToggle && mobileNav) {
+    menuToggle.addEventListener('click', function () {
+        mobileNav.classList.toggle('active');
+
+        // Toggle menu icon between hamburger and X
+        if (mobileNav.classList.contains('active')) {
+            menuToggle.innerHTML = '&times;'; // X
+        } else {
+            menuToggle.innerHTML = '&#9776;'; // Hamburger
+        }
+    });
+}
+
+
+function showMessage(message, callback = null) {
+    const modal = document.getElementById('message-modal');
+    const messageText = document.getElementById('message-text');
+    const closeButton = document.getElementById('message-close-button');
+
+    // Ensure elements exist before trying to manipulate them
+    if (!modal || !messageText || !closeButton) {
+        console.error("Message modal elements not found. Falling back to console log.");
+        console.log("Message:", message); // Fallback to console log instead of alert
+        if (callback) callback();
+        return;
+    }
+
+    messageText.textContent = message;
+    modal.classList.remove('hidden'); // Show the modal
+
+    const handleClose = () => {
+        modal.classList.add('hidden'); // Hide the modal
+        closeButton.removeEventListener('click', handleClose);
+        modal.removeEventListener('click', outsideClick); // Remove outside click listener
+        if (callback) {
+            callback();
+        }
+    };
+    closeButton.addEventListener('click', handleClose);
+
+    // Also close if clicking outside the message box (optional, but good UX)
+    function outsideClick(event) {
+        if (event.target === modal) {
+            handleClose();
+        }
+    }
+    modal.addEventListener('click', outsideClick);
+}
+
+/**
+ * Applies specific UI restrictions for 'Martha' and 'Joshua' roles in Sales, Expenses, and Cash Management sections.
+ * Hides headings, filters, and tables, showing only the forms for these roles.
+ * @param {string} sectionId The ID of the currently active section.
+ */
+function applyBarStaffUIRestrictions(sectionId) {
+    // Check if the current user is 'Martha' or 'Joshua'
+    const isMartha = currentUserRole === 'Martha';
+    const isJoshua = currentUserRole === 'Joshua';
+    const isBarStaff = isMartha || isJoshua;
+
+    // Sales section specific elements
+    const salesHeading = document.querySelector('#sales-section .sales-records-heading');
+    const salesFilter = document.querySelector('#sales-section .sales-filter-controls');
+    const paginationControl = document.querySelector('#sales-section .pagination-controls');
+    const salesTable = document.getElementById('sales-table');
+    const excelbtnTable = document.querySelector('#sales-section .export-button');
+
+    // Expenses section specific elements
+    const expensesHeading = document.querySelector('#expenses-section .expenses-records-heading');
+    const expensesFilter = document.querySelector('#expenses-section .expenses-filter-controls');
+    const expensePag = document.querySelector('#expenses-section .pagination-controls');
+    const expensesTable = document.getElementById('expenses-table');
+
+    // Cash Management section specific elements
+    const cashHeading = document.querySelector('#cash-management-section .cash-header');
+    const cashFilter = document.querySelector('#cash-management-section .filter-controls');
+    const cashTable = document.getElementById('cash-journal-table');
+
+    // Inventory section specific elements (for Joshua)
+    const inventoryHeading = document.querySelector('#inventory-section .inventory-records-heading');
+    const inventoryFilter = document.querySelector('#inventory-section .inventory-filter-controls');
+    const inventoryPagination = document.querySelector('#inventory-section .pagination-controls');
+    const inventoryTable = document.getElementById('inventory-table');
+
+
+    // Reset display for all elements initially to ensure proper visibility when roles change
+    [salesHeading, salesFilter, paginationControl, salesTable, excelbtnTable,
+     expensesHeading, expensesFilter, expensePag, expensesTable,
+     cashHeading, cashFilter, cashTable,
+     inventoryHeading, inventoryFilter, inventoryPagination, inventoryTable].forEach(el => {
+        if (el) el.style.display = ''; // Reset to default display
+    });
+
+
+    if (isBarStaff) {
+        // Martha: Sales, Expenses, Cash Management (view only tables)
+        // Joshua: Inventory, Sales (view only tables)
+
+        // Sales Section
+        if (sectionId === 'sales') {
+            // Tables, filters, headings should be visible for both Martha and Joshua
+            if (salesHeading) salesHeading.style.display = 'block';
+            if (salesFilter) salesFilter.style.display = 'flex';
+            if (salesTable) salesTable.style.display = 'table';
+            if (excelbtnTable) excelbtnTable.style.display = 'block';
+            if (paginationControl) paginationControl.style.display = 'block';
+        }
+
+        // Expenses Section (Martha & Joshua)
+        if (sectionId === 'expenses') {
+            if (expensesHeading) expensesHeading.style.display = 'block';
+            if (expensesFilter) expensesFilter.style.display = 'flex';
+            if (expensesTable) expensesTable.style.display = 'table';
+            if (expensePag) expensePag.style.display = 'block';
+        }
+
+        // Cash Management Section (Martha & Joshua)
+        if (sectionId === 'cash-management') {
+            if (cashHeading) cashHeading.style.display = 'block';
+            if (cashFilter) cashFilter.style.display = 'flex';
+            if (cashTable) cashTable.style.display = 'table';
+        }
+
+        // Inventory Section (Only for Joshua, Martha doesn't have access to this section)
+        if (sectionId === 'inventory' && isJoshua) {
+            if (inventoryHeading) inventoryHeading.style.display = 'block';
+            if (inventoryFilter) inventoryFilter.style.display = 'flex';
+            if (inventoryPagination) inventoryPagination.style.display = 'block';
+            if (inventoryTable) inventoryTable.style.display = 'table';
+        } else if (sectionId === 'inventory' && isMartha) {
+            // Martha should not see inventory, so hide it
+            if (inventoryHeading) inventoryHeading.style.display = 'none';
+            if (inventoryFilter) inventoryFilter.style.display = 'none';
+            if (inventoryPagination) inventoryPagination.style.display = 'none';
+            if (inventoryTable) inventoryTable.style.display = 'none';
+        }
     } else {
-        console.log("Message:", message);
+        // For Nachwera Richard, Nelson, Florence, or other roles, ensure all elements are visible
+        if (salesHeading) salesHeading.style.display = 'block';
+        if (salesFilter) salesFilter.style.display = 'flex';
+        if (salesTable) salesTable.style.display = 'table';
+        if (excelbtnTable) excelbtnTable.style.display = 'block';
+        if (paginationControl) paginationControl.style.display = 'block';
+
+        if (expensesHeading) expensesHeading.style.display = 'block';
+        if (expensesFilter) expensesFilter.style.display = 'flex';
+        if (expensesTable) expensesTable.style.display = 'table';
+        if (expensePag) expensePag.style.display = 'block';
+
+        if (cashHeading) cashHeading.style.display = 'block';
+        if (cashFilter) cashFilter.style.display = 'flex';
+        if (cashTable) cashTable.style.display = 'table';
+
+        if (inventoryHeading) inventoryHeading.style.display = 'block';
+        if (inventoryFilter) inventoryFilter.style.display = 'flex';
+        if (inventoryPagination) inventoryPagination.style.display = 'block';
+        if (inventoryTable) inventoryTable.style.display = 'table';
     }
 }
 
-async function authenticatedFetch(url, options = {}) {
-    // This is a placeholder. Your actual implementation should:
-    // 1. Get the JWT token from localStorage/sessionStorage.
-    // 2. Add an 'Authorization' header with 'Bearer <token>'.
-    // 3. Handle token expiration and refresh if necessary.
-    // 4. Handle network errors and HTTP status codes (e.g., 401 Unauthorized).
-    const token = localStorage.getItem('jwt_token'); // Or wherever you store it
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers,
-    };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    try {
-        const response = await fetch(url, {
-            ...options,
-            headers,
+/**
+ * Updates the display of the current logged-in user and manages navigation button visibility.
+ * Ensures the login form is hidden on success and sets nav button visibility based on role.
+ */
+function updateUIForUserRole() {
+    const userDisplay = document.getElementById('current-user-display');
+    const useDisplay = document.getElementById('mobil-nav'); // Assuming this is for a mobile nav display
+    const mainContent = document.getElementById('main-content');
+    const loginSection = document.getElementById('login-section');
+    const mainContainer = document.getElementById('main-container');
+    const navButtons = document.querySelectorAll('nav button');
+
+    console.log('updateUIForUserRole called. AuthToken present:', !!authToken);
+    console.log('Current User Role:', currentUserRole);
+
+    if (authToken && currentUserRole) {
+        if (userDisplay) userDisplay.textContent = `${currentUserRole}`;
+        if (useDisplay) useDisplay.textContent = `${currentUserRole}`;
+
+        // --- Hide Login Section, Show Main Container ---
+        if (loginSection) loginSection.style.display = 'none';
+        if (mainContainer) mainContainer.style.display = 'block';
+        if (mainContent) mainContent.style.display = 'block';
+
+
+        // --- Manage Navigation Button Visibility based on role ---
+        navButtons.forEach(button => {
+            button.style.display = 'none'; // Hide all buttons by default
         });
 
-        if (response.status === 401) {
-            showMessage('Session expired or unauthorized. Please log in again.', true);
-            logout(); // Assuming logout redirects to login
-            return null; // Important to return null or throw to stop execution
+        // Roles with full access (Nachwera Richard, Nelson, Florence)
+        const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        if (fullAccessRoles.includes(currentUserRole)) {
+            navButtons.forEach(button => {
+                button.style.display = 'inline-block';
+            });
+        }
+        // Martha: Sales, Expenses, Cash Management
+        else if (currentUserRole === 'Martha') {
+            if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
+            if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
+            if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
+        }
+        // Joshua: Inventory, Sales, Expenses, Cash Management
+        else if (currentUserRole === 'Joshua') {
+            if (document.getElementById('nav-inventory')) document.getElementById('nav-inventory').style.display = 'inline-block';
+            if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
+            if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
+            if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
         }
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+
+        // Show default section based on role
+        if (fullAccessRoles.includes(currentUserRole)) {
+            showSection('inventory'); // Admins start with inventory
+        } else if (currentUserRole === 'Martha') {
+            showSection('sales'); // Martha starts with sales
+        } else if (currentUserRole === 'Joshua') {
+            showSection('inventory'); // Joshua starts with inventory
         }
-        return response;
-    } catch (error) {
-        console.error("Authenticated fetch error:", error);
-        showMessage('Network or server error: ' + error.message, true);
-        return null; // Return null to indicate failure
-    }
-}
 
-function updateUIForUserRole() {
-    // Placeholder: This function should dynamically update the UI based on `currentUserRole`
-    // You'd typically call this after login and on page load.
-    // Ensure `currentUserRole` is correctly set from login response.
-
-    console.log("Updating UI for user role:", currentUserRole);
-
-    // Get all navigation elements
-    const navInventory = document.getElementById('nav-inventory');
-    const navSales = document.getElementById('nav-sales');
-    const navExpenses = document.getElementById('nav-expenses');
-    const navCashManagement = document.getElementById('nav-cash-management');
-    const navReports = document.getElementById('nav-reports');
-    const navAuditLogs = document.getElementById('nav-audit-logs');
-    const loginSection = document.getElementById('login-section');
-    const dashboardSection = document.getElementById('dashboard-section'); // Assuming a main dashboard
-    const logoutButton = document.getElementById('logout-button');
-
-    // Hide all sections and navigation by default
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.style.display = 'none';
-    });
-    if (navInventory) navInventory.style.display = 'none';
-    if (navSales) navSales.style.display = 'none';
-    if (navExpenses) navExpenses.style.display = 'none';
-    if (navCashManagement) navCashManagement.style.display = 'none';
-    if (navReports) navReports.style.display = 'none';
-    if (navAuditLogs) navAuditLogs.style.display = 'none';
-    if (logoutButton) logoutButton.style.display = 'none';
-    if (loginSection) loginSection.style.display = 'block'; // Show login by default
-
-    if (currentUserRole) {
-        // User is logged in
-        if (loginSection) loginSection.style.display = 'none';
-        if (dashboardSection) dashboardSection.style.display = 'block'; // Show dashboard
-        if (logoutButton) logoutButton.style.display = 'inline-block';
-
-        // Show common navs
-        if (navInventory) navInventory.style.display = 'block';
-        if (navSales) navSales.style.display = 'block';
-
-        // Specific restrictions for Joshua
-        if (currentUserRole === JOSHUA_ROLE) {
-            // Joshua should ONLY see Inventory and Sales
-            if (navExpenses) navExpenses.style.display = 'none';
-            if (navCashManagement) navCashManagement.style.display = 'none';
-            if (navReports) navReports.style.display = 'none';
-            if (navAuditLogs) navAuditLogs.style.display = 'none';
-        } else {
-            // Other roles (including Martha and Admins) see more
-            if (navExpenses) navExpenses.style.display = 'block';
-            if (navCashManagement) navCashManagement.style.display = 'block';
-            if (navReports) navReports.style.display = 'block'; // Assuming non-Joshuas can see reports
-            if (navAuditLogs) navAuditLogs.style.display = 'block'; // Assuming non-Joshuas can see audit logs
-        }
-        // Initially show the inventory section or a default one
-        showSection('inventory'); // Assuming 'inventory' is the default landing page
     } else {
-        // Not logged in, show login page
-        showSection('login');
+        // Not logged in: Show login section, hide main container
+        if (userDisplay) userDisplay.textContent = '';
+        if (mainContent) mainContent.style.display = 'none';
+        if (mainContainer) mainContainer.style.display = 'none';
+        if (loginSection) loginSection.style.display = 'block';
+
+        // Hide all nav buttons if not logged in
+        navButtons.forEach(button => {
+            button.style.display = 'none';
+        });
     }
+    console.log('End of updateUIForUserRole.');
 }
 
 
+/**
+ * Hides all sections and shows the specified one.
+ * Includes role-based access checks and special handling for bar staff sales view.
+ * @param {string} sectionId The ID of the section to show.
+ */
 function showSection(sectionId) {
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.style.display = 'none';
-    });
-    const activeSection = document.getElementById(sectionId);
-    if (activeSection) {
-        activeSection.style.display = 'block';
+    // Define which sections are allowed for each role
+    const allowedSections = {
+        'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
+        'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
+        'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
+        'Martha': ['sales', 'expenses', 'cash-management'], // Martha can view these
+        'Joshua': ['inventory', 'sales'] // Joshua can view these
+    };
+
+    // --- Role-based Access Check ---
+    if (currentUserRole && !allowedSections[currentUserRole]?.includes(sectionId)) {
+        showMessage('Access Denied: You do not have permission to view this section.');
+        // Redirect to a default allowed section if trying to access unauthorized
+        const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        if (fullAccessRoles.includes(currentUserRole)) {
+            showSection('inventory'); // Admin default
+        } else if (currentUserRole === 'Martha') {
+            showSection('sales'); // Martha default
+        } else if (currentUserRole === 'Joshua') {
+            showSection('inventory'); // Joshua default
+        }
+        return; // Prevent further execution for unauthorized access
     }
 
-    // Trigger data fetches when a section is shown
+    // --- Show/Hide Sections ---
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    const targetSection = document.getElementById(`${sectionId}-section`);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    } else {
+        console.warn(`Section with ID ${sectionId}-section not found.`);
+        return; // Exit if section doesn't exist
+    }
+
+    // --- Apply Bar Staff UI Restrictions (Headings, Filters, Tables) ---
+    applyBarStaffUIRestrictions(sectionId);
+
+
+    // --- Fetch Data based on Section and Role ---
     if (sectionId === 'inventory') {
         fetchInventory();
     } else if (sectionId === 'sales') {
+        // For Martha/Joshua, we now fetch data, but the render function will hide edit/delete buttons
         fetchSales();
     } else if (sectionId === 'expenses') {
+        // For Martha/Joshua, we now fetch data, but the render function will hide edit/delete buttons
         fetchExpenses();
     } else if (sectionId === 'cash-management') {
+        // Set default date for new entry and filter
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayString = `${yyyy}-${mm}-${dd}`;
+        const cashDate = document.getElementById('cash-date');
+        const cashFilterDate = document.getElementById('cash-filter-date');
+        if (cashDate) cashDate.value = todayString; // For the form
+        if (cashFilterDate) cashFilterDate.value = todayString; // For the filter
         fetchCashJournal();
     } else if (sectionId === 'reports') {
-        // When reports section is shown, generate a default report (e.g., for last 30 days)
-        generateReports();
+        // Set default dates for reports (last 30 days)
+        const today = new Date();
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        const startInput = document.getElementById('report-start-date');
+        const endInput = document.getElementById('report-end-date');
+
+        if (startInput && !startInput.value) {
+            startInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+        }
+        if (endInput && !endInput.value) {
+            endInput.value = today.toISOString().split('T')[0];
+        }
     } else if (sectionId === 'audit-logs') {
         fetchAuditLogs();
     }
 }
 
-async function login() {
-    const usernameInput = document.getElementById('login-username');
-    const passwordInput = document.getElementById('login-password');
+/**
+ * Wrapper for fetch API to include authentication header and handle common errors.
+ * @param {string} url The URL to fetch.
+ * @param {object} options Fetch options (method, headers, body, etc.).
+ * @returns {Promise<Response|null>} The fetch Response object or null if authentication fails.
+ */
+async function authenticatedFetch(url, options = {}) {
+    if (!authToken) {
+        showMessage('You are not logged in. Please log in first.', logout);
+        return null;
+    }
 
-    if (!usernameInput || !passwordInput) {
-        showMessage('Login form elements missing.', true);
+    options.headers = {
+        ...options.headers,
+        'Authorization': `Basic ${authToken}`,
+        'Content-Type': 'application/json'
+    };
+
+    try {
+        const response = await fetch(url, options);
+
+        if (response.status === 401 || response.status === 403) {
+            const errorData = await response.json();
+            showMessage(`Access Denied: ${errorData.error || 'Invalid credentials or insufficient permissions.'}`, logout);
+            return null;
+        }
+        if (!response.ok && response.status !== 204) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
+        }
+        return response;
+    } catch (error) {
+        console.error('Network or fetch error:', error);
+        showMessage('Could not connect to the server or process request: ' + error.message);
+        return null;
+    }
+}
+
+// --- Login/Logout ---
+
+async function login() {
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginMessage = document.getElementById('login-message');
+
+    if (!usernameInput || !passwordInput || !loginMessage) {
+        console.error("Login form elements not found.");
         return;
     }
 
     const username = usernameInput.value;
     const password = passwordInput.value;
 
-    if (!username || !password) {
-        showMessage('Please enter both username and password.', true);
-        return;
-    }
+    loginMessage.textContent = 'Logging in...';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        const response = await fetch(`${API_BASE_URL}/login`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username, password })
         });
 
-        const data = await response.json();
-
         if (response.ok) {
-            localStorage.setItem('jwt_token', data.token);
-            currentUserRole = data.user.role; // Assuming your backend returns user role
-            currentUsername = data.user.username; // Assuming your backend returns username
-            showMessage('Login successful!', false);
-            updateUIForUserRole(); // Update UI after successful login
+            const data = await response.json();
+            // For hardcoded auth, the token is derived from the plain credentials
+            authToken = btoa(`${username}:${password}`);
+            currentUsername = data.username;
+            currentUserRole = data.role;
+
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('username', currentUsername);
+            localStorage.setItem('userRole', currentUserRole);
+
+            loginMessage.textContent = '';
+            console.log('Login successful, calling updateUIForUserRole...');
+            updateUIForUserRole(); // Update UI based on new role
+
         } else {
-            showMessage(data.message || 'Login failed.', true);
+            const errorData = await response.json();
+            loginMessage.textContent = errorData.error || 'Invalid username or password.';
+            authToken = '';
+            currentUsername = '';
+            currentUserRole = '';
+            localStorage.clear();
+            console.log('Login failed.');
+            updateUIForUserRole(); // Ensure UI resets to login form
         }
     } catch (error) {
         console.error('Login error:', error);
-        showMessage('An error occurred during login: ' + error.message, true);
+        loginMessage.textContent = 'Network error or server unavailable.';
+        authToken = '';
+        currentUsername = '';
+        currentUserRole = '';
+        localStorage.clear();
+        updateUIForUserRole();
     }
 }
 
-function logout() {
-    localStorage.removeItem('jwt_token');
-    currentUserRole = ''; // Clear current user role
-    currentUsername = ''; // Clear current username
-    showMessage('Logged out successfully.');
-    updateUIForUserRole(); // Reset UI to logged-out state (show login form)
+async function logout() {
+    try {
+        // Optionally notify backend of logout for audit logging
+        // Send token before clearing it, to allow backend to process if needed
+        await fetch(`${API_BASE_URL}/logout`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${authToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (error) {
+        // This catch handles network errors or if the backend doesn't exist
+        // or doesn't require auth for logout, which is acceptable.
+        console.warn('Error notifying backend of logout (may be due to network issues or no backend endpoint):', error);
+    }
+
+    authToken = '';
+    currentUsername = '';
+    currentUserRole = '';
+    localStorage.clear(); // Clear all stored user data
+    updateUIForUserRole(); // Reset UI to login state
+    if (document.getElementById('username')) document.getElementById('username').value = '';
+    if (document.getElementById('password')) document.getElementById('password').value = '';
+    if (document.getElementById('login-message')) document.getElementById('login-message').textContent = '';
 }
 
-// --- Inventory Functions (Placeholder - Implement your actual logic) ---
+// --- Inventory Functions ---
 async function fetchInventory() {
     try {
-        const response = await authenticatedFetch(`${API_BASE_URL}/inventory?page=${currentInventoryPage}&limit=${inventoryPerPage}`);
+        const itemFilterInput = document.getElementById('search-inventory-item');
+        const lowFilterInput = document.getElementById('search-inventory-low');
+
+        const itemFilter = itemFilterInput ? itemFilterInput.value : '';
+        const lowFilter = lowFilterInput ? lowFilterInput.value : '';
+
+        let url = `${API_BASE_URL}/inventory`;
+        const params = new URLSearchParams();
+        if (itemFilter) params.append('item', itemFilter);
+        if (lowFilter) params.append('low', lowFilter);
+        params.append('page', currentPage);
+        params.append('limit', itemsPerPage);
+
+        url += `?${params.toString()}`;
+
+        const response = await authenticatedFetch(url);
         if (!response) return;
+
         const result = await response.json();
-        // renderInventoryTable(result.data); // Implement this
-        // renderInventoryPagination(result.page, result.pages); // Implement this
-        console.log("Fetched Inventory:", result.data); // For debugging
+        renderInventoryTable(result.data);
+        renderPagination(result.page, result.pages);
     } catch (error) {
         console.error('Error fetching inventory:', error);
-        showMessage('Failed to fetch inventory: ' + error.message, true);
+        showMessage('Failed to fetch inventory: ' + error.message);
     }
+}
+
+function renderPagination(current, totalPages) {
+    const container = document.getElementById('pagination');
+    if (!container) return; // Exit if container not found
+    container.innerHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.disabled = i === current;
+        btn.onclick = () => {
+            currentPage = i;
+            fetchInventory();
+        };
+        container.appendChild(btn);
+    }
+}
+
+
+function renderInventoryTable(inventory) {
+    const tbody = document.querySelector('#inventory-table tbody');
+    if (!tbody) return; // Exit if tbody not found
+
+    tbody.innerHTML = '';
+    if (inventory.length === 0) {
+        const row = tbody.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 7;
+        cell.textContent = 'No inventory items found.';
+        cell.style.textAlign = 'center';
+        return;
+    }
+
+    inventory.forEach(item => {
+        const row = tbody.insertRow();
+        row.insertCell().textContent = item.item;
+        row.insertCell().textContent = item.opening;
+        row.insertCell().textContent = item.purchases;
+        row.insertCell().textContent = item.sales;
+        row.insertCell().textContent = item.spoilage;
+        row.insertCell().textContent = item.closing;
+        const actionsCell = row.insertCell();
+        actionsCell.className = 'actions';
+
+        // Only Nachwera Richard, Nelson, Florence can edit inventory
+        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        if (adminRoles.includes(currentUserRole)) {
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.className = 'edit';
+            editButton.onclick = () => populateInventoryForm(item);
+            actionsCell.appendChild(editButton);
+        } else {
+            actionsCell.textContent = 'View Only';
+        }
+    });
 }
 
 async function submitInventoryForm(event) {
     event.preventDefault();
-    showMessage('Inventory form submission logic not implemented.', true);
+    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    if (!adminRoles.includes(currentUserRole)) {
+        showMessage('Permission Denied: Only administrators can add/update inventory.');
+        return;
+    }
+    const idInput = document.getElementById('inventory-id');
+    const itemInput = document.getElementById('item');
+    const openingInput = document.getElementById('opening');
+    const purchasesInput = document.getElementById('purchases');
+    const inventorySalesInput = document.getElementById('inventory-sales');
+    const spoilageInput = document.getElementById('spoilage');
+
+    if (!idInput || !itemInput || !openingInput || !purchasesInput || !inventorySalesInput || !spoilageInput) {
+        showMessage('Inventory form elements are missing.');
+        return;
+    }
+
+    const id = idInput.value;
+    const item = itemInput.value;
+    const opening = parseInt(openingInput.value);
+    const purchases = parseInt(purchasesInput.value);
+    const sales = parseInt(inventorySalesInput.value);
+    const spoilage = parseInt(spoilageInput.value);
+
+    // Basic validation
+    if (!item || isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage)) {
+        showMessage('Please fill in all inventory fields correctly with valid numbers.');
+        return;
+    }
+
+    const inventoryData = { item, opening, purchases, sales, spoilage };
+
+    try {
+        let response;
+        if (id) {
+            response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(inventoryData)
+            });
+        } else {
+            response = await authenticatedFetch(`${API_BASE_URL}/inventory`, {
+                method: 'POST',
+                body: JSON.stringify(inventoryData)
+            });
+        }
+        if (response) {
+            await response.json(); // Consume the response body
+            showMessage('Inventory item saved successfully!');
+            const inventoryForm = document.getElementById('inventory-form');
+            if (inventoryForm) inventoryForm.reset();
+            if (idInput) idInput.value = ''; // Clear ID after submission
+            fetchInventory();
+        }
+    } catch (error) {
+        console.error('Error saving inventory item:', error);
+        showMessage('Failed to save inventory item: ' + error.message);
+    }
 }
 
 function populateInventoryForm(item) {
-    showMessage('Inventory form population logic not implemented.', true);
+    const idInput = document.getElementById('inventory-id');
+    const itemInput = document.getElementById('item');
+    const openingInput = document.getElementById('opening');
+    const purchasesInput = document.getElementById('purchases');
+    const inventorySalesInput = document.getElementById('inventory-sales');
+    const spoilageInput = document.getElementById('spoilage');
+
+    if (idInput) idInput.value = item._id;
+    if (itemInput) itemInput.value = item.item;
+    if (openingInput) openingInput.value = item.opening;
+    if (purchasesInput) purchasesInput.value = item.purchases;
+    if (inventorySalesInput) inventorySalesInput.value = item.sales;
+    if (spoilageInput) spoilageInput.value = item.spoilage;
 }
 
-
 // --- Sales Functions ---
+async function fetchSales() {
+    try {
+        const dateFilterInput = document.getElementById('sales-date-filter');
+        const dateFilter = dateFilterInput ? dateFilterInput.value : '';
 
-// The BUYING_PRICES object (corrected for duplicates)
+        let url = `${API_BASE_URL}/sales`;
+        const params = new URLSearchParams();
+        if (dateFilter) params.append('date', dateFilter);
+        params.append('page', currentSalesPage);
+        params.append('limit', salesPerPage);
+        url += `?${params.toString()}`;
+
+        const response = await authenticatedFetch(url);
+        if (!response) return;
+
+        const result = await response.json();
+        renderSalesTable(result.data);
+        renderSalesPagination(result.page, result.pages);
+    } catch (error) {
+        console.error('Error fetching sales:', error);
+        showMessage('Failed to fetch sales: ' + error.message);
+    }
+}
+
+function renderSalesPagination(current, totalPages) {
+    const container = document.getElementById('sales-pagination');
+    if (!container) return; // Exit if container not found
+    container.innerHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.disabled = i === current;
+        btn.onclick = () => {
+            currentSalesPage = i;
+            fetchSales();
+        };
+        container.appendChild(btn);
+    }
+}
+
+function renderSalesTable(sales) {
+    const tbody = document.querySelector('#sales-table tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    if (sales.length === 0) {
+        const row = tbody.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 8;
+        cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
+        cell.style.textAlign = 'center';
+        return;
+    }
+
+    sales.forEach(sale => {
+        // Calculate profit and percentageprofit if they are missing from the fetched sale object
+        if (sale.profit === undefined || sale.percentageprofit === undefined) {
+            const totalBuyingPrice = sale.bp * sale.number;
+            const totalSellingPrice = sale.sp * sale.number;
+            sale.profit = totalSellingPrice - totalBuyingPrice;
+            sale.percentageprofit = 0;
+            if (totalBuyingPrice !== 0) {
+                sale.percentageprofit = (sale.profit / totalBuyingPrice) * 100;
+            }
+        }
+
+        const row = tbody.insertRow();
+        row.insertCell().textContent = sale.item;
+        row.insertCell().textContent = sale.number;
+        row.insertCell().textContent = sale.bp;
+        row.insertCell().textContent = sale.sp;
+        // Now 'sale.profit' and 'sale.percentageprofit' will always be defined
+        row.insertCell().textContent = sale.profit.toFixed(2);
+        row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
+        row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
+        const actionsCell = row.insertCell();
+        actionsCell.className = 'actions';
+
+        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        // Only administrators can edit sales
+        if (adminRoles.includes(currentUserRole)) {
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.className = 'edit';
+            editButton.onclick = () => populateSaleForm(sale);
+            actionsCell.appendChild(editButton);
+        } else {
+            actionsCell.textContent = 'View Only';
+        }
+    });
+}
+
+async function submitSaleForm(event) {
+    event.preventDefault();
+    // Roles allowed to record sales
+    const allowedToRecordSales = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    if (!allowedToRecordSales.includes(currentUserRole)) {
+        showMessage('Permission Denied: You do not have permission to record sales.');
+        return;
+    }
+
+    const idInput = document.getElementById('sale-id');
+    const itemInput = document.getElementById('sale-item');
+    const numberInput = document.getElementById('sale-number');
+    const bpInput = document.getElementById('sale-bp');
+    const spInput = document.getElementById('sale-sp');
+    const salesDateFilterInput = document.getElementById('sales-date-filter'); // Assuming this is used for the sale date
+
+    if (!idInput || !itemInput || !numberInput || !bpInput || !spInput || !salesDateFilterInput) {
+        showMessage('Sales form elements are missing.');
+        return;
+    }
+
+    const id = idInput.value;
+    const item = itemInput.value;
+    const number = parseInt(numberInput.value);
+    const bp = parseFloat(bpInput.value);
+    const sp = parseFloat(spInput.value);
+    const date = salesDateFilterInput.value; // Use the value from the date filter as the sale date
+
+    // Basic validation
+    if (!item || isNaN(number) || isNaN(bp) || isNaN(sp) || !date) {
+        showMessage('Please fill in all sales fields correctly with valid numbers and date.');
+        return;
+    }
+    if (number <= 0 || bp <= 0 || sp <= 0) {
+        showMessage('Number, Buying Price, and Selling Price must be positive values.');
+        return;
+    }
+
+    // --- Calculate Profit and Percentage Profit Here ---
+    const totalBuyingPrice = bp * number;
+    const totalSellingPrice = sp * number;
+    const profit = totalSellingPrice - totalBuyingPrice;
+    let percentageProfit = 0;
+    if (totalBuyingPrice !== 0) { // Avoid division by zero
+        percentageProfit = (profit / totalBuyingPrice) * 100;
+    }
+    // --- End Calculation ---
+
+    const saleData = {
+        item,
+        number,
+        bp,
+        sp,
+        profit: profit,
+        percentageprofit: percentageProfit,
+        date
+    };
+
+    try {
+        let response;
+        if (id) { // Edit operation (Nachwera Richard, Nelson, Florence only)
+            const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+            if (!adminRoles.includes(currentUserRole)) {
+                showMessage('Permission Denied: Only administrators can edit sales.');
+                return;
+            }
+            response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(saleData)
+            });
+        } else { // New entry creation (all allowed roles)
+            response = await authenticatedFetch(`${API_BASE_URL}/sales`, {
+                method: 'POST',
+                body: JSON.stringify(saleData)
+            });
+        }
+        if (response) {
+            await response.json(); // Consume response body
+            showMessage('Sale recorded successfully!');
+            const saleForm = document.getElementById('sale-form');
+            if (saleForm) saleForm.reset();
+            if (idInput) idInput.value = ''; // Clear ID after submission
+            // Re-set the date filter to today after successful submission for convenience
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            if (salesDateFilterInput) salesDateFilterInput.value = `${yyyy}-${mm}-${dd}`;
+            fetchSales(); // Re-fetch to update table after successful operation
+        }
+    } catch (error) {
+        console.error('Error saving sale entry:', error);
+        showMessage('Failed to save sale entry: ' + error.message);
+    }
+}
+
+function populateSaleForm(sale) {
+    const idInput = document.getElementById('sale-id');
+    const itemInput = document.getElementById('sale-item');
+    const numberInput = document.getElementById('sale-number');
+    const bpInput = document.getElementById('sale-bp');
+    const spInput = document.getElementById('sale-sp');
+    const salesDateFilterInput = document.getElementById('sales-date-filter');
+
+    if (idInput) idInput.value = sale._id;
+    if (itemInput) itemInput.value = sale.item;
+    if (numberInput) numberInput.value = sale.number;
+    if (bpInput) bpInput.value = sale.bp;
+    if (spInput) spInput.value = sale.sp;
+    if (salesDateFilterInput && sale.date) {
+        salesDateFilterInput.value = new Date(sale.date).toISOString().split('T')[0];
+    }
+}
+
 const BUYING_PRICES = {
     "rest greek salad": 9000,
     "rest toasted salad": 7500,
@@ -271,7 +875,7 @@ const BUYING_PRICES = {
     "rest chicken spring rolls": 22300,
     "rest chicken wing": 12600,
     "rest french fries": 5800,
-    "rest chips masala": 7000, // Corrected typo
+    "rest chips masala": 7000,
     "rest pan fried fish fillet": 18100,
     "rest deep fried whole fish": 19800,
     "rest stir fried beef": 20000,
@@ -309,28 +913,71 @@ const BUYING_PRICES = {
     "rest strombolli pizza": 10600,
     "rest hawaii pizza": 8000,
     "bar Mountain dew": 771,
-    "bar mirinda fruity": 771,
+    "bar mirinda fruity ": 771,
     "bar Mirinda fanta": 771,
     "bar Novida": 771,
     "bar pepsi": 771,
-    "bar mirinda apple": 771,
-    "bar cocacola can": 771, // Renamed to make unique
-    "bar cocacola pet": 771, // Renamed to make unique
-    "bar stoney": 771,
-    "bar fanta orange": 771, // Renamed to make unique
-    "bar fanta pineapple": 771, // Renamed to make unique
-    "bar Nile Special": 3335, // Renamed to be more specific
-    "bar Club Pilsner": 2925, // Renamed to be more specific
-    "bar Guinness Foreign Extra": 2800, // Renamed to be more specific
-    "bar Guinness Rich & Smooth": 2800, // Renamed to be more specific
-    "bar Uganda waragi (small)": 7000, // Renamed to be more specific
-    "bar Gilbey's (small)": 7800, // Renamed to be more specific
-    "bar Tusker Lite": 2860, // Renamed to be more specific
-    "bar water (500ml)": 1000, // Renamed to be more specific
-    "bar Castle Lite": 2860
+    "bar mirinda apple":771,
+    "bar cocacola":771,
+    "bar stoney":771,
+    "bar fanta":771,
+    "bar cocacola":771,
+    "bar fanta":771,
+    "bar Nile":3335,
+    "bar club":2925,
+    "bar Guiness Foreign Extra":2800,
+    "bar Guiness Rich $ Smooth":2800,
+    "bar Uganda waragi":7000,
+    "bar Gilbey's":7800,
+    "bar tusker lite":2860,
+    "bar water":1000,
+    "bar castle lite":2860
 };
 
-// The SELLING_PRICES object (corrected for duplicates)
+/**
+ * Automatically populates the buying price based on the selected item.
+ */
+function populateBuyingPrice() {
+    const itemInput = document.getElementById('sale-item');
+    const bpInput = document.getElementById('sale-bp');
+
+    if (itemInput && bpInput) {
+        // No need to convert to lowercase for exact match from datalist
+        const item = itemInput.value.trim();
+        const buyingPrice = BUYING_PRICES[item];
+
+        if (buyingPrice !== undefined) {
+            bpInput.value = buyingPrice;
+        } else {
+            bpInput.value = '';
+        }
+    }
+}
+
+/**
+ * Populates the datalist with items from BUYING_PRICES.
+ */
+function populateDatalist() {
+    const datalist = document.getElementById('item-suggestions');
+    if (datalist) {
+        for (const item in BUYING_PRICES) {
+            const option = document.createElement('option');
+            option.value = item;
+            datalist.appendChild(option);
+        }
+    }
+}
+
+// Add event listeners when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    populateDatalist(); // Populate the datalist on page load
+
+    const itemInput = document.getElementById('sale-item');
+    if (itemInput) {
+        itemInput.addEventListener('input', populateBuyingPrice);
+    }
+});
+
 const SELLING_PRICES = {
     "rest greek salad": 9000,
     "rest toasted salad": 7500,
@@ -358,7 +1005,7 @@ const SELLING_PRICES = {
     "rest chicken spring rolls": 22300,
     "rest chicken wing": 12600,
     "rest french fries": 5800,
-    "rest chips masala": 7000, // Corrected typo
+    "resT chips masala": 7000,
     "rest pan fried fish fillet": 18100,
     "rest deep fried whole fish": 19800,
     "rest stir fried beef": 20000,
@@ -396,46 +1043,25 @@ const SELLING_PRICES = {
     "rest strombolli pizza": 10600,
     "rest hawaii pizza": 8000,
     "bar Mountain dew": 2000,
-    "bar mirinda fruity": 2000,
+    "bar mirinda fruity ": 2000,
     "bar Mirinda fanta": 2000,
     "bar Novida": 2000,
     "bar pepsi": 2000,
-    "bar mirinda apple": 2000,
-    "bar cocacola can": 2000, // Renamed to make unique
-    "bar cocacola pet": 2000, // Renamed to make unique
-    "bar stoney": 2000,
-    "bar fanta orange": 2000, // Renamed to make unique
-    "bar fanta pineapple": 2000, // Renamed to make unique
-    "bar Nile Special": 5000,
-    "bar Club Pilsner": 5000,
-    "bar Guinness Foreign Extra": 5000, // Renamed to be more specific
-    "bar Uganda Waragi (small)": 13000, // Renamed to be more specific
-    "bar Gilbey's (small)": 15000, // Renamed to be more specific
-    "bar Tusker Lite": 5000,
-    "bar water (500ml)": 5000,
-    "bar Castle Lite": 5000
+    "bar mirinda apple":2000,
+    "bar cocacola":2000,
+    "bar stoney":2000,
+    "bar fanta":2000,
+    "bar cocacola":2000,
+    "bar fanta":2000,
+    "bar Nile":5000,
+    "bar club":5000,
+    "bar guiness":5000,
+    "bar Uganda Waragi":13000,
+    "bar Gilbey's":15000,
+    "bar tusker lite":5000,
+    "bar water":5000,
+    "bar castle lite":5000
 };
-
-
-/**
- * Automatically populates the buying price based on the selected item.
- */
-function populateBuyingPrice() {
-    const itemInput = document.getElementById('sale-item');
-    const bpInput = document.getElementById('sale-bp');
-
-    if (itemInput && bpInput) {
-        // Apply .toLowerCase() for case-insensitive matching, consistent with selling price
-        const item = itemInput.value.toLowerCase().trim();
-        const buyingPrice = BUYING_PRICES[item];
-
-        if (buyingPrice !== undefined) {
-            bpInput.value = buyingPrice;
-        } else {
-            bpInput.value = '';
-        }
-    }
-}
 
 /**
  * Automatically populates the selling price based on the selected item.
@@ -451,267 +1077,20 @@ function populateSellingPrice() {
         if (sellingPrice !== undefined) {
             spInput.value = sellingPrice;
         } else {
-            // Optionally clear the SP field if the item doesn't have a predefined price
+            // Optionally clear the BP field if the item doesn't have a predefined price
+            // Or you can leave it as is for manual entry
             spInput.value = '';
         }
     }
 }
 
-/**
- * Populates the datalist with items from BUYING_PRICES.
- */
-function populateDatalist() {
-    const datalist = document.getElementById('item-suggestions');
-    if (datalist) {
-        // Clear existing options
-        datalist.innerHTML = '';
-        for (const item in BUYING_PRICES) {
-            const option = document.createElement('option');
-            option.value = item;
-            datalist.appendChild(option);
-        }
-    }
-}
-
-// Function to fetch sales data
-async function fetchSales() {
-    try {
-        const dateFilterInput = document.getElementById('sales-date-filter');
-        const dateFilter = dateFilterInput ? dateFilterInput.value : '';
-
-        let url = `${API_BASE_URL}/sales`;
-        const params = new URLSearchParams();
-        if (dateFilter) params.append('date', dateFilter);
-        params.append('page', currentSalesPage);
-        params.append('limit', salesPerPage);
-        url += `?${params.toString()}`;
-
-        const response = await authenticatedFetch(url);
-        if (!response) return;
-
-        const result = await response.json();
-        renderSalesTable(result.data); // Render the table with fetched data
-        renderSalesPagination(result.page, result.pages); // Render pagination controls
-    } catch (error) {
-        console.error('Error fetching sales:', error);
-        showMessage('Failed to fetch sales: ' + error.message, true);
-    }
-}
-
-// Function to render the sales table (MODIFIED for profit visibility)
-function renderSalesTable(sales) {
-    const tbody = document.querySelector('#sales-table tbody');
-    const thead = document.querySelector('#sales-table thead tr');
-    if (!tbody || !thead) return;
-
-    tbody.innerHTML = ''; // Clear existing rows
-
-    // Adjust table headers based on user role (for profit columns)
-    // First, reset headers to default (without profit) then add if allowed
-    thead.innerHTML = `
-        <th>ID</th>
-        <th>Item</th>
-        <th>Number</th>
-        <th>Buying Price</th>
-        <th>Selling Price</th>
-        <th>Date</th>
-        <th>Actions</th>
-    `;
-
-    // Only add Profit and Percentage Profit headers if the current user role is allowed
-    const canViewProfit = PROFIT_VIEW_ROLES.includes(currentUserRole);
-
-    if (canViewProfit) {
-        const profitHeader = document.createElement('th');
-        profitHeader.textContent = 'Profit';
-        thead.insertBefore(profitHeader, thead.querySelector('th:last-child')); // Insert before Actions
-
-        const percentageProfitHeader = document.createElement('th');
-        percentageProfitHeader.textContent = '% Profit';
-        thead.insertBefore(percentageProfitHeader, thead.querySelector('th:last-child')); // Insert before Actions
-    }
-
-
-    if (sales.length === 0) {
-        const row = tbody.insertRow();
-        const cell = row.insertCell();
-        // Adjust colspan based on whether profit columns are visible
-        cell.colSpan = canViewProfit ? 9 : 7; // 7 base + 2 for profit
-        cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
-        cell.style.textAlign = 'center';
-        return;
-    }
-
-    sales.forEach(sale => {
-        const row = tbody.insertRow();
-        row.insertCell().textContent = sale._id ? sale._id.substring(0, 8) + '...' : 'N/A'; // Displaying truncated ID
-        row.insertCell().textContent = sale.item;
-        row.insertCell().textContent = sale.number;
-        row.insertCell().textContent = sale.bp.toFixed(2);
-        row.insertCell().textContent = sale.sp.toFixed(2);
-        row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
-
-        // Conditionally add profit cells
-        if (canViewProfit) {
-            const profitCell = row.insertCell();
-            profitCell.textContent = sale.profit ? sale.profit.toFixed(2) : '0.00';
-            profitCell.className = sale.profit >= 0 ? 'positive' : 'negative';
-
-            const percentageProfitCell = row.insertCell();
-            percentageProfitCell.textContent = sale.percentageprofit ? sale.percentageprofit.toFixed(2) + '%' : '0.00%';
-            percentageProfitCell.className = sale.profit >= 0 ? 'positive' : 'negative';
-        }
-
-        const actionsCell = row.insertCell();
-        actionsCell.className = 'actions';
-
-        const adminRoles = ADMIN_ROLES; // Use the global constant for admin roles
-        // Only administrators can edit sales
-        if (adminRoles.includes(currentUserRole)) {
-            const editButton = document.createElement('button');
-            editButton.textContent = 'Edit';
-            editButton.className = 'edit';
-            editButton.onclick = () => populateSaleForm(sale);
-            actionsCell.appendChild(editButton);
-        } else {
-            actionsCell.textContent = 'View Only';
-        }
-    });
-}
-
-// Function to render pagination for sales (no change needed here)
-function renderSalesPagination(current, totalPages) {
-    const container = document.getElementById('sales-pagination');
-    if (!container) return;
-    container.innerHTML = '';
-
-    for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        btn.disabled = i === current;
-        btn.onclick = () => {
-            currentSalesPage = i;
-            fetchSales();
-        };
-        container.appendChild(btn);
-    }
-}
-
-
-async function submitSaleForm(event) {
-    event.preventDefault();
-    // Roles allowed to record sales (using global constant)
-    if (!SALES_ENTRY_ROLES.includes(currentUserRole)) {
-        showMessage('Permission Denied: You do not have permission to record sales.', true);
-        return;
-    }
-
-    const idInput = document.getElementById('sale-id');
+// Add an event listener to the item input field
+document.addEventListener('DOMContentLoaded', () => {
     const itemInput = document.getElementById('sale-item');
-    const numberInput = document.getElementById('sale-number');
-    const bpInput = document.getElementById('sale-bp');
-    const spInput = document.getElementById('sale-sp');
-    const salesDateFilterInput = document.getElementById('sales-date-filter'); // Assuming this is used for the sale date
-
-    if (!idInput || !itemInput || !numberInput || !bpInput || !spInput || !salesDateFilterInput) {
-        showMessage('Sales form elements are missing.', true);
-        return;
+    if (itemInput) {
+        itemInput.addEventListener('input', populateSellingPrice);
     }
-
-    const id = idInput.value;
-    const item = itemInput.value;
-    const number = parseInt(numberInput.value);
-    const bp = parseFloat(bpInput.value);
-    const sp = parseFloat(spInput.value);
-    const date = salesDateFilterInput.value; // Use the value from the date filter as the sale date
-
-    // Basic validation
-    if (!item || isNaN(number) || isNaN(bp) || isNaN(sp) || !date) {
-        showMessage('Please fill in all sales fields correctly with valid numbers and date.', true);
-        return;
-    }
-    if (number <= 0 || bp <= 0 || sp <= 0) {
-        showMessage('Number, Buying Price, and Selling Price must be positive values.', true);
-        return;
-    }
-
-    // --- Calculate Profit and Percentage Profit Here ---
-    const totalBuyingPrice = bp * number;
-    const totalSellingPrice = sp * number;
-    const profit = totalSellingPrice - totalBuyingPrice;
-    let percentageProfit = 0;
-    if (totalBuyingPrice !== 0) { // Avoid division by zero
-        percentageProfit = (profit / totalBuyingPrice) * 100;
-    }
-    // --- End Calculation ---
-
-    const saleData = {
-        item,
-        number,
-        bp,
-        sp,
-        profit: profit,
-        percentageprofit: percentageProfit,
-        date
-    };
-
-    try {
-        let response;
-        if (id) { // Edit operation (Nachwera Richard, Nelson, Florence only)
-            if (!ADMIN_ROLES.includes(currentUserRole)) { // Use global constant
-                showMessage('Permission Denied: Only administrators can edit sales.', true);
-                return;
-            }
-            response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
-                method: 'PUT',
-                body: JSON.stringify(saleData)
-            });
-        } else { // New entry creation (all allowed roles)
-            response = await authenticatedFetch(`${API_BASE_URL}/sales`, {
-                method: 'POST',
-                body: JSON.stringify(saleData)
-            });
-        }
-        if (response) {
-            await response.json(); // Consume response body
-            showMessage('Sale recorded successfully!', false);
-            const saleForm = document.getElementById('sale-form');
-            if (saleForm) saleForm.reset();
-            if (idInput) idInput.value = ''; // Clear ID after submission
-            // Re-set the date filter to today after successful submission for convenience
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            if (salesDateFilterInput) salesDateFilterInput.value = `${yyyy}-${mm}-${dd}`;
-            fetchSales(); // Re-fetch to update table after successful operation
-        }
-    } catch (error) {
-        console.error('Error saving sale entry:', error);
-        showMessage('Failed to save sale entry: ' + error.message, true);
-    }
-}
-
-function populateSaleForm(sale) {
-    const idInput = document.getElementById('sale-id');
-    const itemInput = document.getElementById('sale-item');
-    const numberInput = document.getElementById('sale-number');
-    const bpInput = document.getElementById('sale-bp');
-    const spInput = document.getElementById('sale-sp');
-    const salesDateFilterInput = document.getElementById('sales-date-filter');
-
-    if (idInput) idInput.value = sale._id;
-    if (itemInput) itemInput.value = sale.item;
-    if (numberInput) numberInput.value = sale.number;
-    if (bpInput) bpInput.value = sale.bp;
-    if (spInput) spInput.value = sale.sp;
-    if (salesDateFilterInput && sale.date) {
-        salesDateFilterInput.value = new Date(sale.date).toISOString().split('T')[0];
-    }
-    // Note: Profit and Percentage Profit are calculated on submission, not populated back to form
-}
-
-
+});
 // --- Expenses Functions ---
 async function fetchExpenses() {
     try {
@@ -733,7 +1112,7 @@ async function fetchExpenses() {
         renderExpensesPagination(result.page, result.pages);
     } catch (error) {
         console.error('Error fetching expenses:', error);
-        showMessage('Failed to fetch expenses: ' + error.message, true);
+        showMessage('Failed to fetch expenses: ' + error.message);
     }
 }
 
@@ -778,8 +1157,9 @@ function renderExpensesTable(expenses) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        // Only administrators can edit expenses (using global constant)
-        if (ADMIN_ROLES.includes(currentUserRole)) {
+        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        // Only administrators can edit expenses
+        if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -793,9 +1173,9 @@ function renderExpensesTable(expenses) {
 
 async function submitExpenseForm(event) {
     event.preventDefault();
-    // Roles allowed to record expenses (using global constant)
-    if (!EXPENSE_ENTRY_ROles.includes(currentUserRole)) {
-        showMessage('Permission Denied: You do not have permission to record expenses.', true);
+    const allowedToRecordExpenses = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    if (!allowedToRecordExpenses.includes(currentUserRole)) {
+        showMessage('Permission Denied: You do not have permission to record expenses.');
         return;
     }
 
@@ -807,7 +1187,7 @@ async function submitExpenseForm(event) {
     const expenseDateInput = document.getElementById('expenses-date-filter'); // Using this as the date input
 
     if (!idInput || !descriptionInput || !amountInput || !receiptIdInput || !sourceInput || !expenseDateInput) {
-        showMessage('Expense form elements are missing.', true);
+        showMessage('Expense form elements are missing.');
         return;
     }
 
@@ -820,7 +1200,7 @@ async function submitExpenseForm(event) {
     const recordedBy = currentUsername; // Automatically record who made the entry
 
     if (!description || isNaN(amount) || amount <= 0 || !receiptId || !date) {
-        showMessage('Please fill in all expense fields correctly.', true);
+        showMessage('Please fill in all expense fields correctly.');
         return;
     }
 
@@ -829,8 +1209,9 @@ async function submitExpenseForm(event) {
     try {
         let response;
         if (id) {
-            if (!ADMIN_ROLES.includes(currentUserRole)) { // Use global constant
-                showMessage('Permission Denied: Only administrators can edit expenses.', true);
+            const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+            if (!adminRoles.includes(currentUserRole)) {
+                showMessage('Permission Denied: Only administrators can edit expenses.');
                 return;
             }
             response = await authenticatedFetch(`${API_BASE_URL}/expenses/${id}`, {
@@ -845,7 +1226,7 @@ async function submitExpenseForm(event) {
         }
         if (response) {
             await response.json();
-            showMessage('Expense recorded successfully!', false);
+            showMessage('Expense recorded successfully!');
             const expenseForm = document.getElementById('expense-form');
             if (expenseForm) expenseForm.reset();
             if (idInput) idInput.value = '';
@@ -858,7 +1239,7 @@ async function submitExpenseForm(event) {
         }
     } catch (error) {
         console.error('Error saving expense:', error);
-        showMessage('Failed to save expense: ' + error.message, true);
+        showMessage('Failed to save expense: ' + error.message);
     }
 }
 
@@ -904,7 +1285,7 @@ async function fetchCashJournal() {
         renderCashJournalTable(records);
     } catch (error) {
         console.error('Error fetching cash journal:', error);
-        showMessage('Failed to fetch cash journal: ' + error.message, true);
+        showMessage('Failed to fetch cash journal: ' + error.message);
     }
 }
 
@@ -930,8 +1311,9 @@ function renderCashJournalTable(records) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        // Only Nachwera Richard, Nelson, Florence can edit cash entries (using global constant)
-        if (ADMIN_ROLES.includes(currentUserRole)) {
+        // Only Nachwera Richard, Nelson, Florence can edit cash entries
+        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -945,9 +1327,10 @@ function renderCashJournalTable(records) {
 
 async function submitCashJournalForm(event) {
     event.preventDefault();
-    // Roles allowed to record cash entries (using global constant)
-    if (!CASH_ENTRY_ROLES.includes(currentUserRole)) {
-        showMessage('Permission Denied: You do not have permission to record cash entries.', true);
+    // Roles allowed to record cash entries
+    const allowedToRecordCash = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    if (!allowedToRecordCash.includes(currentUserRole)) {
+        showMessage('Permission Denied: You do not have permission to record cash entries.');
         return;
     }
     const idInput = document.getElementById('cash-journal-id');
@@ -957,7 +1340,7 @@ async function submitCashJournalForm(event) {
     const cashDateInput = document.getElementById('cash-date');
 
     if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput || !cashDateInput) {
-        showMessage('Cash journal form elements are missing.', true);
+        showMessage('Cash journal form elements are missing.');
         return;
     }
 
@@ -969,7 +1352,7 @@ async function submitCashJournalForm(event) {
 
     // Basic validation
     if (isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !date) {
-        showMessage('Please fill in all cash entry fields correctly.', true);
+        showMessage('Please fill in all cash entry fields correctly.');
         return;
     }
 
@@ -978,8 +1361,9 @@ async function submitCashJournalForm(event) {
     try {
         let response;
         if (id) { // Edit operation (Nachwera Richard, Nelson, Florence only)
-            if (!ADMIN_ROLES.includes(currentUserRole)) { // Use global constant
-                showMessage('Permission Denied: Only administrators can edit cash entries.', true);
+            const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+            if (!adminRoles.includes(currentUserRole)) {
+                showMessage('Permission Denied: Only administrators can edit cash entries.');
                 return;
             }
             response = await authenticatedFetch(`${API_BASE_URL}/cash-journal/${id}`, {
@@ -994,7 +1378,7 @@ async function submitCashJournalForm(event) {
         }
         if (response) {
             await response.json();
-            showMessage('Cash entry saved successfully!', false);
+            showMessage('Cash entry saved successfully!');
             const cashJournalForm = document.getElementById('cash-journal-form');
             if (cashJournalForm) cashJournalForm.reset();
             if (idInput) idInput.value = '';
@@ -1008,7 +1392,7 @@ async function submitCashJournalForm(event) {
         }
     } catch (error) {
         console.error('Error saving cash entry:', error);
-        showMessage('Failed to save cash entry: ' + error.message, true);
+        showMessage('Failed to save cash entry: ' + error.message);
     }
 }
 
@@ -1044,7 +1428,7 @@ async function generateReports() {
     const endDateInput = document.getElementById('report-end-date');
 
     if (!startDateInput || !endDateInput) {
-        showMessage('Report date inputs not found.', true);
+        showMessage('Report date inputs not found.');
         return;
     }
 
@@ -1052,7 +1436,7 @@ async function generateReports() {
     const endDateString = endDateInput.value;
 
     if (!startDateString || !endDateString) {
-        showMessage('Please select both start and end dates for the report.', true);
+        showMessage('Please select both start and end dates for the report.');
         return;
     }
 
@@ -1072,7 +1456,7 @@ async function generateReports() {
 
     try {
         // Fetch sales
-        const salesResponse = await authenticatedFetch(`${API_BASE_URL}/sales`); // Consider adding date filters to this API call for efficiency
+        const salesResponse = await authenticatedFetch(`${API_BASE_URL}/sales`);
         if (salesResponse) {
             const salesData = await salesResponse.json();
             if (Array.isArray(salesData.data)) {
@@ -1087,7 +1471,7 @@ async function generateReports() {
         }
 
         // Fetch expenses
-        const expensesResponse = await authenticatedFetch(`${API_BASE_URL}/expenses`); // Consider adding date filters to this API call for efficiency
+        const expensesResponse = await authenticatedFetch(`${API_BASE_URL}/expenses`);
         if (expensesResponse) {
             const expensesData = await expensesResponse.json();
             if (Array.isArray(expensesData.data)) {
@@ -1165,7 +1549,7 @@ async function generateReports() {
 
     } catch (error) {
         console.error('Error generating reports:', error);
-        showMessage('Failed to generate reports: ' + error.message, true);
+        showMessage('Failed to generate reports: ' + error.message);
     }
 }
 
@@ -1201,7 +1585,7 @@ async function fetchAuditLogs() {
         renderAuditPagination(result.page, result.pages);
     } catch (error) {
         console.error('Error fetching audit logs:', error);
-        showMessage('Failed to fetch audit logs: ' + error.message, true);
+        showMessage('Failed to fetch audit logs: ' + error.message);
     }
 }
 
@@ -1270,7 +1654,7 @@ function exportTableToExcel(tableID, filename = '') {
     const tableSelect = document.getElementById(tableID);
 
     if (!tableSelect) {
-        showMessage(`Table with ID "${tableID}" not found for export.`, true);
+        showMessage(`Table with ID "${tableID}" not found for export.`);
         return;
     }
 
@@ -1287,40 +1671,6 @@ function exportTableToExcel(tableID, filename = '') {
         if (actionHeader && actionHeader.textContent.trim() === 'Actions') {
             actionHeader.remove();
         }
-    }
-
-    // Specific modification for Sales Table: hide Profit and Percentage Profit if currentUserRole is not allowed
-    if (tableID === 'sales-table' && !PROFIT_VIEW_ROLES.includes(currentUserRole)) {
-        // Find the column indices for 'Profit' and '% Profit' in the cloned table's header
-        const headers = Array.from(clonedTable.querySelectorAll('thead th')).map(th => th.textContent.trim());
-        const profitIndex = headers.indexOf('Profit');
-        const percentageProfitIndex = headers.indexOf('% Profit');
-
-        // Remove the headers if they exist
-        if (profitIndex !== -1) {
-            clonedTable.querySelector('thead tr').removeChild(clonedTable.querySelector('thead tr').children[profitIndex]);
-        }
-        if (percentageProfitIndex !== -1) {
-            // Adjust index if profit column was already removed
-            const adjustedPercentageProfitIndex = (profitIndex !== -1 && percentageProfitIndex > profitIndex) ? percentageProfitIndex - 1 : percentageProfitIndex;
-            if (adjustedPercentageProfitIndex !== -1) {
-                clonedTable.querySelector('thead tr').removeChild(clonedTable.querySelector('thead tr').children[adjustedPercentageProfitIndex]);
-            }
-        }
-
-        // Remove the corresponding cells from each row in the tbody
-        clonedTable.querySelectorAll('tbody tr').forEach(row => {
-            const cells = Array.from(row.children);
-            if (percentageProfitIndex !== -1 && cells[percentageProfitIndex]) {
-                const adjustedPercentageProfitIndex = (profitIndex !== -1 && percentageProfitIndex > profitIndex) ? percentageProfitIndex - 1 : percentageProfitIndex;
-                if (cells[adjustedPercentageProfitIndex]) {
-                     cells[adjustedPercentageProfitIndex].remove();
-                }
-            }
-            if (profitIndex !== -1 && cells[profitIndex]) {
-                cells[profitIndex].remove();
-            }
-        });
     }
 
 
@@ -1351,15 +1701,7 @@ function exportTableToExcel(tableID, filename = '') {
 
 // --- Initial Setup and Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Set initial current user role for testing/initial state.
-    // In a real app, this would be determined after successful login.
-    // For local testing, you might uncomment one of these:
-    // currentUserRole = 'Nachwera Richard'; // Admin
-    // currentUserRole = 'Martha';            // Can record sales/expenses/cash, but not view profit
-    // currentUserRole = 'Joshua';            // Can record sales/inventory, but not view profit or other navs
-    // currentUserRole = 'Guest';             // Not allowed to do much
-
-    // Check authentication status and update UI on page load
+    // Check authentication status on page load
     updateUIForUserRole();
 
     // Attach form submission handlers
@@ -1491,4 +1833,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if (auditLogsExportButton) {
         auditLogsExportButton.addEventListener('click', () => exportTableToExcel('audit-logs-table', 'Audit_Logs'));
     }
+
 });
