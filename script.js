@@ -228,12 +228,13 @@ function updateUIForUserRole() {
             if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
             if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
         }
-        // Joshua: Inventory, Sales, Expenses, Cash Management
+        // Joshua: Inventory, Sales (No Cash Management, No Expenses)
         else if (currentUserRole === 'Joshua') {
             if (document.getElementById('nav-inventory')) document.getElementById('nav-inventory').style.display = 'inline-block';
             if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
-            if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
-            if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
+            // Explicitly hide Cash Management and Expenses for Joshua
+            if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'none';
+            if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'none';
         }
 
 
@@ -696,6 +697,8 @@ function renderSalesTable(sales) {
         return;
     }
 
+    const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
+
     sales.forEach(sale => {
         // Calculate profit and percentageprofit if they are missing from the fetched sale object
         if (sale.profit === undefined || sale.percentageprofit === undefined) {
@@ -713,9 +716,16 @@ function renderSalesTable(sales) {
         row.insertCell().textContent = sale.number;
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
-        // Now 'sale.profit' and 'sale.percentageprofit' will always be defined
-        row.insertCell().textContent = sale.profit.toFixed(2);
-        row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
+
+        // Conditionally display profit and percentage profit
+        if (hideProfitColumns) {
+            row.insertCell().textContent = 'N/A'; // Hide profit
+            row.insertCell().textContent = 'N/A'; // Hide percentage profit
+        } else {
+            row.insertCell().textContent = sale.profit.toFixed(2);
+            row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
+        }
+
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
