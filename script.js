@@ -274,7 +274,7 @@ function showSection(sectionId) {
         'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Martha': ['sales', 'expenses', 'cash-management'], // Martha can view these
-        'Joshua': ['inventory', 'sales', 'expenses', 'cash-management'] // Joshua can view these
+        'Joshua': ['inventory', 'sales'] // Joshua can view these
     };
 
     // --- Role-based Access Check ---
