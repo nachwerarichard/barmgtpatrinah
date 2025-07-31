@@ -440,6 +440,8 @@ async function login() {
         localStorage.clear();
         updateUIForUserRole();
     }
+    console.log('Attempting login with:', username, password);
+
 }
 
 async function logout() {
