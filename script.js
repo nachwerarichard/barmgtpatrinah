@@ -1005,89 +1005,87 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const SELLING_PRICES = {
-   "rest greek salad": 17000;
-"rest toasted salad": 16000; 
-"rest potato salad": 16000;
-"rest mushroom soup": 17000;
-"rest tomato soup": 15000; 
-"rest pumpkin soup": 15000; 
-"rest chicken clear soup": 15000; 
-"rest chicken stew": 28000; 
-"rest chicken stir fry": 25000; 
-"rest chicken cubes": 27000; 
-"rest grilled whole chicken": 50000;
-"rest chicken drum stick": 27000;
-"rest beef stew": 26000; 
-"rest beef curry": 25000;
-"rest navarine goat": 28000; 
-"rest goat muchomo": 28000; 
-"rest steak": 30000;
-"rest panfried pork": 25000;
-"rest pork ribs": 25000; 
-"rest pork chops": 30000; 
-"rest fish curry": 25000; 
-"rest vegetable curry": 20000;
-"rest beef samosa": 60000; 
-"rest chicken spring rolls": 120000;
-"rest chicken wing": 20000; 
-"rest french fries": 7000; "rest chips masala": 10000;
-"rest pan fried fish fillet": 25000; 
-"rest deep fried whole fish": 30000;
-"rest stir fried beef": 20000; 
-"rest stir fried ox liver": 20000; 
-"rest fish finger": 18000; 
-"rest chicken patty": 25000; 
-"rest beef burgar": 26000; 
-"rest vegetable burgar": 25000;
-"rest beef sandwich": 25000; 
-"rest chicken sandwich": 27000; 
-"rest tomato sandwich": 20000; 
-"rest vegetable sandwich": 25000;
-"rest club sandwich": 30000;
-"rest african tea": 7000; 
-"rest african coffee": 8000;
-"rest english tea": 10000; 
-"rest african spiced tea": 8000;
-"rest lemon tea": 5000;
-"rest milk plane": 7000; 
-"rest black tea": 5000;
-"rest black coffee": 6000;
-"rest dhawa tea": 12000; 
-"rest passion juice (l)": 7000; 
-"rest pineapple juice": 7000; 
-"rest water melon juice": 7000; 
-"rest lemon juice": 7000; 
-"rest cocotail juice": 10000; 
-"rest pineapple": 5000; 
-"rest fruit salad": 7000; 
-"rest fruit platter": 5000; 
-"rest spagetti napolitan": 20000;
-"rest spagetti bolognaise": 20000; 
-"rest margarita pizza": 25000;
-"rest chicken polo pizza": 30000; 
-"rest strombolli pizza": 30000;
-"rest hawaii pizza": 25000;
+    "rest greek salad": 17000,
+    "rest toasted salad": 16000,
+    "rest potato salad": 16000,
+    "rest mushroom soup": 17000,
+    "rest tomato soup": 15000,
+    "rest pumpkin soup": 15000,
+    "rest chicken clear soup": 15000,
+    "rest chicken stew": 28000,
+    "rest chicken stir fry": 25000,
+    "rest chicken cubes": 27000,
+    "rest grilled whole chicken": 50000,
+    "rest chicken drum stick": 27000,
+    "rest beef stew": 26000,
+    "rest beef curry": 25000,
+    "rest navarine goat": 28000,
+    "rest goat muchomo": 28000,
+    "rest steak": 30000,
+    "rest panfried pork": 25000,
+    "rest pork ribs": 25000,
+    "rest pork chops": 30000,
+    "rest fish curry": 25000,
+    "rest vegetable curry": 20000,
+    "rest beef samosa": 60000,
+    "rest chicken spring rolls": 120000,
+    "rest chicken wing": 20000,
+    "rest french fries": 7000,
+    "rest chips masala": 10000,
+    "rest pan fried fish fillet": 25000,
+    "rest deep fried whole fish": 30000,
+    "rest stir fried beef": 20000,
+    "rest stir fried ox liver": 20000,
+    "rest fish finger": 18000,
+    "rest chicken patty": 25000,
+    "rest beef burgar": 26000,
+    "rest vegetable burgar": 25000,
+    "rest beef sandwich": 25000,
+    "rest chicken sandwich": 27000,
+    "rest tomato sandwich": 20000,
+    "rest vegetable sandwich": 25000,
+    "rest club sandwich": 30000,
+    "rest african tea": 7000,
+    "rest african coffee": 8000,
+    "rest english tea": 10000,
+    "rest african spiced tea": 8000,
+    "rest lemon tea": 5000,
+    "rest milk plane": 7000,
+    "rest black tea": 5000,
+    "rest black coffee": 6000,
+    "rest dhawa tea": 12000,
+    "rest passion juice (l)": 7000,
+    "rest pineapple juice": 7000,
+    "rest water melon juice": 7000,
+    "rest lemon juice": 7000,
+    "rest cocotail juice": 10000,
+    "rest pineapple": 5000,
+    "rest fruit salad": 7000,
+    "rest fruit platter": 5000,
+    "rest spagetti napolitan": 20000,
+    "rest spagetti bolognaise": 20000,
+    "rest margarita pizza": 25000,
+    "rest chicken polo pizza": 30000,
+    "rest strombolli pizza": 30000,
+    "rest hawaii pizza": 25000,
     "bar Mountain dew": 2000,
     "bar mirinda fruity ": 2000,
     "bar Mirinda fanta": 2000,
     "bar Novida": 2000,
     "bar pepsi": 2000,
-    "bar mirinda apple":2000,
-    "bar cocacola":2000,
-    "bar stoney":2000,
-    "bar fanta":2000,
-    "bar cocacola":2000,
-    "bar fanta":2000,
-    "bar Nile":5000,
-    "bar club":5000,
-    "bar guiness":5000,
-    "bar Uganda Waragi":13000,
-    "bar Gilbey's":15000,
-    "bar tusker lite":5000,
-    "bar water":5000,
-    "bar castle lite":5000
+    "bar mirinda apple": 2000,
+    "bar cocacola": 2000,
+    "bar stoney": 2000,
+    "bar fanta": 2000,
+    "bar Nile": 5000,
+    "bar club": 5000,
+    "bar guiness": 5000,
+    "bar Uganda Waragi": 13000,
+    "bar Gilbey's": 15000,
+    "bar tusker lite": 5000,
+    "bar water": 5000,
+    "bar castle lite": 5000
 };
-
 /**
  * Automatically populates the selling price based on the selected item.
  */
