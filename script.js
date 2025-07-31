@@ -38,6 +38,14 @@ if (menuToggle && mobileNav) {
 }
 
 
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        login(); // This is the correct way to call the function
+    });
+}
+
 function showMessage(message, callback = null) {
     const modal = document.getElementById('message-modal');
     const messageText = document.getElementById('message-text');
