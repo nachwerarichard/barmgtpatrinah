@@ -553,11 +553,41 @@ function renderInventoryTable(inventory) {
             editButton.className = 'edit';
             editButton.onclick = () => populateInventoryForm(item);
             actionsCell.appendChild(editButton);
+            
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.className = 'delete';
+                    deleteButton.onclick = () => deleteInventory(item._id);
+                    actionsCell.appendChild(deleteButton);
         } else {
             actionsCell.textContent = 'View Only';
         }
     });
 }
+
+sync function deleteInventory(id) {
+            if (currentUserRole !== 'Nachwera Richard') {
+                alert('Permission Denied: Only administrators can delete inventory.');
+                return;
+            }
+            if (!confirm('Are you sure you want to delete this inventory item?')) return;
+            try {
+                const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
+                    method: 'DELETE'
+                });
+                if (response && response.status === 204) {
+                    alert('Inventory item deleted successfully!');
+                    fetchInventory();
+                } else if (response) {
+                     const errorData = await response.json();
+                     alert('Failed to delete inventory item: ' + errorData.error);
+                }
+            } catch (error) {
+                console.error('Error deleting inventory item:', error);
+                alert('Failed to delete inventory item: ' + error.message);
+            }
+        }
+
 
 async function submitInventoryForm(event) {
     event.preventDefault();
