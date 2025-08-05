@@ -566,9 +566,8 @@ function renderInventoryTable(inventory) {
 }
 
 async function deleteInventory(id) {
-            if (currentUserRole !== 'Nachwera Richard') {
-                alert('Permission Denied: Only administrators can delete inventory.');
-                return;
+            if (currentUserRole !== '') {
+                alert('');
             }
             if (!confirm('Are you sure you want to delete this inventory item?')) return;
             try {
