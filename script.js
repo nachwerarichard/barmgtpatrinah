@@ -921,7 +921,7 @@ const BUYING_PRICES = {
     "rest chicken spring rolls": 22300,
     "rest chicken wing": 12600,
     "rest french fries": 5800,
-    "resT chips masala": 7000,
+    "rest chips masala": 7000,
     "rest pan fried fish fillet": 18100,
     "rest deep fried whole fish": 19800,
     "rest stir fried beef": 20000,
