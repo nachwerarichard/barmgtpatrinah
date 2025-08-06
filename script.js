@@ -566,10 +566,12 @@ function renderInventoryTable(inventory) {
 }
 
 async function deleteInventory(id) {
-            if (currentUserRole !== '') {
-                alert('');
+
+        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+            if (currentUserRole !== adminRoles) {
+                alert('Only admins allowed');
             }
-            if (!confirm('Are you sure you want to delete this inventory item?')) return;
+            if (!confirm('Are you sure you want to delete this inventory item?')) ;
             try {
                 const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
                     method: 'DELETE'
