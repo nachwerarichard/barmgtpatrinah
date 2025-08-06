@@ -976,6 +976,7 @@ const BUYING_PRICES = {
     "bar uganda waragi":7000,
     "bar gilbey's":7800,
     "bar tusker lite":2860,
+    "bar tusker lager":2860,
     "bar water":1000,
     "bar castle lite":2860
 };
