@@ -1505,7 +1505,7 @@ function populateCashJournalForm(record) {
 // --- Reports Functions ---
 const departmentPrefixes = {
     'bar': 'Bar',
-    'rest': 'Restaurant',
+    'rest': 'Rest',
     'conf': 'Conference',
     'gardens': 'Gardens',
     'accommodation': 'Accommodation'
