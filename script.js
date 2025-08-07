@@ -1503,15 +1503,29 @@ function populateCashJournalForm(record) {
 }
 
 // --- Reports Functions ---
+const departmentPrefixes = {
+    'bar': 'Bar',
+    'restaurant': 'Restaurant',
+    'conference': 'Conference',
+    'gardens': 'Gardens',
+    'accommodation': 'Accommodation'
+};
+
+// A function to get the department from the first word of the text.
 function getDepartmentFromText(text) {
     const lowerText = text.toLowerCase();
-    if (lowerText.includes('bar')) return 'Bar';
-    if (lowerText.includes('rest')) return 'Restaurant';
-    if (lowerText.includes('conf')) return 'Conference';
-    if (lowerText.includes('grdn')) return 'Gardens';
-    if (lowerText.includes('accomm')) return 'Accommodation';
-    return 'Other'; // Default department if not matched
+    
+    // Split the text into an array of words
+    const firstWord = lowerText.split(' ')[0];
+
+    // Check if the first word exists in our department prefixes map
+    if (departmentPrefixes[firstWord]) {
+        return departmentPrefixes[firstWord];
+    }
+    
+    return 'Other'; // Default department if no match is found
 }
+
 
 async function generateReports() {
     const startDateInput = document.getElementById('report-start-date');
