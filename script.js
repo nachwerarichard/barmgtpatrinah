@@ -789,9 +789,13 @@ function renderSalesTable(sales) {
         }
     });
 
+    // --- NEW CODE STARTS HERE ---
+    // Insert an empty row for spacing before the total
+    tbody.insertRow();
+    // --- NEW CODE ENDS HERE ---
+
     // Create a new row for the total selling price at the bottom
     const totalRow = tbody.insertRow();
-    const totalRo = tbody.insertRow();
     const totalCell = totalRow.insertCell();
     totalCell.colSpan = 4;
     totalCell.textContent = 'Total Selling Price:';
