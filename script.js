@@ -1559,31 +1559,31 @@ function populateCashJournalForm(record) {
 }
 
 // --- Reports Functions ---
-// --- Reports Functions ---
-const departmentPrefixes = {
-    'bar': 'Bar',
-    'rest': 'Rest',
-    'conf': 'Conference',
-    'gardens': 'Gardens',
-    'accommodation': 'Accommodation'
-};
-
-// A function to get the department from the text.
-function getDepartmentFromText(text) {
-    const lowerText = text.toLowerCase();
-
-    // Check if the text includes any of our department prefixes
-    for (const prefix in departmentPrefixes) {
-        if (lowerText.includes(prefix)) {
-            return departmentPrefixes[prefix];
-        }
-    }
-    
-    return 'Other'; // Default department if no match is found
-}
-
-
 async function generateReports() {
+    // Define the department prefixes and the logic to get the department.
+    // This makes the function self-contained and ensures consistent logic.
+    const departmentPrefixes = {
+        'bar': 'Bar',
+        'rest': 'Rest',
+        'conf': 'Conference',
+        'gardens': 'Gardens',
+        'accommodation': 'Accommodation'
+    };
+
+    // A function to get the department from the text.
+    function getDepartmentFromText(text) {
+        const lowerText = text.toLowerCase();
+
+        // Check if the text includes any of our department prefixes
+        for (const prefix in departmentPrefixes) {
+            if (lowerText.includes(prefix)) {
+                return departmentPrefixes[prefix];
+            }
+        }
+        
+        return 'Other'; // Default department if no match is found
+    }
+
     const startDateInput = document.getElementById('report-start-date');
     const endDateInput = document.getElementById('report-end-date');
 
@@ -1716,6 +1716,7 @@ async function generateReports() {
         showMessage('Failed to generate reports: ' + error.message);
     }
 }
+
 
 // --- Audit Logs Functions ---
 function debounce(func, delay) {
