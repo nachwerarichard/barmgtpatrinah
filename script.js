@@ -1650,6 +1650,13 @@ async function generateReports() {
         }
 
         const departmentReports = {};
+        
+        // Initialize department reports with zero values to prevent 'undefined' issues
+        for (const prefix in departmentPrefixes) {
+            departmentReports[departmentPrefixes[prefix]] = { sales: 0, expenses: 0 };
+        }
+        departmentReports['Other'] = { sales: 0, expenses: 0 };
+
         let overallSales = 0;
         let overallExpenses = 0;
 
@@ -1659,6 +1666,8 @@ async function generateReports() {
 
             overallSales += saleAmount;
             if (!departmentReports[department]) {
+                // This case should ideally not happen with the new initialization,
+                // but it's a good fallback
                 departmentReports[department] = { sales: 0, expenses: 0 };
             }
             departmentReports[department].sales += saleAmount;
@@ -1669,6 +1678,8 @@ async function generateReports() {
 
             overallExpenses += expense.amount;
             if (!departmentReports[department]) {
+                // This case should ideally not happen with the new initialization,
+                // but it's a good fallback
                 departmentReports[department] = { sales: 0, expenses: 0 };
             }
             departmentReports[department].expenses += expense.amount;
@@ -1716,7 +1727,6 @@ async function generateReports() {
         showMessage('Failed to generate reports: ' + error.message);
     }
 }
-
 
 // --- Audit Logs Functions ---
 function debounce(func, delay) {
