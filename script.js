@@ -736,6 +736,12 @@ function renderSalesTable(sales) {
     const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
     // Initialize a variable to hold the total of all selling prices
     let totalSellingPriceSum = 0;
+    // Initialize an object to hold departmental totals
+    const departmentTotals = {
+        bar: 0,
+        rest: 0,
+        others: 0
+    };
 
     sales.forEach(sale => {
         if (sale.profit === undefined || sale.percentageprofit === undefined) {
@@ -758,6 +764,15 @@ function renderSalesTable(sales) {
         row.insertCell().textContent = totalSellingPrice.toFixed(2);
         // Add the current sale's total selling price to the sum
         totalSellingPriceSum += totalSellingPrice;
+
+        // Categorize and add to department totals
+        if (sale.item.toLowerCase().startsWith('bar')) {
+            departmentTotals.bar += totalSellingPrice;
+        } else if (sale.item.toLowerCase().startsWith('rest')) {
+            departmentTotals.rest += totalSellingPrice;
+        } else {
+            departmentTotals.others += totalSellingPrice;
+        }
 
         if (hideProfitColumns) {
             row.insertCell().textContent = 'N/A';
@@ -789,22 +804,42 @@ function renderSalesTable(sales) {
         }
     });
 
-    // --- NEW CODE STARTS HERE ---
-    // Insert an empty row for spacing before the total
+    // Insert an empty row for spacing before the totals
     tbody.insertRow();
-    // --- NEW CODE ENDS HERE ---
 
-    // Create a new row for the total selling price at the bottom
-    const totalRow = tbody.insertRow();
-    const totalCell = totalRow.insertCell();
-    totalCell.colSpan = 4;
-    totalCell.textContent = 'Total Selling Price:';
-    totalCell.style.fontWeight = 'bold';
-    totalCell.style.textAlign = 'right';
+    // Create a new row for each departmental total
+    for (const department in departmentTotals) {
+        if (departmentTotals[department] > 0) {
+            const totalRow = tbody.insertRow();
+            const totalCell = totalRow.insertCell();
+            totalCell.colSpan = 4;
+            const departmentName = department.charAt(0).toUpperCase() + department.slice(1);
+            totalCell.textContent = `${departmentName} Total Selling Price:`;
+            totalCell.style.fontWeight = 'bold';
+            totalCell.style.textAlign = 'right';
 
-    const totalValueCell = totalRow.insertCell();
-    totalValueCell.textContent = totalSellingPriceSum.toFixed(2);
-    totalValueCell.style.fontWeight = 'bold';
+            const totalValueCell = totalRow.insertCell();
+            totalValueCell.textContent = departmentTotals[department].toFixed(2);
+            totalValueCell.style.fontWeight = 'bold';
+        }
+    }
+
+    // Insert an empty row for spacing between departmental totals and the grand total
+    if (Object.values(departmentTotals).some(total => total > 0)) {
+        tbody.insertRow();
+    }
+
+    // Create a new row for the grand total selling price at the bottom
+    const grandTotalRow = tbody.insertRow();
+    const grandTotalCell = grandTotalRow.insertCell();
+    grandTotalCell.colSpan = 4;
+    grandTotalCell.textContent = 'Grand Total Selling Price:';
+    grandTotalCell.style.fontWeight = 'bold';
+    grandTotalCell.style.textAlign = 'right';
+
+    const grandTotalValueCell = grandTotalRow.insertCell();
+    grandTotalValueCell.textContent = totalSellingPriceSum.toFixed(2);
+    grandTotalValueCell.style.fontWeight = 'bold';
 }
 
 function showConfirm(message, onConfirm, onCancel = null) {
