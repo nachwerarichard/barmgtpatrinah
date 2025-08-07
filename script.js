@@ -1603,10 +1603,13 @@ async function generateReports() {
     const startDate = new Date(startDateString);
     const endDate = new Date(endDateString);
     
-    // Fix: Set the start date to the beginning of the day (00:00:00)
-    startDate.setHours(0, 0, 0, 0); 
-    // Fix: Set the end date to the end of the day (23:59:59)
-    endDate.setHours(23, 59, 59, 999);
+    // A helper function to format dates as YYYY-MM-DD
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
     let allExpenses = [];
     let allSales = [];
@@ -1625,11 +1628,13 @@ async function generateReports() {
             const salesData = await salesResponse.json();
             if (Array.isArray(salesData.data)) {
                 // Filter sales by comparing date strings for consistency
-                const startDateISO = startDate.toISOString().split('T')[0];
-                const endDateISO = endDate.toISOString().split('T')[0];
+                const startFormatted = formatDate(startDate);
+                const endFormatted = formatDate(endDate);
+
                 allSales = salesData.data.filter(s => {
-                    const saleDateISO = new Date(s.date).toISOString().split('T')[0];
-                    return saleDateISO >= startDateISO && saleDateISO <= endDateISO;
+                    const saleDate = new Date(s.date);
+                    const saleFormatted = formatDate(saleDate);
+                    return saleFormatted >= startFormatted && saleFormatted <= endFormatted;
                 });
             } else {
                 console.warn('API /sales did not return an array for data property:', salesData);
@@ -1643,11 +1648,13 @@ async function generateReports() {
             const expensesData = await expensesResponse.json();
             if (Array.isArray(expensesData.data)) {
                 // Filter expenses by comparing date strings for consistency
-                const startDateISO = startDate.toISOString().split('T')[0];
-                const endDateISO = endDate.toISOString().split('T')[0];
+                const startFormatted = formatDate(startDate);
+                const endFormatted = formatDate(endDate);
+
                 allExpenses = expensesData.data.filter(e => {
-                    const expenseDateISO = new Date(e.date).toISOString().split('T')[0];
-                    return expenseDateISO >= startDateISO && expenseDateISO <= endDateISO;
+                    const expenseDate = new Date(e.date);
+                    const expenseFormatted = formatDate(expenseDate);
+                    return expenseFormatted >= startFormatted && expenseFormatted <= endFormatted;
                 });
             } else {
                 console.warn('API /expenses did not return an array for data property:', expensesData);
