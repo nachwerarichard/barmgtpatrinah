@@ -718,109 +718,138 @@ function renderSalesPagination(current, totalPages) {
         container.appendChild(btn);
     }
 }
+renderSalesTable(sales) {
 
-function renderSalesTable(sales) {
-    const tbody = document.querySelector('#sales-table tbody');
-    const salesSummaryContainer = document.querySelector('#sales-summary'); 
+    const tbody = document.querySelector('#sales-table tbody');
 
-    if (!tbody || !salesSummaryContainer) return;
+    if (!tbody) return;
 
-    tbody.innerHTML = '';
-    salesSummaryContainer.innerHTML = ''; 
 
-    if (sales.length === 0) {
-        const row = tbody.insertRow();
-        const cell = row.insertCell();
-        cell.colSpan = 8;
-        cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
-        cell.style.textAlign = 'center';
-        return;
-    }
 
-    const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
-    
-    // START OF NEW LOGIC
-    // Object to store total selling price for each unique item
-    const itemTotals = {};
+    tbody.innerHTML = '';
 
-    sales.forEach(sale => {
-        // Calculate profit and percentageprofit if they are missing
-        if (sale.profit === undefined || sale.percentageprofit === undefined) {
-            const totalBuyingPrice = sale.bp * sale.number;
-            const totalSellingPrice = sale.sp * sale.number;
-            sale.profit = totalSellingPrice - totalBuyingPrice;
-            sale.percentageprofit = 0;
-            if (totalBuyingPrice !== 0) {
-                sale.percentageprofit = (sale.profit / totalBuyingPrice) * 100;
-            }
-        }
-        
-        // Calculate total selling price for the current item and add to a new object
-        const totalSellingPrice = sale.sp * sale.number;
-        
-        if (itemTotals[sale.item]) {
-            itemTotals[sale.item] += totalSellingPrice;
-        } else {
-            itemTotals[sale.item] = totalSellingPrice;
-        }
+    if (sales.length === 0) {
 
-        const row = tbody.insertRow();
-        row.insertCell().textContent = sale.item;
-        row.insertCell().textContent = sale.number;
-        row.insertCell().textContent = sale.bp;
-        row.insertCell().textContent = sale.sp;
+        const row = tbody.insertRow();
 
-        // Conditionally display profit and percentage profit
-        if (hideProfitColumns) {
-            row.insertCell().textContent = 'N/A';
-            row.insertCell().textContent = 'N/A'; 
-        } else {
-            row.insertCell().textContent = sale.profit.toFixed(2);
-            row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
-        }
+        const cell = row.insertCell();
 
-        row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
-        const actionsCell = row.insertCell();
-        actionsCell.className = 'actions';
+        cell.colSpan = 8;
 
-        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-        // Only administrators can edit sales
-        if (adminRoles.includes(currentUserRole)) {
-            const editButton = document.createElement('button');
-            editButton.textContent = 'Edit';
-            editButton.className = 'edit';
-            editButton.onclick = () => populateSaleForm(sale);
-            actionsCell.appendChild(editButton);
+        cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
 
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'delete';
-            deleteButton.onclick = () => deleteSale(sale._id);
-            actionsCell.appendChild(deleteButton);
-        } else {
-            actionsCell.textContent = 'View Only';
-        }
-    });
+        cell.style.textAlign = 'center';
 
-    // Display the total selling price for each item
-    const itemSummaryTitle = document.createElement('h3');
-    itemSummaryTitle.textContent = 'Total Selling Price Per Item:';
-    salesSummaryContainer.appendChild(itemSummaryTitle);
+        return;
 
-    let grandTotalSalesSP = 0;
-    for (const item in itemTotals) {
-        const itemTotalElement = document.createElement('p');
-        itemTotalElement.textContent = `${item}: ${itemTotals[item].toFixed(2)}`;
-        salesSummaryContainer.appendChild(itemTotalElement);
-        grandTotalSalesSP += itemTotals[item];
-    }
-    
-    // Display the grand total sales below the table
-    const grandTotalElement = document.createElement('div');
-    grandTotalElement.innerHTML = `<h3>Grand Total Selling Price: ${grandTotalSalesSP.toFixed(2)}</h3>`;
-    salesSummaryContainer.appendChild(grandTotalElement);
-    // END OF NEW LOGIC
+    }
+
+
+
+    const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
+
+
+
+    sales.forEach(sale => {
+
+        // Calculate profit and percentageprofit if they are missing from the fetched sale object
+
+        if (sale.profit === undefined || sale.percentageprofit === undefined) {
+
+            const totalBuyingPrice = sale.bp * sale.number;
+
+            const totalSellingPrice = sale.sp * sale.number;
+
+            sale.profit = totalSellingPrice - totalBuyingPrice;
+
+            sale.percentageprofit = 0;
+
+            if (totalBuyingPrice !== 0) {
+
+                sale.percentageprofit = (sale.profit / totalBuyingPrice) * 100;
+
+            }
+
+        }
+
+
+
+        const row = tbody.insertRow();
+
+        row.insertCell().textContent = sale.item;
+
+        row.insertCell().textContent = sale.number;
+
+        row.insertCell().textContent = sale.bp;
+
+        row.insertCell().textContent = sale.sp;
+
+
+
+        // Conditionally display profit and percentage profit
+
+        if (hideProfitColumns) {
+
+            row.insertCell().textContent = 'N/A'; // Hide profit
+
+            row.insertCell().textContent = 'N/A'; // Hide percentage profit
+
+        } else {
+
+            row.insertCell().textContent = sale.profit.toFixed(2);
+
+            row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
+
+        }
+
+
+
+        row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
+
+        const actionsCell = row.insertCell();
+
+        actionsCell.className = 'actions';
+
+
+
+        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+
+        // Only administrators can edit sales
+
+        if (adminRoles.includes(currentUserRole)) {
+
+            const editButton = document.createElement('button');
+
+            editButton.textContent = 'Edit';
+
+            editButton.className = 'edit';
+
+            editButton.onclick = () => populateSaleForm(sale);
+
+            actionsCell.appendChild(editButton);
+
+
+
+            const deleteButton = document.createElement('button');
+
+            deleteButton.textContent = 'Delete';
+
+            deleteButton.className = 'delete';
+
+            deleteButton.onclick = () => deleteSale(sale._id);
+
+            actionsCell.appendChild(deleteButton);
+
+        } else {
+
+            actionsCell.textContent = 'View Only';
+
+        }
+
+    });
+
 }
+
 
 function showConfirm(message, onConfirm, onCancel = null) {
     // For simplicity, using native confirm. For a custom UI, you'd implement a modal similar to showMessage.
