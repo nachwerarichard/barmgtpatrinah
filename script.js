@@ -1623,25 +1623,20 @@ async function generateReports() {
     tbody.innerHTML = ''; // Clear any existing rows
 
     try {
-        // Fetch all sales data, handling pagination if necessary.
-        let nextPageUrl = `${API_BASE_URL}/sales`;
-        while (nextPageUrl) {
-            const salesResponse = await authenticatedFetch(nextPageUrl);
-            if (salesResponse) {
-                const salesData = await salesResponse.json();
-                if (Array.isArray(salesData.data)) {
-                    allSales = allSales.concat(salesData.data);
-                    // Assuming the API returns a link to the next page.
-                    // This will need to be adjusted if your API has a different structure.
-                    nextPageUrl = salesData.nextPageUrl || null; 
-                } else {
-                    console.warn('API /sales did not return an array for data property:', salesData);
-                    nextPageUrl = null; // Stop fetching
-                }
+        // Fetch all sales data, handling pagination by incrementing a page number.
+        let page = 1;
+        let salesDataFetched;
+        do {
+            const salesResponse = await authenticatedFetch(`${API_BASE_URL}/sales?page=${page}`);
+            salesDataFetched = await salesResponse.json();
+            if (salesDataFetched && Array.isArray(salesDataFetched.data)) {
+                console.log(`Fetched ${salesDataFetched.data.length} sales records from page ${page}`);
+                allSales = allSales.concat(salesDataFetched.data);
+                page++;
             } else {
-                nextPageUrl = null; // Stop fetching on a bad response
+                salesDataFetched = null; // Exit the loop if data is not an array or response is bad
             }
-        }
+        } while (salesDataFetched && salesDataFetched.data.length > 0);
         
         console.log('Total sales fetched from all pages:', allSales.length);
 
@@ -1653,25 +1648,20 @@ async function generateReports() {
         });
         console.log('Total sales after filtering:', allSales.length);
 
-        // Fetch all expenses data, handling pagination if necessary.
-        nextPageUrl = `${API_BASE_URL}/expenses`;
-        while (nextPageUrl) {
-            const expensesResponse = await authenticatedFetch(nextPageUrl);
-            if (expensesResponse) {
-                const expensesData = await expensesResponse.json();
-                if (Array.isArray(expensesData.data)) {
-                    allExpenses = allExpenses.concat(expensesData.data);
-                    // Assuming the API returns a link to the next page.
-                    // This will need to be adjusted if your API has a different structure.
-                    nextPageUrl = expensesData.nextPageUrl || null; 
-                } else {
-                    console.warn('API /expenses did not return an array for data property:', expensesData);
-                    nextPageUrl = null; // Stop fetching
-                }
+        // Fetch all expenses data, handling pagination by incrementing a page number.
+        page = 1;
+        let expensesDataFetched;
+        do {
+            const expensesResponse = await authenticatedFetch(`${API_BASE_URL}/expenses?page=${page}`);
+            expensesDataFetched = await expensesResponse.json();
+            if (expensesDataFetched && Array.isArray(expensesDataFetched.data)) {
+                console.log(`Fetched ${expensesDataFetched.data.length} expense records from page ${page}`);
+                allExpenses = allExpenses.concat(expensesDataFetched.data);
+                page++;
             } else {
-                nextPageUrl = null; // Stop fetching on a bad response
+                expensesDataFetched = null; // Exit the loop if data is not an array or response is bad
             }
-        }
+        } while (expensesDataFetched && expensesDataFetched.data.length > 0);
 
         console.log('Total expenses fetched from all pages:', allExpenses.length);
 
@@ -1757,6 +1747,7 @@ async function generateReports() {
         showMessage('Failed to generate reports: ' + error.message);
     }
 }
+
 
 // --- Audit Logs Functions ---
 function debounce(func, delay) {
