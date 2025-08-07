@@ -791,6 +791,7 @@ function renderSalesTable(sales) {
 
     // Create a new row for the total selling price at the bottom
     const totalRow = tbody.insertRow();
+    const totalRow = tbody.insertRow();
     const totalCell = totalRow.insertCell();
     totalCell.colSpan = 4;
     totalCell.textContent = 'Total Selling Price:';
