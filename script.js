@@ -739,8 +739,9 @@ function renderSalesTable(sales) {
 
     const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
     
-    // Initialize the total sales for the selling price
-    let totalSalesSP = 0;
+    // START OF NEW LOGIC
+    // Object to store total selling price for each unique item
+    const itemTotals = {};
 
     sales.forEach(sale => {
         // Calculate profit and percentageprofit if they are missing
@@ -754,9 +755,14 @@ function renderSalesTable(sales) {
             }
         }
         
-        // Correctly calculate the total selling price for each item and add it to the running total
+        // Calculate total selling price for the current item and add to a new object
         const totalSellingPrice = sale.sp * sale.number;
-        totalSalesSP += totalSellingPrice;
+        
+        if (itemTotals[sale.item]) {
+            itemTotals[sale.item] += totalSellingPrice;
+        } else {
+            itemTotals[sale.item] = totalSellingPrice;
+        }
 
         const row = tbody.insertRow();
         row.insertCell().textContent = sale.item;
@@ -796,10 +802,24 @@ function renderSalesTable(sales) {
         }
     });
 
-    // Display the total sales below the table
-    const totalSalesElement = document.createElement('div');
-    totalSalesElement.innerHTML = `<h3>Total Selling Price Sales: ${totalSalesSP.toFixed(2)}</h3>`;
-    salesSummaryContainer.appendChild(totalSalesElement);
+    // Display the total selling price for each item
+    const itemSummaryTitle = document.createElement('h3');
+    itemSummaryTitle.textContent = 'Total Selling Price Per Item:';
+    salesSummaryContainer.appendChild(itemSummaryTitle);
+
+    let grandTotalSalesSP = 0;
+    for (const item in itemTotals) {
+        const itemTotalElement = document.createElement('p');
+        itemTotalElement.textContent = `${item}: ${itemTotals[item].toFixed(2)}`;
+        salesSummaryContainer.appendChild(itemTotalElement);
+        grandTotalSalesSP += itemTotals[item];
+    }
+    
+    // Display the grand total sales below the table
+    const grandTotalElement = document.createElement('div');
+    grandTotalElement.innerHTML = `<h3>Grand Total Selling Price: ${grandTotalSalesSP.toFixed(2)}</h3>`;
+    salesSummaryContainer.appendChild(grandTotalElement);
+    // END OF NEW LOGIC
 }
 
 function showConfirm(message, onConfirm, onCancel = null) {
