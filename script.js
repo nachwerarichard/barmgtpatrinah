@@ -1603,13 +1603,13 @@ async function generateReports() {
     const startDate = new Date(startDateString);
     const endDate = new Date(endDateString);
     
-    // A helper function to format dates as YYYY-MM-DD
-    const formatDate = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
+    // Set the start date to the beginning of the day (00:00:00)
+    startDate.setHours(0, 0, 0, 0); 
+    // Set the end date to the end of the day (23:59:59)
+    endDate.setHours(23, 59, 59, 999);
+
+    console.log('Report Start Date:', startDate.toLocaleString());
+    console.log('Report End Date:', endDate.toLocaleString());
 
     let allExpenses = [];
     let allSales = [];
@@ -1627,15 +1627,13 @@ async function generateReports() {
         if (salesResponse) {
             const salesData = await salesResponse.json();
             if (Array.isArray(salesData.data)) {
-                // Filter sales by comparing date strings for consistency
-                const startFormatted = formatDate(startDate);
-                const endFormatted = formatDate(endDate);
-
+                console.log('Total sales fetched from API:', salesData.data.length);
                 allSales = salesData.data.filter(s => {
                     const saleDate = new Date(s.date);
-                    const saleFormatted = formatDate(saleDate);
-                    return saleFormatted >= startFormatted && saleFormatted <= endFormatted;
+                    // Use getTime() for robust date comparison
+                    return saleDate.getTime() >= startDate.getTime() && saleDate.getTime() <= endDate.getTime();
                 });
+                console.log('Total sales after filtering:', allSales.length);
             } else {
                 console.warn('API /sales did not return an array for data property:', salesData);
                 allSales = [];
@@ -1647,15 +1645,13 @@ async function generateReports() {
         if (expensesResponse) {
             const expensesData = await expensesResponse.json();
             if (Array.isArray(expensesData.data)) {
-                // Filter expenses by comparing date strings for consistency
-                const startFormatted = formatDate(startDate);
-                const endFormatted = formatDate(endDate);
-
+                console.log('Total expenses fetched from API:', expensesData.data.length);
                 allExpenses = expensesData.data.filter(e => {
                     const expenseDate = new Date(e.date);
-                    const expenseFormatted = formatDate(expenseDate);
-                    return expenseFormatted >= startFormatted && expenseFormatted <= endFormatted;
+                    // Use getTime() for robust date comparison
+                    return expenseDate.getTime() >= startDate.getTime() && expenseDate.getTime() <= endDate.getTime();
                 });
+                console.log('Total expenses after filtering:', allExpenses.length);
             } else {
                 console.warn('API /expenses did not return an array for data property:', expensesData);
                 allExpenses = [];
