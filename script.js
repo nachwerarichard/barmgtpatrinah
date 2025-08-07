@@ -1603,13 +1603,14 @@ async function generateReports() {
     const startDate = new Date(startDateString);
     const endDate = new Date(endDateString);
     
-    // Set the start date to the beginning of the day (00:00:00)
-    startDate.setHours(0, 0, 0, 0); 
-    // Set the end date to the end of the day (23:59:59)
-    endDate.setHours(23, 59, 59, 999);
+    // Fix: Normalize dates to UTC to avoid timezone issues
+    // Set the start date to the beginning of the day (00:00:00) in UTC
+    startDate.setUTCHours(0, 0, 0, 0); 
+    // Set the end date to the end of the day (23:59:59) in UTC
+    endDate.setUTCHours(23, 59, 59, 999);
 
-    console.log('Report Start Date:', startDate.toLocaleString());
-    console.log('Report End Date:', endDate.toLocaleString());
+    console.log('Report Start Date (UTC):', startDate.toUTCString());
+    console.log('Report End Date (UTC):', endDate.toUTCString());
 
     let allExpenses = [];
     let allSales = [];
@@ -1622,41 +1623,65 @@ async function generateReports() {
     tbody.innerHTML = ''; // Clear any existing rows
 
     try {
-        // Fetch sales
-        const salesResponse = await authenticatedFetch(`${API_BASE_URL}/sales`);
-        if (salesResponse) {
-            const salesData = await salesResponse.json();
-            if (Array.isArray(salesData.data)) {
-                console.log('Total sales fetched from API:', salesData.data.length);
-                allSales = salesData.data.filter(s => {
-                    const saleDate = new Date(s.date);
-                    // Use getTime() for robust date comparison
-                    return saleDate.getTime() >= startDate.getTime() && saleDate.getTime() <= endDate.getTime();
-                });
-                console.log('Total sales after filtering:', allSales.length);
+        // Fetch all sales data, handling pagination if necessary.
+        let nextPageUrl = `${API_BASE_URL}/sales`;
+        while (nextPageUrl) {
+            const salesResponse = await authenticatedFetch(nextPageUrl);
+            if (salesResponse) {
+                const salesData = await salesResponse.json();
+                if (Array.isArray(salesData.data)) {
+                    allSales = allSales.concat(salesData.data);
+                    // Assuming the API returns a link to the next page.
+                    // This will need to be adjusted if your API has a different structure.
+                    nextPageUrl = salesData.nextPageUrl || null; 
+                } else {
+                    console.warn('API /sales did not return an array for data property:', salesData);
+                    nextPageUrl = null; // Stop fetching
+                }
             } else {
-                console.warn('API /sales did not return an array for data property:', salesData);
-                allSales = [];
+                nextPageUrl = null; // Stop fetching on a bad response
+            }
+        }
+        
+        console.log('Total sales fetched from all pages:', allSales.length);
+
+        // Filter sales by date after all data has been fetched
+        allSales = allSales.filter(s => {
+            const saleDate = new Date(s.date);
+            // Use getTime() for robust date comparison with UTC normalized dates
+            return saleDate.getTime() >= startDate.getTime() && saleDate.getTime() <= endDate.getTime();
+        });
+        console.log('Total sales after filtering:', allSales.length);
+
+        // Fetch all expenses data, handling pagination if necessary.
+        nextPageUrl = `${API_BASE_URL}/expenses`;
+        while (nextPageUrl) {
+            const expensesResponse = await authenticatedFetch(nextPageUrl);
+            if (expensesResponse) {
+                const expensesData = await expensesResponse.json();
+                if (Array.isArray(expensesData.data)) {
+                    allExpenses = allExpenses.concat(expensesData.data);
+                    // Assuming the API returns a link to the next page.
+                    // This will need to be adjusted if your API has a different structure.
+                    nextPageUrl = expensesData.nextPageUrl || null; 
+                } else {
+                    console.warn('API /expenses did not return an array for data property:', expensesData);
+                    nextPageUrl = null; // Stop fetching
+                }
+            } else {
+                nextPageUrl = null; // Stop fetching on a bad response
             }
         }
 
-        // Fetch expenses
-        const expensesResponse = await authenticatedFetch(`${API_BASE_URL}/expenses`);
-        if (expensesResponse) {
-            const expensesData = await expensesResponse.json();
-            if (Array.isArray(expensesData.data)) {
-                console.log('Total expenses fetched from API:', expensesData.data.length);
-                allExpenses = expensesData.data.filter(e => {
-                    const expenseDate = new Date(e.date);
-                    // Use getTime() for robust date comparison
-                    return expenseDate.getTime() >= startDate.getTime() && expenseDate.getTime() <= endDate.getTime();
-                });
-                console.log('Total expenses after filtering:', allExpenses.length);
-            } else {
-                console.warn('API /expenses did not return an array for data property:', expensesData);
-                allExpenses = [];
-            }
-        }
+        console.log('Total expenses fetched from all pages:', allExpenses.length);
+
+        // Filter expenses by date after all data has been fetched
+        allExpenses = allExpenses.filter(e => {
+            const expenseDate = new Date(e.date);
+            // Use getTime() for robust date comparison with UTC normalized dates
+            return expenseDate.getTime() >= startDate.getTime() && expenseDate.getTime() <= endDate.getTime();
+        });
+        console.log('Total expenses after filtering:', allExpenses.length);
 
         const departmentReports = {};
         
