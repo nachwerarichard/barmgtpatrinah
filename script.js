@@ -786,6 +786,16 @@ function renderSalesTable(sales) {
     });
 }
 
+function showConfirm(message, onConfirm, onCancel = null) {
+    // For simplicity, using native confirm. For a custom UI, you'd implement a modal similar to showMessage.
+    const userConfirmed = window.confirm(message);
+    if (userConfirmed) {
+        onConfirm();
+    } else if (onCancel) {
+        onCancel();
+    }
+}
+
 async function deleteSale(id) {
     const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
     if (!adminRoles.includes(currentUserRole)) {
