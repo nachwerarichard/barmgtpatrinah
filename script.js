@@ -721,9 +721,13 @@ function renderSalesPagination(current, totalPages) {
 
 function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
-    if (!tbody) return;
+    const salesSummaryContainer = document.querySelector('#sales-summary'); // Assumes you have a div with this ID
+
+    if (!tbody || !salesSummaryContainer) return;
 
     tbody.innerHTML = '';
+    salesSummaryContainer.innerHTML = ''; // Clear previous summary
+
     if (sales.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
@@ -734,6 +738,10 @@ function renderSalesTable(sales) {
     }
 
     const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
+    
+    // START OF NEW CODE
+    let totalSalesSP = 0;
+    // END OF NEW CODE
 
     sales.forEach(sale => {
         // Calculate profit and percentageprofit if they are missing from the fetched sale object
@@ -746,6 +754,11 @@ function renderSalesTable(sales) {
                 sale.percentageprofit = (sale.profit / totalBuyingPrice) * 100;
             }
         }
+        
+        // START OF NEW CODE
+        const totalSellingPrice = sale.sp * sale.number;
+        totalSalesSP += totalSellingPrice;
+        // END OF NEW CODE
 
         const row = tbody.insertRow();
         row.insertCell().textContent = sale.item;
@@ -784,6 +797,13 @@ function renderSalesTable(sales) {
             actionsCell.textContent = 'View Only';
         }
     });
+
+    // START OF NEW CODE
+    // Display the total sales below the table
+    const totalSalesElement = document.createElement('div');
+    totalSalesElement.innerHTML = `<h3>Total Selling Price Sales: ${totalSalesSP.toFixed(2)}</h3>`;
+    salesSummaryContainer.appendChild(totalSalesElement);
+    // END OF NEW CODE
 }
 
 function showConfirm(message, onConfirm, onCancel = null) {
