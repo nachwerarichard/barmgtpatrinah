@@ -1561,7 +1561,7 @@ function populateCashJournalForm(record) {
 // --- Reports Functions ---
 async function generateReports() {
     // Define the department prefixes and the logic to get the department.
-    // This makes the function self-contained and ensures consistent logic.
+    // Use lowercase keys for consistency.
     const departmentPrefixes = {
         'bar': 'Bar',
         'rest': 'Rest',
@@ -1624,9 +1624,12 @@ async function generateReports() {
         if (salesResponse) {
             const salesData = await salesResponse.json();
             if (Array.isArray(salesData.data)) {
+                // Filter sales by comparing date strings for consistency
+                const startDateISO = startDate.toISOString().split('T')[0];
+                const endDateISO = endDate.toISOString().split('T')[0];
                 allSales = salesData.data.filter(s => {
-                    const saleDate = new Date(s.date);
-                    return saleDate >= startDate && saleDate <= endDate;
+                    const saleDateISO = new Date(s.date).toISOString().split('T')[0];
+                    return saleDateISO >= startDateISO && saleDateISO <= endDateISO;
                 });
             } else {
                 console.warn('API /sales did not return an array for data property:', salesData);
@@ -1639,9 +1642,12 @@ async function generateReports() {
         if (expensesResponse) {
             const expensesData = await expensesResponse.json();
             if (Array.isArray(expensesData.data)) {
+                // Filter expenses by comparing date strings for consistency
+                const startDateISO = startDate.toISOString().split('T')[0];
+                const endDateISO = endDate.toISOString().split('T')[0];
                 allExpenses = expensesData.data.filter(e => {
-                    const expenseDate = new Date(e.date);
-                    return expenseDate >= startDate && expenseDate <= endDate;
+                    const expenseDateISO = new Date(e.date).toISOString().split('T')[0];
+                    return expenseDateISO >= startDateISO && expenseDateISO <= endDateISO;
                 });
             } else {
                 console.warn('API /expenses did not return an array for data property:', expensesData);
@@ -1666,8 +1672,6 @@ async function generateReports() {
 
             overallSales += saleAmount;
             if (!departmentReports[department]) {
-                // This case should ideally not happen with the new initialization,
-                // but it's a good fallback
                 departmentReports[department] = { sales: 0, expenses: 0 };
             }
             departmentReports[department].sales += saleAmount;
@@ -1678,8 +1682,6 @@ async function generateReports() {
 
             overallExpenses += expense.amount;
             if (!departmentReports[department]) {
-                // This case should ideally not happen with the new initialization,
-                // but it's a good fallback
                 departmentReports[department] = { sales: 0, expenses: 0 };
             }
             departmentReports[department].expenses += expense.amount;
