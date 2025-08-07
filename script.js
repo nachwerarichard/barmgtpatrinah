@@ -1505,12 +1505,13 @@ function populateCashJournalForm(record) {
 // --- Reports Functions ---
 function getDepartmentFromText(text) {
     const lowerText = text.toLowerCase();
-    if (lowerText.startsWith('bar') || lowerText.includes('bar ')) return 'Bar';
-    if (lowerText.startsWith('rest') || lowerText.includes('restaurant')) return 'Restaurant';
-    if (lowerText.startsWith('conf') || lowerText.includes('conference')) return 'Conference';
-    if (lowerText.startsWith('grdn') || lowerText.includes('garden')) return 'Gardens';
-    if (lowerText.startsWith('accomm') || lowerText.includes('accommodation') || lowerText.includes('room')) return 'Accommodation';
-    return 'Bar'; // Default department if not matched
+    if (lowerText.startsWith('bar')) return 'Bar';
+    if 
+        (lowerText.startsWith('rest')) return 'Restaurant';
+    if (lowerText.startsWith('conf')) return 'Conference';
+    if (lowerText.startsWith('grdn')) return 'Gardens';
+    if (lowerText.startsWith('accomm')) return 'Accommodation';
+    return 'Other'; // Default department if not matched
 }
 
 async function generateReports() {
