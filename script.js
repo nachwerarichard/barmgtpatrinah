@@ -1503,6 +1503,7 @@ function populateCashJournalForm(record) {
 }
 
 // --- Reports Functions ---
+// --- Reports Functions ---
 const departmentPrefixes = {
     'bar': 'Bar',
     'rest': 'Rest',
@@ -1511,16 +1512,15 @@ const departmentPrefixes = {
     'accommodation': 'Accommodation'
 };
 
-// A function to get the department from the first word of the text.
+// A function to get the department from the text.
 function getDepartmentFromText(text) {
     const lowerText = text.toLowerCase();
-    
-    // Split the text into an array of words
-    const firstWord = lowerText.split(' ')[0];
 
-    // Check if the first word exists in our department prefixes map
-    if (departmentPrefixes[firstWord]) {
-        return departmentPrefixes[firstWord];
+    // Check if the text includes any of our department prefixes
+    for (const prefix in departmentPrefixes) {
+        if (lowerText.includes(prefix)) {
+            return departmentPrefixes[prefix];
+        }
     }
     
     return 'Other'; // Default department if no match is found
