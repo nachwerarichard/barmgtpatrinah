@@ -774,8 +774,40 @@ function renderSalesTable(sales) {
             editButton.className = 'edit';
             editButton.onclick = () => populateSaleForm(sale);
             actionsCell.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'delete';
+            deleteButton.onclick = () => deleteSale(sale._id);
+            actionsCell.appendChild(deleteButton);
         } else {
             actionsCell.textContent = 'View Only';
+        }
+    });
+}
+
+async function deleteSale(id) {
+    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    if (!adminRoles.includes(currentUserRole)) {
+        showMessage('Permission Denied: Only administrators can delete sales records.');
+        return;
+    }
+
+    showConfirm('Are you sure you want to delete this sale record?', async () => {
+        try {
+            const response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
+                method: 'DELETE'
+            });
+            if (response && response.status === 204) {
+                showMessage('Sale record deleted successfully!');
+                fetchSales();
+            } else if (response) {
+                const errorData = await response.json();
+                showMessage('Failed to delete sale record: ' + errorData.error);
+            }
+        } catch (error) {
+            console.error('Error deleting sale record:', error);
+            showMessage('Failed to delete sale record: ' + error.message);
         }
     });
 }
