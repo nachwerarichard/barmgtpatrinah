@@ -1546,7 +1546,11 @@ async function generateReports() {
 
     const startDate = new Date(startDateString);
     const endDate = new Date(endDateString);
-    endDate.setHours(23, 59, 59, 999); // Set to end of day
+    
+    // Fix: Set the start date to the beginning of the day (00:00:00)
+    startDate.setHours(0, 0, 0, 0); 
+    // Fix: Set the end date to the end of the day (23:59:59)
+    endDate.setHours(23, 59, 59, 999);
 
     let allExpenses = [];
     let allSales = [];
@@ -1656,7 +1660,6 @@ async function generateReports() {
         showMessage('Failed to generate reports: ' + error.message);
     }
 }
-
 
 // --- Audit Logs Functions ---
 function debounce(func, delay) {
