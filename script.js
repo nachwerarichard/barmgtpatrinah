@@ -727,7 +727,7 @@ function renderSalesTable(sales) {
     if (sales.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
-        cell.colSpan = 8;
+        cell.colSpan = 9; // Changed from 8 to 9 to account for the new column
         cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
         cell.style.textAlign = 'center';
         return;
@@ -736,9 +736,10 @@ function renderSalesTable(sales) {
     const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
 
     sales.forEach(sale => {
-        // Calculate profit and percentageprofit if they are missing from the fetched sale object
+        // Calculate profit and percentageprofit if they are missing
         if (sale.profit === undefined || sale.percentageprofit === undefined) {
             const totalBuyingPrice = sale.bp * sale.number;
+            // The total selling price is already being calculated here
             const totalSellingPrice = sale.sp * sale.number;
             sale.profit = totalSellingPrice - totalBuyingPrice;
             sale.percentageprofit = 0;
@@ -753,10 +754,16 @@ function renderSalesTable(sales) {
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
 
+        // --- NEW LINE ADDED HERE ---
+        // Calculate and insert the total selling price
+        const totalSellingPrice = sale.sp * sale.number;
+        row.insertCell().textContent = totalSellingPrice.toFixed(2);
+        // -----------------------------
+
         // Conditionally display profit and percentage profit
         if (hideProfitColumns) {
-            row.insertCell().textContent = 'N/A'; // Hide profit
-            row.insertCell().textContent = 'N/A'; // Hide percentage profit
+            row.insertCell().textContent = 'N/A';
+            row.insertCell().textContent = 'N/A';
         } else {
             row.insertCell().textContent = sale.profit.toFixed(2);
             row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
