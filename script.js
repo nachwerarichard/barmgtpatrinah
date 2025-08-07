@@ -727,19 +727,19 @@ function renderSalesTable(sales) {
     if (sales.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
-        cell.colSpan = 9; // Changed from 8 to 9 to account for the new column
+        cell.colSpan = 9;
         cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
         cell.style.textAlign = 'center';
         return;
     }
 
     const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
+    // Initialize a variable to hold the total of all selling prices
+    let totalSellingPriceSum = 0;
 
     sales.forEach(sale => {
-        // Calculate profit and percentageprofit if they are missing
         if (sale.profit === undefined || sale.percentageprofit === undefined) {
             const totalBuyingPrice = sale.bp * sale.number;
-            // The total selling price is already being calculated here
             const totalSellingPrice = sale.sp * sale.number;
             sale.profit = totalSellingPrice - totalBuyingPrice;
             sale.percentageprofit = 0;
@@ -754,13 +754,11 @@ function renderSalesTable(sales) {
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
 
-        // --- NEW LINE ADDED HERE ---
-        // Calculate and insert the total selling price
         const totalSellingPrice = sale.sp * sale.number;
         row.insertCell().textContent = totalSellingPrice.toFixed(2);
-        // -----------------------------
+        // Add the current sale's total selling price to the sum
+        totalSellingPriceSum += totalSellingPrice;
 
-        // Conditionally display profit and percentage profit
         if (hideProfitColumns) {
             row.insertCell().textContent = 'N/A';
             row.insertCell().textContent = 'N/A';
@@ -774,7 +772,6 @@ function renderSalesTable(sales) {
         actionsCell.className = 'actions';
 
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-        // Only administrators can edit sales
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
@@ -791,6 +788,19 @@ function renderSalesTable(sales) {
             actionsCell.textContent = 'View Only';
         }
     });
+
+    // Create a new row for the total selling price at the bottom
+    const totalRow = tbody.insertRow();
+    const totalCell = totalRow.insertCell();
+    totalCell.colSpan = 5;
+    totalCell.textContent = 'Total Selling Price:';
+    totalCell.style.fontWeight = 'bold';
+    totalCell.style.textAlign = 'right';
+
+    const totalValueCell = totalRow.insertCell();
+    totalValueCell.textContent = totalSellingPriceSum.toFixed(2);
+    totalValueCell.style.fontWeight = 'bold';
+    totalValueCell.colSpan = 4; // Span across the remaining columns
 }
 
 function showConfirm(message, onConfirm, onCancel = null) {
