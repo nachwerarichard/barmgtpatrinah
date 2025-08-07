@@ -800,7 +800,6 @@ function renderSalesTable(sales) {
     const totalValueCell = totalRow.insertCell();
     totalValueCell.textContent = totalSellingPriceSum.toFixed(2);
     totalValueCell.style.fontWeight = 'bold';
-    totalValueCell.colSpan = 4; // Span across the remaining columns
 }
 
 function showConfirm(message, onConfirm, onCancel = null) {
