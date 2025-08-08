@@ -719,46 +719,12 @@ function renderSalesPagination(current, totalPages) {
     }
 }
 
-// This function should be called with the full, unpaginated sales data
-// This function calculates totals and renders the table.
-// It should be called with the full, unpaginated sales data.
-function renderSalesData(allSales) {
-    let totalSellingPriceSum = 0;
-    const departmentTotals = {
-        bar: 0,
-        rest: 0,
-        others: 0
-    };
-    
-    // Check if allSales is null or undefined to prevent errors
-    if (!allSales || !Array.isArray(allSales)) {
-        console.error("Invalid sales data provided.");
-        return;
-    }
-
-    allSales.forEach(sale => {
-        const totalSellingPrice = sale.sp * sale.number;
-        totalSellingPriceSum += totalSellingPrice;
-
-        if (sale.item.toLowerCase().startsWith('bar')) {
-            departmentTotals.bar += totalSellingPrice;
-        } else if (sale.item.toLowerCase().startsWith('rest')) {
-            departmentTotals.rest += totalSellingPrice;
-        } else {
-            departmentTotals.others += totalSellingPrice;
-        }
-    });
-
+function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
-    if (!tbody) {
-        console.error("Table body element not found.");
-        return;
-    }
+    if (!tbody) return;
 
-    // Clear existing table body
     tbody.innerHTML = '';
-
-    if (allSales.length === 0) {
+    if (sales.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
         cell.colSpan = 9;
@@ -768,36 +734,60 @@ function renderSalesData(allSales) {
     }
 
     const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-    const canEdit = adminRoles.includes(currentUserRole);
+    // Initialize a variable to hold the total of all selling prices
+    let totalSellingPriceSum = 0;
+    // Initialize an object to hold departmental totals
+    const departmentTotals = {
+        bar: 0,
+        rest: 0,
+        others: 0
+    };
 
-    allSales.forEach(sale => {
-        // Calculate profit and percentageprofit if they don't exist
-        const totalBuyingPrice = sale.bp * sale.number;
-        const totalSellingPrice = sale.sp * sale.number;
-        const profit = totalSellingPrice - totalBuyingPrice;
-        const percentageprofit = totalBuyingPrice !== 0 ? (profit / totalBuyingPrice) * 100 : 0;
+    sales.forEach(sale => {
+        if (sale.profit === undefined || sale.percentageprofit === undefined) {
+            const totalBuyingPrice = sale.bp * sale.number;
+            const totalSellingPrice = sale.sp * sale.number;
+            sale.profit = totalSellingPrice - totalBuyingPrice;
+            sale.percentageprofit = 0;
+            if (totalBuyingPrice !== 0) {
+                sale.percentageprofit = (sale.profit / totalBuyingPrice) * 100;
+            }
+        }
 
         const row = tbody.insertRow();
         row.insertCell().textContent = sale.item;
         row.insertCell().textContent = sale.number;
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
+
+        const totalSellingPrice = sale.sp * sale.number;
         row.insertCell().textContent = totalSellingPrice.toFixed(2);
+        // Add the current sale's total selling price to the sum
+        totalSellingPriceSum += totalSellingPrice;
+
+        // Categorize and add to department totals
+        if (sale.item.toLowerCase().startsWith('bar')) {
+            departmentTotals.bar += totalSellingPrice;
+        } else if (sale.item.toLowerCase().startsWith('rest')) {
+            departmentTotals.rest += totalSellingPrice;
+        } else {
+            departmentTotals.others += totalSellingPrice;
+        }
 
         if (hideProfitColumns) {
             row.insertCell().textContent = 'N/A';
             row.insertCell().textContent = 'N/A';
         } else {
-            row.insertCell().textContent = profit.toFixed(2);
-            row.insertCell().textContent = percentageprofit.toFixed(2) + '%';
+            row.insertCell().textContent = sale.profit.toFixed(2);
+            row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
         }
 
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        if (canEdit) {
+        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -835,7 +825,6 @@ function renderSalesData(allSales) {
     }
 
     // Insert an empty row for spacing between departmental totals and the grand total
-    // This check is now robust and won't throw an error
     if (Object.values(departmentTotals).some(total => total > 0)) {
         tbody.insertRow();
     }
@@ -852,9 +841,6 @@ function renderSalesData(allSales) {
     grandTotalValueCell.textContent = totalSellingPriceSum.toFixed(2);
     grandTotalValueCell.style.fontWeight = 'bold';
 }
-
-// Assumed fetch function that now calls the combined render function
-
 
 function showConfirm(message, onConfirm, onCancel = null) {
     // For simplicity, using native confirm. For a custom UI, you'd implement a modal similar to showMessage.
