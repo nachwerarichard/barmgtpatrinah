@@ -719,10 +719,37 @@ function renderSalesPagination(current, totalPages) {
     }
 }
 
-function renderSalesTable(sales) {
+// This function should be called with the full, unpaginated sales data
+function calculateTotalsFromFullData(allSales) {
+    let totalSellingPriceSum = 0;
+    const departmentTotals = {
+        bar: 0,
+        rest: 0,
+        others: 0
+    };
+
+    allSales.forEach(sale => {
+        const totalSellingPrice = sale.sp * sale.number;
+        totalSellingPriceSum += totalSellingPrice;
+
+        if (sale.item.toLowerCase().startsWith('bar')) {
+            departmentTotals.bar += totalSellingPrice;
+        } else if (sale.item.toLowerCase().startsWith('rest')) {
+            departmentTotals.rest += totalSellingPrice;
+        } else {
+            departmentTotals.others += totalSellingPrice;
+        }
+    });
+
+    return { totalSellingPriceSum, departmentTotals };
+}
+
+// This function now only renders the page data and uses pre-calculated totals
+function renderSalesTable(sales, grandTotal, departmentTotals) {
     const tbody = document.querySelector('#sales-table tbody');
     if (!tbody) return;
 
+    // Clear existing table body
     tbody.innerHTML = '';
     if (sales.length === 0) {
         const row = tbody.insertRow();
@@ -734,14 +761,6 @@ function renderSalesTable(sales) {
     }
 
     const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
-    // Initialize a variable to hold the total of all selling prices
-    let totalSellingPriceSum = 0;
-    // Initialize an object to hold departmental totals
-    const departmentTotals = {
-        bar: 0,
-        rest: 0,
-        others: 0
-    };
 
     sales.forEach(sale => {
         if (sale.profit === undefined || sale.percentageprofit === undefined) {
@@ -762,17 +781,6 @@ function renderSalesTable(sales) {
 
         const totalSellingPrice = sale.sp * sale.number;
         row.insertCell().textContent = totalSellingPrice.toFixed(2);
-        // Add the current sale's total selling price to the sum
-        totalSellingPriceSum += totalSellingPrice;
-
-        // Categorize and add to department totals
-        if (sale.item.toLowerCase().startsWith('bar')) {
-            departmentTotals.bar += totalSellingPrice;
-        } else if (sale.item.toLowerCase().startsWith('rest')) {
-            departmentTotals.rest += totalSellingPrice;
-        } else {
-            departmentTotals.others += totalSellingPrice;
-        }
 
         if (hideProfitColumns) {
             row.insertCell().textContent = 'N/A';
@@ -838,7 +846,7 @@ function renderSalesTable(sales) {
     grandTotalCell.style.textAlign = 'right';
 
     const grandTotalValueCell = grandTotalRow.insertCell();
-    grandTotalValueCell.textContent = totalSellingPriceSum.toFixed(2);
+    grandTotalValueCell.textContent = grandTotal.toFixed(2);
     grandTotalValueCell.style.fontWeight = 'bold';
 }
 
