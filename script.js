@@ -854,23 +854,7 @@ function renderSalesData(allSales) {
 }
 
 // Assumed fetch function that now calls the combined render function
-async function fetchSales() {
-    try {
-        const response = await fetch('/api/sales');
-        if (!response.ok) {
-            throw new Error('Failed to fetch sales');
-        }
-        const salesData = await response.json();
 
-        // Call the combined function with the full data
-        renderSalesData(salesData);
-
-    } catch (error) {
-        console.error('Error fetching sales:', error);
-        // Using console.error instead of showMessageModal
-        console.error('Failed to fetch sales: ' + error.message);
-    }
-}
 
 function showConfirm(message, onConfirm, onCancel = null) {
     // For simplicity, using native confirm. For a custom UI, you'd implement a modal similar to showMessage.
