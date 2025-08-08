@@ -720,13 +720,21 @@ function renderSalesPagination(current, totalPages) {
 }
 
 // This function should be called with the full, unpaginated sales data
-function calculateTotalsFromFullData(allSales) {
+// This function calculates totals and renders the table.
+// It should be called with the full, unpaginated sales data.
+function renderSalesData(allSales) {
     let totalSellingPriceSum = 0;
     const departmentTotals = {
         bar: 0,
         rest: 0,
         others: 0
     };
+    
+    // Check if allSales is null or undefined to prevent errors
+    if (!allSales || !Array.isArray(allSales)) {
+        console.error("Invalid sales data provided.");
+        return;
+    }
 
     allSales.forEach(sale => {
         const totalSellingPrice = sale.sp * sale.number;
@@ -741,17 +749,16 @@ function calculateTotalsFromFullData(allSales) {
         }
     });
 
-    return { totalSellingPriceSum, departmentTotals };
-}
-
-// This function now only renders the page data and uses pre-calculated totals
-function renderSalesTable(sales, grandTotal, departmentTotals) {
     const tbody = document.querySelector('#sales-table tbody');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error("Table body element not found.");
+        return;
+    }
 
     // Clear existing table body
     tbody.innerHTML = '';
-    if (sales.length === 0) {
+
+    if (allSales.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
         cell.colSpan = 9;
@@ -761,41 +768,36 @@ function renderSalesTable(sales, grandTotal, departmentTotals) {
     }
 
     const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
+    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    const canEdit = adminRoles.includes(currentUserRole);
 
-    sales.forEach(sale => {
-        if (sale.profit === undefined || sale.percentageprofit === undefined) {
-            const totalBuyingPrice = sale.bp * sale.number;
-            const totalSellingPrice = sale.sp * sale.number;
-            sale.profit = totalSellingPrice - totalBuyingPrice;
-            sale.percentageprofit = 0;
-            if (totalBuyingPrice !== 0) {
-                sale.percentageprofit = (sale.profit / totalBuyingPrice) * 100;
-            }
-        }
+    allSales.forEach(sale => {
+        // Calculate profit and percentageprofit if they don't exist
+        const totalBuyingPrice = sale.bp * sale.number;
+        const totalSellingPrice = sale.sp * sale.number;
+        const profit = totalSellingPrice - totalBuyingPrice;
+        const percentageprofit = totalBuyingPrice !== 0 ? (profit / totalBuyingPrice) * 100 : 0;
 
         const row = tbody.insertRow();
         row.insertCell().textContent = sale.item;
         row.insertCell().textContent = sale.number;
         row.insertCell().textContent = sale.bp;
         row.insertCell().textContent = sale.sp;
-
-        const totalSellingPrice = sale.sp * sale.number;
         row.insertCell().textContent = totalSellingPrice.toFixed(2);
 
         if (hideProfitColumns) {
             row.insertCell().textContent = 'N/A';
             row.insertCell().textContent = 'N/A';
         } else {
-            row.insertCell().textContent = sale.profit.toFixed(2);
-            row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
+            row.insertCell().textContent = profit.toFixed(2);
+            row.insertCell().textContent = percentageprofit.toFixed(2) + '%';
         }
 
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-        if (adminRoles.includes(currentUserRole)) {
+        if (canEdit) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -833,6 +835,7 @@ function renderSalesTable(sales, grandTotal, departmentTotals) {
     }
 
     // Insert an empty row for spacing between departmental totals and the grand total
+    // This check is now robust and won't throw an error
     if (Object.values(departmentTotals).some(total => total > 0)) {
         tbody.insertRow();
     }
@@ -846,8 +849,27 @@ function renderSalesTable(sales, grandTotal, departmentTotals) {
     grandTotalCell.style.textAlign = 'right';
 
     const grandTotalValueCell = grandTotalRow.insertCell();
-    grandTotalValueCell.textContent = grandTotal.toFixed(2);
+    grandTotalValueCell.textContent = totalSellingPriceSum.toFixed(2);
     grandTotalValueCell.style.fontWeight = 'bold';
+}
+
+// Assumed fetch function that now calls the combined render function
+async function fetchSales() {
+    try {
+        const response = await fetch('/api/sales');
+        if (!response.ok) {
+            throw new Error('Failed to fetch sales');
+        }
+        const salesData = await response.json();
+
+        // Call the combined function with the full data
+        renderSalesData(salesData);
+
+    } catch (error) {
+        console.error('Error fetching sales:', error);
+        // Using console.error instead of showMessageModal
+        console.error('Failed to fetch sales: ' + error.message);
+    }
 }
 
 function showConfirm(message, onConfirm, onCancel = null) {
