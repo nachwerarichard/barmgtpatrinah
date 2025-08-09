@@ -7,7 +7,7 @@ let currentUserRole = localStorage.getItem('userRole') || ''; // Stores the logg
 let currentPage = 1; // For Inventory
 const itemsPerPage = 10;
 let currentSalesPage = 1; // For Sales
-const salesPerPage = 10;
+const salesPerPage = 15;
 let currentExpensesPage = 1; // For Expenses
 const expensesPerPage = 5;
 let currentAuditPage = 1; // For Audit Logs
@@ -814,7 +814,7 @@ function renderSalesTable(sales) {
             const totalCell = totalRow.insertCell();
             totalCell.colSpan = 4;
             const departmentName = department.charAt(0).toUpperCase() + department.slice(1);
-            totalCell.textContent = `${departmentName} Total Selling Price:`;
+            totalCell.textContent = `${departmentName} Total Sales:`;
             totalCell.style.fontWeight = 'bold';
             totalCell.style.textAlign = 'right';
 
@@ -833,7 +833,7 @@ function renderSalesTable(sales) {
     const grandTotalRow = tbody.insertRow();
     const grandTotalCell = grandTotalRow.insertCell();
     grandTotalCell.colSpan = 4;
-    grandTotalCell.textContent = 'Grand Total Selling Price:';
+    grandTotalCell.textContent = 'Grand Total Sales:';
     grandTotalCell.style.fontWeight = 'bold';
     grandTotalCell.style.textAlign = 'right';
 
