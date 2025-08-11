@@ -472,6 +472,9 @@ async function logout() {
 }
 
 // --- Inventory Functions ---
+let currentInventoryPage = 1;
+const inventoryItemsPerPage = 20;
+
 async function fetchInventory() {
     try {
         // Get filter inputs
