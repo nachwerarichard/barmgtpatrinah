@@ -116,7 +116,7 @@
     <div class="filter-controls sales-filter-controls">
         <label for="sales-date-filter" style="margin-bottom:0;">Filter by Date:</label>
         <input type="date" id="sales-date-filter">
-        <button onclick="fetchSales()"><i class="fas fa-filter"></i> Apply Filters</button>
+        <button onclick="fetchSales()"> Search<i class="fas fa-search"></i></button>
     </div>
     <button class="export-button" onclick="exportTableToExcel('sales-table', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
     <div class="table-responsive">
@@ -160,7 +160,7 @@
                 <div class="filter-controls expenses-filter-controls">
                     <label for="expenses-date-filter" style="margin-bottom:0;">Filter by Date:</label>
                     <input type="date" id="expenses-date-filter">
-                    <button onclick="fetchExpenses()"><i class="fas fa-filter"></i> Apply Filters</button>
+                    <button onclick="fetchExpenses()">Search<i class="fas fa-search"></i></button>
                 </div>
                 <div class="table-responsive">
                     <table id="expenses-table" class="expenses-table">
@@ -201,7 +201,7 @@
                     <input type="date" id="cash-filter-date">
                     <!--<label for="cash-filter-responsible">Filter by Responsible Person:</label>
                     <input type="text" id="cash-filter-responsible" placeholder="e.g., John Doe">-->
-                    <button onclick="fetchCashJournal()"><i class="fas fa-filter"></i> Apply Filters</button>
+                    <button onclick="fetchCashJournal()">Search<i class="fas fa-search"></i></button>
                 </div>
                 <div class="table-responsive">
                     <table id="cash-journal-table">
