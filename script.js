@@ -475,11 +475,6 @@ async function logout() {
 let currentInventoryPage = 1;
 const inventoryItemsPerPage = 20;
 
-function renderInventoryPagination(current, totalPages) {
-    // This is a placeholder function. You would implement the logic here
-    // to create 'Prev' and 'Next' buttons and page number display.
-    console.log(`Current Page: ${current}, Total Pages: ${totalPages}`);
-}
 
 async function fetchInventory() {
     try {
@@ -528,7 +523,7 @@ async function fetchInventory() {
         const result = await response.json();
         if (result && Array.isArray(result.data)) {
             renderInventoryTable(result.data);
-            renderInventoryPagination(result.page, result.pages);
+            renderPagination(result.page, result.pages);
         } else {
             renderInventoryTable([]);
         }
