@@ -474,33 +474,56 @@ async function logout() {
 // --- Inventory Functions ---
 async function fetchInventory() {
     try {
+        // Get filter inputs
         const itemFilterInput = document.getElementById('search-inventory-item');
         const lowFilterInput = document.getElementById('search-inventory-low');
-        // Get the date input element and its value
         const dateFilterInput = document.getElementById('search-inventory-date');
 
         const itemFilter = itemFilterInput ? itemFilterInput.value : '';
         const lowFilter = lowFilterInput ? lowFilterInput.value : '';
-        // Get the date value, if any
         const dateFilter = dateFilterInput ? dateFilterInput.value : '';
 
-        let url = `${API_BASE_URL}/inventory`;
         const params = new URLSearchParams();
+        // Add item and low stock filters if they exist
         if (itemFilter) params.append('item', itemFilter);
         if (lowFilter) params.append('low', lowFilter);
-        // Add the date parameter to the URL if a date is selected
-        if (dateFilter) params.append('date', dateFilter);
-        params.append('page', currentPage);
-        params.append('limit', itemsPerPage);
 
-        url += `?${params.toString()}`;
+        // Correctly handle the date filter by sending a date range
+        if (dateFilter) {
+            // Create a Date object from the input value
+            const selectedDate = new Date(dateFilter);
+            
+            // Set the start date to the beginning of the selected day in UTC
+            const startDate = new Date(selectedDate.setUTCHours(0, 0, 0, 0));
+            
+            // Set the end date to the end of the selected day in UTC
+            const endDate = new Date(selectedDate.setUTCHours(23, 59, 59, 999));
+            
+            // Pass the normalized start and end dates to the API
+            // The API needs to be able to handle these parameters (e.g., /inventory?start_date=...&end_date=...)
+            params.append('start_date', startDate.toISOString());
+            params.append('end_date', endDate.toISOString());
+        }
+
+        params.append('page', currentInventoryPage);
+        params.append('limit', inventoryItemsPerPage);
+
+        const url = `${API_BASE_URL}/inventory?${params.toString()}`;
 
         const response = await authenticatedFetch(url);
-        if (!response) return;
+        if (!response) {
+            showMessage('Failed to fetch inventory. No response from server.');
+            return;
+        }
 
         const result = await response.json();
-        renderInventoryTable(result.data);
-        renderPagination(result.page, result.pages);
+        if (result && Array.isArray(result.data)) {
+            renderInventoryTable(result.data);
+            renderInventoryPagination(result.page, result.pages);
+        } else {
+            renderInventoryTable([]);
+        }
+
     } catch (error) {
         console.error('Error fetching inventory:', error);
         showMessage('Failed to fetch inventory: ' + error.message);
