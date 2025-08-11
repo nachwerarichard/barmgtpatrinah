@@ -476,14 +476,20 @@ async function fetchInventory() {
     try {
         const itemFilterInput = document.getElementById('search-inventory-item');
         const lowFilterInput = document.getElementById('search-inventory-low');
+        // Get the date input element and its value
+        const dateFilterInput = document.getElementById('search-inventory-date');
 
         const itemFilter = itemFilterInput ? itemFilterInput.value : '';
         const lowFilter = lowFilterInput ? lowFilterInput.value : '';
+        // Get the date value, if any
+        const dateFilter = dateFilterInput ? dateFilterInput.value : '';
 
         let url = `${API_BASE_URL}/inventory`;
         const params = new URLSearchParams();
         if (itemFilter) params.append('item', itemFilter);
         if (lowFilter) params.append('low', lowFilter);
+        // Add the date parameter to the URL if a date is selected
+        if (dateFilter) params.append('date', dateFilter);
         params.append('page', currentPage);
         params.append('limit', itemsPerPage);
 
@@ -503,7 +509,7 @@ async function fetchInventory() {
 
 function renderPagination(current, totalPages) {
     const container = document.getElementById('pagination');
-    if (!container) return; // Exit if container not found
+    if (!container) return;
     container.innerHTML = '';
 
     for (let i = 1; i <= totalPages; i++) {
@@ -517,6 +523,7 @@ function renderPagination(current, totalPages) {
         container.appendChild(btn);
     }
 }
+
 
 
 function renderInventoryTable(inventory) {
