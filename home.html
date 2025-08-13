@@ -78,7 +78,10 @@
                     <button onclick="fetchInventory()"> Search<i class="fas fa-search"></i></button>
                 </div>
                 <div class="table-responsive">
-                    <table id="inventory-table">
+
+                                        <table id="inventory-table">
+                                               <button class="export-button" onclick="exportTableToExcel('table-responsive', 'Sales_Report_SheetJS')">Export to Excel (XLSX)</button>
+ 
                         <thead>
                             <tr>
                                 <th>Item</th>
