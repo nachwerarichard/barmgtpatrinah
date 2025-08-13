@@ -785,9 +785,9 @@ function renderSalesTable(sales) {
             row.insertCell().textContent = 'N/A';
             row.insertCell().textContent = 'N/A';
         } else {
-            row.insertCell().textContent = sale.profit.toFixed(2);
-            row.insertCell().textContent = sale.percentageprofit.toFixed(2) + '%';
-        }
+  row.insertCell().textContent = Math.round(sale.profit);
+  row.insertCell().textContent = Math.round(sale.percentageprofit) + '%';
+}
 
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
