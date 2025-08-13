@@ -5,7 +5,7 @@ let currentUserRole = localStorage.getItem('userRole') || ''; // Stores the logg
 
 // Pagination variables for different sections
 let currentPage = 1; // For Inventory
-const itemsPerPage = 10;
+const itemsPerPage = 30;
 let currentSalesPage = 1; // For Sales
 const salesPerPage = 15;
 let currentExpensesPage = 1; // For Expenses
