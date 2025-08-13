@@ -1058,7 +1058,7 @@ const BUYING_PRICES ={
     "bar mountain dew": 771,
     "bar mirinda fruity ": 771,
     "bar mirinda fanta": 771,
-    "bar Novida": 771,
+    "bar novida": 771,
     "bar pepsi": 771,
     "bar mirinda apple":771,
     "bar cocacola":771,
