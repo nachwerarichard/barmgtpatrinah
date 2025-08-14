@@ -785,9 +785,9 @@ function renderSalesTable(sales) {
             row.insertCell().textContent = 'N/A';
             row.insertCell().textContent = 'N/A';
         } else {
-  row.insertCell().textContent = Math.round(sale.profit);
-  row.insertCell().textContent = Math.round(sale.percentageprofit) + '%';
-}
+            row.insertCell().textContent = Math.round(sale.profit);
+            row.insertCell().textContent = Math.round(sale.percentageprofit) + '%';
+        }
 
         row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
         const actionsCell = row.insertCell();
@@ -820,7 +820,14 @@ function renderSalesTable(sales) {
             const totalRow = tbody.insertRow();
             const totalCell = totalRow.insertCell();
             totalCell.colSpan = 4;
-            const departmentName = department.charAt(0).toUpperCase() + department.slice(1);
+            // --- MODIFICATION HERE ---
+            let departmentName;
+            if (department === 'rest') {
+                departmentName = 'Restaurant';
+            } else {
+                departmentName = department.charAt(0).toUpperCase() + department.slice(1);
+            }
+            // --- END MODIFICATION ---
             totalCell.textContent = `${departmentName} Total Sales:`;
             totalCell.style.fontWeight = 'bold';
             totalCell.style.textAlign = 'right';
@@ -980,6 +987,7 @@ async function submitSaleForm(event) {
         showMessage('Failed to save sale entry: ' + error.message);
     }
 }
+
 
 function populateSaleForm(sale) {
     const idInput = document.getElementById('sale-id');
