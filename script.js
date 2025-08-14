@@ -476,20 +476,17 @@ async function fetchInventory() {
     try {
         const itemFilterInput = document.getElementById('search-inventory-item');
         const lowFilterInput = document.getElementById('search-inventory-low');
-        // Get the date input element and its value
         const dateFilterInput = document.getElementById('search-inventory-date');
 
         const itemFilter = itemFilterInput ? itemFilterInput.value : '';
         const lowFilter = lowFilterInput ? lowFilterInput.value : '';
-        // Get the date value, if any
         const dateFilter = dateFilterInput ? dateFilterInput.value : '';
 
         let url = `${API_BASE_URL}/inventory`;
         const params = new URLSearchParams();
         if (itemFilter) params.append('item', itemFilter);
         if (lowFilter) params.append('low', lowFilter);
-        // Add the date parameter to the URL if a date is selected
-        if (dateFilter) params.append('date', dateFilter);
+        if (dateFilter) params.append('date', dateFilter); // Add date to params
         params.append('page', currentPage);
         params.append('limit', itemsPerPage);
 
@@ -499,8 +496,23 @@ async function fetchInventory() {
         if (!response) return;
 
         const result = await response.json();
-        renderInventoryTable(result.data);
-        renderPagination(result.page, result.pages);
+
+        // Check if the 'date' filter was used
+        let inventoryData;
+        if (dateFilter) {
+            // For the daily report, the data is in the 'report' property
+            inventoryData = result.report;
+            // Since the daily report is not paginated, we don't render pagination
+            renderPagination(1, 1);
+        } else {
+            // For the standard paginated list, the data is in the 'data' property
+            inventoryData = result.data;
+            renderPagination(result.page, result.pages);
+        }
+        
+        // Pass the correct data array to the rendering function
+        renderInventoryTable(inventoryData);
+
     } catch (error) {
         console.error('Error fetching inventory:', error);
         showMessage('Failed to fetch inventory: ' + error.message);
