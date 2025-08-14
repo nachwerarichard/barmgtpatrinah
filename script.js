@@ -834,11 +834,7 @@ function renderSalesTable(sales) {
             editButton.onclick = () => populateSaleForm(sale);
             actionsCell.appendChild(editButton);
 
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'delete';
-            deleteButton.onclick = () => deleteSale(sale._id);
-            actionsCell.appendChild(deleteButton);
+           
         } else {
             actionsCell.textContent = 'View Only';
         }
