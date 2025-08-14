@@ -1555,7 +1555,7 @@ async function generateReports() {
     // Use lowercase keys for consistency.
     const departmentPrefixes = {
         'bar': 'Bar',
-        'rest': 'Rest',
+        'rest': 'Restaurant',
         'conf': 'Conference',
         'gardens': 'Gardens',
         'accommodation': 'Accommodation'
