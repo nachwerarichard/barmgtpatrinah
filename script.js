@@ -573,11 +573,6 @@ function renderInventoryTable(inventory) {
             editButton.onclick = () => populateInventoryForm(item);
             actionsCell.appendChild(editButton);
             
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.className = 'delete';
-                    deleteButton.onclick = () => deleteInventory(item._id);
-                    actionsCell.appendChild(deleteButton);
         } else {
             actionsCell.textContent = 'View Only';
         }
