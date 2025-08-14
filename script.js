@@ -603,7 +603,6 @@ async function deleteInventory(id) {
             }
         }
 
-
 async function submitInventoryForm(event) {
     event.preventDefault();
     // Roles allowed to add new inventory items (POST)
@@ -640,7 +639,9 @@ async function submitInventoryForm(event) {
 
     try {
         let response;
-        if (id) { // This is an edit operation (PUT)
+        // Check if id is a non-empty string.
+        if (id && id !== '') { 
+            // This is an edit operation (PUT)
             if (!allowedToEditInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit inventory.');
                 return;
@@ -649,7 +650,8 @@ async function submitInventoryForm(event) {
                 method: 'PUT',
                 body: JSON.stringify(inventoryData)
             });
-        } else { // This is a new item creation (POST)
+        } else {
+            // This is a new item creation (POST)
             if (!allowedToAddInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: You do not have permission to add inventory.');
                 return;
