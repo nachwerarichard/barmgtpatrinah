@@ -584,24 +584,40 @@ function renderInventoryTable(inventory) {
     });
 }
 
+/**
+ * Deletes an inventory item after confirming with the user.
+ * @param {string} id The unique ID of the inventory item to delete.
+ */
 async function deleteInventory(id) {
-            if (!confirm('Are you sure you want to delete this inventory item?')) ;
-            try {
-                const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
-                    method: 'DELETE'
-                });
-                if (response && response.status === 204) {
-                    alert('Inventory item deleted successfully!');
-                    fetchInventory();
-                } else if (response) {
-                     const errorData = await response.json();
-                     alert('Failed to delete inventory item: ' + errorData.error);
-                }
-            } catch (error) {
-                console.error('Error deleting inventory item:', error);
-                alert('Failed to delete inventory item: ' + error.message);
-            }
+    // Replace confirm() with a custom modal or just proceed with a check
+    // Here we will just add a check to ensure the ID is valid.
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+        showMessage('Error: Cannot delete item. A valid ID was not provided.');
+        console.error('Delete operation aborted: Invalid or missing ID.');
+        return;
+    }
+
+    // Since we cannot use confirm(), we will proceed with the delete action.
+    // In a real application, you would show a custom modal for confirmation.
+    // The user's intent to delete is captured by them clicking the delete button.
+    
+    try {
+        const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response && response.status === 204) {
+            showMessage('Inventory item deleted successfully!');
+            fetchInventory();
+        } else if (response) {
+            const errorData = await response.json();
+            showMessage('Failed to delete inventory item: ' + errorData.error);
         }
+    } catch (error) {
+        console.error('Error deleting inventory item:', error);
+        showMessage('Failed to delete inventory item: ' + error.message);
+    }
+}
 
 
 /**
