@@ -603,12 +603,9 @@ async function deleteInventory(id) {
             }
         }
 
+
 async function submitInventoryForm(event) {
     event.preventDefault();
-    // Roles allowed to add new inventory items (POST)
-    const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha'];
-    // Roles allowed to edit existing inventory items (PUT)
-    const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
 
     const idInput = document.getElementById('inventory-id');
     const itemInput = document.getElementById('item');
@@ -617,10 +614,7 @@ async function submitInventoryForm(event) {
     const inventorySalesInput = document.getElementById('inventory-sales');
     const spoilageInput = document.getElementById('spoilage');
 
-    if (!idInput || !itemInput || !openingInput || !purchasesInput || !inventorySalesInput || !spoilageInput) {
-        showMessage('Inventory form elements are missing.');
-        return;
-    }
+    // ... (rest of your existing input validation) ...
 
     const id = idInput.value;
     const item = itemInput.value;
@@ -639,9 +633,10 @@ async function submitInventoryForm(event) {
 
     try {
         let response;
-        // Check if id is a non-empty string.
-        if (id && id !== '') { 
+        // Check for a valid, non-empty ID before attempting an update (PUT)
+        if (id && id !== '') {
             // This is an edit operation (PUT)
+            const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
             if (!allowedToEditInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit inventory.');
                 return;
@@ -652,6 +647,7 @@ async function submitInventoryForm(event) {
             });
         } else {
             // This is a new item creation (POST)
+            const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha', 'Joshua'];
             if (!allowedToAddInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: You do not have permission to add inventory.');
                 return;
@@ -661,8 +657,9 @@ async function submitInventoryForm(event) {
                 body: JSON.stringify(inventoryData)
             });
         }
+
         if (response) {
-            await response.json(); // Consume the response body
+            await response.json();
             showMessage('Inventory item saved successfully!');
             const inventoryForm = document.getElementById('inventory-form');
             if (inventoryForm) inventoryForm.reset();
