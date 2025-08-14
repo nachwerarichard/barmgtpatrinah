@@ -303,7 +303,6 @@ function showSection(sectionId) {
 
     // --- Fetch Data based on Section and Role ---
     if (sectionId === 'inventory') {
-        fetchInventory();
     } else if (sectionId === 'sales') {
         // For Martha/Joshua, we now fetch data, but the render function will hide edit/delete buttons
         fetchSales();
