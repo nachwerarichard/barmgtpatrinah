@@ -604,6 +604,11 @@ async function deleteInventory(id) {
         }
 
 
+/**
+ * Submits the inventory form, handling both new item creation (POST) and
+ * existing item updates (PUT).
+ * @param {Event} event The form submission event.
+ */
 async function submitInventoryForm(event) {
     event.preventDefault();
 
@@ -614,7 +619,11 @@ async function submitInventoryForm(event) {
     const inventorySalesInput = document.getElementById('inventory-sales');
     const spoilageInput = document.getElementById('spoilage');
 
-    // ... (rest of your existing input validation) ...
+    // Basic check for form elements
+    if (!idInput || !itemInput || !openingInput || !purchasesInput || !inventorySalesInput || !spoilageInput) {
+        showMessage('Inventory form elements are missing.');
+        return;
+    }
 
     const id = idInput.value;
     const item = itemInput.value;
@@ -623,7 +632,7 @@ async function submitInventoryForm(event) {
     const sales = parseInt(inventorySalesInput.value);
     const spoilage = parseInt(spoilageInput.value);
 
-    // Basic validation
+    // Basic validation to ensure fields are filled and are numbers
     if (!item || isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage)) {
         showMessage('Please fill in all inventory fields correctly with valid numbers.');
         return;
@@ -633,7 +642,7 @@ async function submitInventoryForm(event) {
 
     try {
         let response;
-        // Check for a valid, non-empty ID before attempting an update (PUT)
+        // The core fix: Check if 'id' is a non-empty string to determine if it's an update.
         if (id && id !== '') {
             // This is an edit operation (PUT)
             const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
@@ -658,12 +667,13 @@ async function submitInventoryForm(event) {
             });
         }
 
+        // Handle the response regardless of method
         if (response) {
-            await response.json();
+            await response.json(); // Consume the response body
             showMessage('Inventory item saved successfully!');
             const inventoryForm = document.getElementById('inventory-form');
             if (inventoryForm) inventoryForm.reset();
-            if (idInput) idInput.value = ''; // Clear ID after submission
+            if (idInput) idInput.value = ''; // Ensure ID is cleared after submission
             fetchInventory();
         }
     } catch (error) {
@@ -671,6 +681,7 @@ async function submitInventoryForm(event) {
         showMessage('Failed to save inventory item: ' + error.message);
     }
 }
+
 
 function populateInventoryForm(item) {
     // Only allow populating for editing if the user has permission to edit
