@@ -569,7 +569,7 @@ function renderInventoryTable(inventory) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
-            editButton.onclick = () => populateInventoryForm(item);
+            editButton.onclick = () => openEditModal(item);
             actionsCell.appendChild(editButton);
             
         } else {
