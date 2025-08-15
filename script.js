@@ -536,12 +536,12 @@ function renderPagination(current, totalPages) {
 }
 
 
-
 function renderInventoryTable(inventory) {
-     console.log('Current User Role:', currentUserRole); // ADD THIS LINE
+    console.log('Current User Role:', currentUserRole);
+    console.log('Inventory Data:', inventory); // Add this line to inspect the full data
 
     const tbody = document.querySelector('#inventory-table tbody');
-    if (!tbody) return; // Exit if tbody not found
+    if (!tbody) return;
 
     tbody.innerHTML = '';
     if (inventory.length === 0) {
@@ -554,6 +554,12 @@ function renderInventoryTable(inventory) {
     }
 
     inventory.forEach(item => {
+        // Add this check to confirm each item has an _id before proceeding
+        if (!item._id) {
+            console.error('An inventory item is missing the _id field:', item);
+            return; // Skip this item to prevent errors
+        }
+
         const row = tbody.insertRow();
         row.insertCell().textContent = item.item;
         row.insertCell().textContent = item.opening;
@@ -564,8 +570,6 @@ function renderInventoryTable(inventory) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        // Only Nachwera Richard, Nelson, Florence can edit inventory
-        // Martha can view but not edit
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
@@ -573,12 +577,12 @@ function renderInventoryTable(inventory) {
             editButton.className = 'edit';
             editButton.onclick = () => openEditModal(item);
             actionsCell.appendChild(editButton);
-            
         } else {
             actionsCell.textContent = 'View Only';
         }
     });
 }
+
 
 /**
  * Deletes an inventory item after confirming with the user.
