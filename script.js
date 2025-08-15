@@ -538,6 +538,8 @@ function renderPagination(current, totalPages) {
 
 
 function renderInventoryTable(inventory) {
+     console.log('Current User Role:', currentUserRole); // ADD THIS LINE
+
     const tbody = document.querySelector('#inventory-table tbody');
     if (!tbody) return; // Exit if tbody not found
 
