@@ -538,7 +538,7 @@ function renderPagination(current, totalPages) {
 
 function renderInventoryTable(inventory) {
     console.log('Current User Role:', currentUserRole);
-    console.log('Inventory Data:', inventory); // Add this line to inspect the full data
+    console.log('Inventory Data:', inventory);
 
     const tbody = document.querySelector('#inventory-table tbody');
     if (!tbody) return;
@@ -554,12 +554,6 @@ function renderInventoryTable(inventory) {
     }
 
     inventory.forEach(item => {
-        // Add this check to confirm each item has an _id before proceeding
-        if (!item._id) {
-            console.error('An inventory item is missing the _id field:', item);
-            return; // Skip this item to prevent errors
-        }
-
         const row = tbody.insertRow();
         row.insertCell().textContent = item.item;
         row.insertCell().textContent = item.opening;
@@ -571,7 +565,9 @@ function renderInventoryTable(inventory) {
         actionsCell.className = 'actions';
 
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-        if (adminRoles.includes(currentUserRole)) {
+
+        // We only create an edit button if the user has permission AND the item has an _id
+        if (adminRoles.includes(currentUserRole) && item._id) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
@@ -582,6 +578,7 @@ function renderInventoryTable(inventory) {
         }
     });
 }
+
 
 
 /**
