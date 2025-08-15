@@ -693,28 +693,6 @@ async function submitInventoryForm(event) {
 }
 
 
-function populateInventoryForm(item) {
-    // Only allow populating for editing if the user has permission to edit
-    const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
-    if (!allowedToEditInventory.includes(currentUserRole)) {
-        showMessage('Permission Denied: You cannot edit inventory items.');
-        return;
-    }
-
-    const idInput = document.getElementById('inventory-id');
-    const itemInput = document.getElementById('item');
-    const openingInput = document.getElementById('opening');
-    const purchasesInput = document.getElementById('purchases');
-    const inventorySalesInput = document.getElementById('inventory-sales');
-    const spoilageInput = document.getElementById('spoilage');
-
-    if (idInput) idInput.value = item._id;
-    if (itemInput) itemInput.value = item.item;
-    if (openingInput) openingInput.value = item.opening;
-    if (purchasesInput) purchasesInput.value = item.purchases;
-    if (inventorySalesInput) inventorySalesInput.value = item.sales;
-    if (spoilageInput) spoilageInput.value = item.spoilage;
-}
 
 // --- Sales Functions ---
 async function fetchSales() {
