@@ -535,7 +535,6 @@ function renderPagination(current, totalPages) {
     }
 }
 
-
 function renderInventoryTable(inventory) {
     console.log('Current User Role:', currentUserRole);
     console.log('Inventory Data:', inventory);
@@ -544,16 +543,22 @@ function renderInventoryTable(inventory) {
     if (!tbody) return;
 
     tbody.innerHTML = '';
-    if (inventory.length === 0) {
+
+    // Filter out items where the 'item' name starts with 'rest' (case-insensitive)
+    const filteredInventory = inventory.filter(item => 
+        !item.item.toLowerCase().startsWith('rest')
+    );
+
+    if (filteredInventory.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
         cell.colSpan = 7;
-        cell.textContent = 'No inventory items found.';
+        cell.textContent = 'No inventory items found, or all items were filtered out.';
         cell.style.textAlign = 'center';
         return;
     }
 
-    inventory.forEach(item => {
+    filteredInventory.forEach(item => {
         const row = tbody.insertRow();
         row.insertCell().textContent = item.item;
         row.insertCell().textContent = item.opening;
@@ -578,8 +583,6 @@ function renderInventoryTable(inventory) {
         }
     });
 }
-
-
 
 /**
  * Deletes an inventory item after confirming with the user.
