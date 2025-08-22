@@ -266,8 +266,8 @@ function showSection(sectionId) {
         'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-        'Martha': ['inventory', 'sales', 'expenses', 'cash-management'], // Martha can now view Inventory
-        'Joshua': ['inventory', 'sales'] // Joshua can view these
+        'Martha': [ 'sales', 'expenses', 'cash-management'], // Martha can now view Inventory
+        'Joshua': [ 'sales'] // Joshua can view these
     };
 
     // --- Role-based Access Check ---
@@ -278,9 +278,9 @@ function showSection(sectionId) {
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admin default
         } else if (currentUserRole === 'Martha') {
-            showSection('inventory'); // Martha default
+            showSection('sales'); // Martha default
         } else if (currentUserRole === 'Joshua') {
-            showSection('inventory'); // Joshua default
+            showSection('sales'); // Joshua default
         }
         return; // Prevent further execution for unauthorized access
     }
