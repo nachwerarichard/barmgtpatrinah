@@ -535,6 +535,12 @@ function renderPagination(current, totalPages) {
     }
 }
 
+/**
+ * Renders the inventory data into a table on the page.
+ * It now includes a fix to recalculate the closing stock on the frontend
+ * to ensure accuracy, especially when viewing a daily report.
+ * @param {Array<Object>} inventory - An array of inventory item objects.
+ */
 function renderInventoryTable(inventory) {
     console.log('Current User Role:', currentUserRole);
     console.log('Inventory Data:', inventory);
@@ -561,11 +567,22 @@ function renderInventoryTable(inventory) {
     filteredInventory.forEach(item => {
         const row = tbody.insertRow();
         row.insertCell().textContent = item.item;
-        row.insertCell().textContent = item.opening;
-        row.insertCell().textContent = item.purchases;
-        row.insertCell().textContent = item.sales;
-        row.insertCell().textContent = item.spoilage;
-        row.insertCell().textContent = item.closing;
+        
+        // Use a default of 0 if a field is not present to prevent errors.
+        const opening = item.opening || 0;
+        const purchases = item.purchases || 0;
+        const sales = item.sales || 0;
+        const spoilage = item.spoilage || 0;
+        
+        // --- KEY CHANGE: Recalculate closing stock here on the frontend ---
+        const calculatedClosing = opening + purchases - sales - spoilage;
+
+        row.insertCell().textContent = opening;
+        row.insertCell().textContent = purchases;
+        row.insertCell().textContent = sales;
+        row.insertCell().textContent = spoilage;
+        // Display the newly calculated closing stock
+        row.insertCell().textContent = calculatedClosing; 
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
@@ -578,12 +595,14 @@ function renderInventoryTable(inventory) {
             editButton.className = 'edit';
             editButton.onclick = () => openEditModal(item);
             actionsCell.appendChild(editButton);
-              
+            
         } else {
             actionsCell.textContent = 'View Only';
         }
     });
 }
+
+
 
 /**
  * Deletes an inventory item after confirming with the user.
