@@ -74,15 +74,15 @@ function showMessage(message, callback = null) {
 }
 
 /**
- * Applies specific UI restrictions for 'Martha' and 'Joshua' roles in Sales, Expenses, and Cash Management sections.
+ * Applies specific UI restrictions for 'Mercy' and 'Joshua' roles in Sales, Expenses, and Cash Management sections.
  * Hides headings, filters, and tables, showing only the forms for these roles.
  * @param {string} sectionId The ID of the currently active section.
  */
 function applyBarStaffUIRestrictions(sectionId) {
-    // Check if the current user is 'Martha' or 'Joshua'
-    const isMartha = currentUserRole === 'Martha';
+    // Check if the current user is 'Mercy' or 'Joshua'
+    const isMercy = currentUserRole === 'Mercy';
     const isJoshua = currentUserRole === 'Joshua';
-    const isBarStaff = isMartha || isJoshua;
+    const isBarStaff = isMercy || isJoshua;
 
     // Sales section specific elements
     const salesHeading = document.querySelector('#sales-section .sales-records-heading');
@@ -102,7 +102,7 @@ function applyBarStaffUIRestrictions(sectionId) {
     const cashFilter = document.querySelector('#cash-management-section .filter-controls');
     const cashTable = document.getElementById('cash-journal-table');
 
-    // Inventory section specific elements (for Joshua and Martha)
+    // Inventory section specific elements (for Joshua and Mercy)
     const inventoryHeading = document.querySelector('#inventory-section .inventory-records-heading');
     const inventoryFilter = document.querySelector('#inventory-section .inventory-filter-controls');
     const inventoryPagination = document.querySelector('#inventory-section .pagination-controls');
@@ -125,11 +125,11 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (salesFilter) salesFilter.style.display = 'flex';
             if (salesTable) salesTable.style.display = 'table';
             if (paginationControl) paginationControl.style.display = 'block';
-            // Hide sales export button for Martha and Joshua
+            // Hide sales export button for Mercy and Joshua
             if (excelbtnTable) excelbtnTable.style.display = 'none';
         }
 
-        // Expenses Section (Martha & Joshua)
+        // Expenses Section (Mercy & Joshua)
         if (sectionId === 'expenses') {
             if (expensesHeading) expensesHeading.style.display = 'block';
             if (expensesFilter) expensesFilter.style.display = 'flex';
@@ -137,15 +137,15 @@ function applyBarStaffUIRestrictions(sectionId) {
             if (expensePag) expensePag.style.display = 'block';
         }
 
-        // Cash Management Section (Martha & Joshua)
+        // Cash Management Section (Mercy & Joshua)
         if (sectionId === 'cash-management') {
             if (cashHeading) cashHeading.style.display = 'block';
             if (cashFilter) cashFilter.style.display = 'flex';
             if (cashTable) cashTable.style.display = 'table';
         }
 
-        // Inventory Section (For Joshua and Martha)
-        if (sectionId === 'inventory' && (isJoshua || isMartha)) {
+        // Inventory Section (For Joshua and Mercy)
+        if (sectionId === 'inventory' && (isJoshua || isMercy)) {
             if (inventoryHeading) inventoryHeading.style.display = 'block';
             if (inventoryFilter) inventoryFilter.style.display = 'flex';
             if (inventoryPagination) inventoryPagination.style.display = 'block';
@@ -213,9 +213,9 @@ function updateUIForUserRole() {
                 button.style.display = 'inline-block';
             });
         }
-        // Martha: Inventory, Sales, Expenses, Cash Management
-        else if (currentUserRole === 'Martha') {
-            if (document.getElementById('nav-inventory')) document.getElementById('nav-inventory').style.display = 'inline-block'; // Martha can now see Inventory
+        // Mercy: Inventory, Sales, Expenses, Cash Management
+        else if (currentUserRole === 'Mercy') {
+            if (document.getElementById('nav-inventory')) document.getElementById('nav-inventory').style.display = 'inline-block'; // Mercy can now see Inventory
             if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
             if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
             if (document.getElementById('nav-cash-management')) document.getElementById('nav-cash-management').style.display = 'inline-block';
@@ -233,8 +233,8 @@ function updateUIForUserRole() {
         // Show default section based on role
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admins start with inventory
-        } else if (currentUserRole === 'Martha') {
-            showSection('inventory'); // Martha now starts with inventory
+        } else if (currentUserRole === 'Mercy') {
+            showSection('inventory'); // Mercy now starts with inventory
         } else if (currentUserRole === 'Joshua') {
             showSection('inventory'); // Joshua starts with inventory
         }
@@ -266,7 +266,7 @@ function showSection(sectionId) {
         'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
-        'Martha': [ 'sales', 'expenses', 'cash-management'], // Martha can now view Inventory
+        'Mercy': [ 'sales', 'expenses', 'cash-management'], // Mercy can now view Inventory
         'Joshua': [ 'sales'] // Joshua can view these
     };
 
@@ -277,8 +277,8 @@ function showSection(sectionId) {
         const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admin default
-        } else if (currentUserRole === 'Martha') {
-            showSection('sales'); // Martha default
+        } else if (currentUserRole === 'Mercy') {
+            showSection('sales'); // Mercy default
         } else if (currentUserRole === 'Joshua') {
             showSection('sales'); // Joshua default
         }
@@ -304,10 +304,10 @@ function showSection(sectionId) {
     // --- Fetch Data based on Section and Role ---
     if (sectionId === 'inventory') {
     } else if (sectionId === 'sales') {
-        // For Martha/Joshua, we now fetch data, but the render function will hide edit/delete buttons
+        // For Mercy/Joshua, we now fetch data, but the render function will hide edit/delete buttons
         fetchSales();
     } else if (sectionId === 'expenses') {
-        // For Martha/Joshua, we now fetch data, but the render function will hide edit/delete buttons
+        // For Mercy/Joshua, we now fetch data, but the render function will hide edit/delete buttons
         fetchExpenses();
     } else if (sectionId === 'cash-management') {
         // Set default date for new entry and filter
@@ -692,7 +692,7 @@ async function submitInventoryForm(event) {
             });
         } else {
             // This is a new item creation (POST)
-            const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha', 'Joshua'];
+            const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Mercy', 'Joshua'];
             if (!allowedToAddInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: You do not have permission to add inventory.');
                 return;
@@ -776,7 +776,7 @@ function renderSalesTable(sales) {
         return;
     }
 
-    const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
+    const hideProfitColumns = ['Mercy', 'Joshua'].includes(currentUserRole);
     // Initialize a variable to hold the total of all selling prices
     let totalSellingPriceSum = 0;
     // Initialize an object to hold departmental totals
@@ -927,7 +927,7 @@ async function deleteSale(id) {
 async function submitSaleForm(event) {
     event.preventDefault();
     // Roles allowed to record sales
-    const allowedToRecordSales = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    const allowedToRecordSales = ['Nachwera Richard', 'Mercy', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordSales.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record sales.');
         return;
@@ -1350,7 +1350,7 @@ function renderExpensesTable(expenses) {
 
 async function submitExpenseForm(event) {
     event.preventDefault();
-    const allowedToRecordExpenses = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    const allowedToRecordExpenses = ['Nachwera Richard', 'Mercy', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordExpenses.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record expenses.');
         return;
@@ -1505,7 +1505,7 @@ function renderCashJournalTable(records) {
 async function submitCashJournalForm(event) {
     event.preventDefault();
     // Roles allowed to record cash entries
-    const allowedToRecordCash = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    const allowedToRecordCash = ['Nachwera Richard', 'Mercy', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordCash.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record cash entries.');
         return;
@@ -2030,13 +2030,13 @@ document.addEventListener('DOMContentLoaded', () => {
         auditSearchInput.addEventListener('input', debouncedFetchAuditLogs);
     }
 
-    // Determine if the current user is Martha or Joshua
-    const isMarthaOrJoshua = ['Martha', 'Joshua'].includes(currentUserRole);
+    // Determine if the current user is Mercy or Joshua
+    const isMercyOrJoshua = ['Mercy', 'Joshua'].includes(currentUserRole);
 
     // Conditionally attach event listeners for Export buttons
     const salesExportButton = document.getElementById('export-sales-excel');
     if (salesExportButton) {
-        if (isMarthaOrJoshua) {
+        if (isMercyOrJoshua) {
             salesExportButton.style.display = 'none'; // Hide the button
         } else {
             salesExportButton.style.display = 'inline-block'; // Ensure visible for other roles
@@ -2046,7 +2046,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const expensesExportButton = document.getElementById('export-expenses-excel');
     if (expensesExportButton) {
-        if (isMarthaOrJoshua) {
+        if (isMercyOrJoshua) {
             expensesExportButton.style.display = 'none';
         } else {
             expensesExportButton.style.display = 'inline-block';
@@ -2056,7 +2056,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cashExportButton = document.getElementById('export-cash-journal-excel');
     if (cashExportButton) {
-        if (isMarthaOrJoshua) {
+        if (isMercyOrJoshua) {
             cashExportButton.style.display = 'none';
         } else {
             cashExportButton.style.display = 'inline-block';
@@ -2066,7 +2066,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const reportsExportButton = document.getElementById('export-reports-excel');
     if (reportsExportButton) {
-        if (isMarthaOrJoshua) {
+        if (isMercyOrJoshua) {
             reportsExportButton.style.display = 'none';
         } else {
             reportsExportButton.style.display = 'inline-block';
@@ -2076,7 +2076,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const auditLogsExportButton = document.getElementById('export-audit-logs-excel');
     if (auditLogsExportButton) {
-        if (isMarthaOrJoshua) {
+        if (isMercyOrJoshua) {
             auditLogsExportButton.style.display = 'none';
         } else {
             auditLogsExportButton.style.display = 'inline-block';
