@@ -81,8 +81,9 @@ function showMessage(message, callback = null) {
 function applyBarStaffUIRestrictions(sectionId) {
     // Check if the current user is 'Martha' or 'Joshua'
     const isMartha = currentUserRole === 'Martha';
+    const isMercy = currentUserRole === 'Mercy';
     const isJoshua = currentUserRole === 'Joshua';
-    const isBarStaff = isMartha || isJoshua;
+    const isBarStaff = isMartha || isJoshua || isMercy;
 
     // Sales section specific elements
     const salesHeading = document.querySelector('#sales-section .sales-records-heading');
