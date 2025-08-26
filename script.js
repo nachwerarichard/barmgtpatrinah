@@ -146,7 +146,7 @@ function applyBarStaffUIRestrictions(sectionId) {
         }
 
         // Inventory Section (For Joshua and Martha)
-        if (sectionId === 'inventory' && (isJoshua || isMartha)) {
+        if (sectionId === 'inventory' && (isJoshua || isMartha || isMercy)) {
             if (inventoryHeading) inventoryHeading.style.display = 'block';
             if (inventoryFilter) inventoryFilter.style.display = 'flex';
             if (inventoryPagination) inventoryPagination.style.display = 'block';
@@ -215,7 +215,7 @@ function updateUIForUserRole() {
             });
         }
         // Martha: Inventory, Sales, Expenses, Cash Management
-        else if (currentUserRole === 'Martha') {
+        else if (currentUserRole === 'Martha' || currentUserRole === 'Mercy') {
             if (document.getElementById('nav-inventory')) document.getElementById('nav-inventory').style.display = 'inline-block'; // Martha can now see Inventory
             if (document.getElementById('nav-sales')) document.getElementById('nav-sales').style.display = 'inline-block';
             if (document.getElementById('nav-expenses')) document.getElementById('nav-expenses').style.display = 'inline-block';
@@ -234,7 +234,7 @@ function updateUIForUserRole() {
         // Show default section based on role
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admins start with inventory
-        } else if (currentUserRole === 'Martha') {
+        } else if (currentUserRole === 'Martha' || currentUserRole === 'Mercy') {
             showSection('inventory'); // Martha now starts with inventory
         } else if (currentUserRole === 'Joshua') {
             showSection('inventory'); // Joshua starts with inventory
@@ -268,6 +268,7 @@ function showSection(sectionId) {
         'Nelson': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash-management', 'reports', 'audit-logs'],
         'Martha': [ 'sales', 'expenses', 'cash-management'], // Martha can now view Inventory
+        'Mercy': [ 'sales', 'expenses', 'cash-management'], // Martha can now view Inventory
         'Joshua': [ 'sales'] // Joshua can view these
     };
 
@@ -278,7 +279,7 @@ function showSection(sectionId) {
         const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (fullAccessRoles.includes(currentUserRole)) {
             showSection('inventory'); // Admin default
-        } else if (currentUserRole === 'Martha') {
+        } else if (currentUserRole === 'Martha' || currentUserRole === 'Mercy') {
             showSection('sales'); // Martha default
         } else if (currentUserRole === 'Joshua') {
             showSection('sales'); // Joshua default
@@ -693,7 +694,7 @@ async function submitInventoryForm(event) {
             });
         } else {
             // This is a new item creation (POST)
-            const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha', 'Joshua'];
+            const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha','Mercy', 'Joshua'];
             if (!allowedToAddInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: You do not have permission to add inventory.');
                 return;
@@ -777,7 +778,7 @@ function renderSalesTable(sales) {
         return;
     }
 
-    const hideProfitColumns = ['Martha', 'Joshua'].includes(currentUserRole);
+    const hideProfitColumns = ['Martha', 'Mercy','Joshua'].includes(currentUserRole);
     // Initialize a variable to hold the total of all selling prices
     let totalSellingPriceSum = 0;
     // Initialize an object to hold departmental totals
@@ -928,7 +929,7 @@ async function deleteSale(id) {
 async function submitSaleForm(event) {
     event.preventDefault();
     // Roles allowed to record sales
-    const allowedToRecordSales = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    const allowedToRecordSales = ['Nachwera Richard', 'Martha','Mercy', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordSales.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record sales.');
         return;
@@ -1351,7 +1352,7 @@ function renderExpensesTable(expenses) {
 
 async function submitExpenseForm(event) {
     event.preventDefault();
-    const allowedToRecordExpenses = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    const allowedToRecordExpenses = ['Nachwera Richard', 'Martha','Mercy', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordExpenses.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record expenses.');
         return;
@@ -1506,7 +1507,7 @@ function renderCashJournalTable(records) {
 async function submitCashJournalForm(event) {
     event.preventDefault();
     // Roles allowed to record cash entries
-    const allowedToRecordCash = ['Nachwera Richard', 'Martha', 'Joshua', 'Nelson', 'Florence'];
+    const allowedToRecordCash = ['Nachwera Richard', 'Martha','Mercy', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordCash.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record cash entries.');
         return;
@@ -2032,7 +2033,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Determine if the current user is Martha or Joshua
-    const isMarthaOrJoshua = ['Martha', 'Joshua'].includes(currentUserRole);
+    const isMarthaOrJoshua = ['Martha', 'Mercy','Joshua'].includes(currentUserRole);
 
     // Conditionally attach event listeners for Export buttons
     const salesExportButton = document.getElementById('export-sales-excel');
