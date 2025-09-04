@@ -928,8 +928,11 @@ async function deleteSale(id) {
 
 async function submitSaleForm(event) {
     event.preventDefault();
-    // Roles allowed to record sales
-    const allowedToRecordSales = ['Nachwera Richard', 'Martha','Mercy', 'Joshua', 'Nelson', 'Florence'];
+
+    const submitButton = document.querySelector('#sale-form button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
+
+    const allowedToRecordSales = ['Nachwera Richard', 'Martha', 'Mercy', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordSales.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record sales.');
         return;
@@ -940,7 +943,7 @@ async function submitSaleForm(event) {
     const numberInput = document.getElementById('sale-number');
     const bpInput = document.getElementById('sale-bp');
     const spInput = document.getElementById('sale-sp');
-    const salesDateFilterInput = document.getElementById('sales-date-filter'); // Assuming this is used for the sale date
+    const salesDateFilterInput = document.getElementById('sales-date-filter');
 
     if (!idInput || !itemInput || !numberInput || !bpInput || !spInput || !salesDateFilterInput) {
         showMessage('Sales form elements are missing.');
@@ -952,9 +955,8 @@ async function submitSaleForm(event) {
     const number = parseInt(numberInput.value);
     const bp = parseFloat(bpInput.value);
     const sp = parseFloat(spInput.value);
-    const date = salesDateFilterInput.value; // Use the value from the date filter as the sale date
+    const date = salesDateFilterInput.value;
 
-    // Basic validation
     if (!item || isNaN(number) || isNaN(bp) || isNaN(sp) || !date) {
         showMessage('Please fill in all sales fields correctly with valid numbers and date.');
         return;
@@ -964,15 +966,13 @@ async function submitSaleForm(event) {
         return;
     }
 
-    // --- Calculate Profit and Percentage Profit Here ---
     const totalBuyingPrice = bp * number;
     const totalSellingPrice = sp * number;
     const profit = totalSellingPrice - totalBuyingPrice;
     let percentageProfit = 0;
-    if (totalBuyingPrice !== 0) { // Avoid division by zero
+    if (totalBuyingPrice !== 0) {
         percentageProfit = (profit / totalBuyingPrice) * 100;
     }
-    // --- End Calculation ---
 
     const saleData = {
         item,
@@ -985,8 +985,13 @@ async function submitSaleForm(event) {
     };
 
     try {
+        submitButton.innerHTML = 'Processing...';
+        submitButton.disabled = true;
+
         let response;
-        if (id) { // Edit operation (Nachwera Richard, Nelson, Florence only)
+        let successMessage;
+
+        if (id) {
             const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
             if (!adminRoles.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit sales.');
@@ -996,33 +1001,48 @@ async function submitSaleForm(event) {
                 method: 'PUT',
                 body: JSON.stringify(saleData)
             });
-        } else { // New entry creation (all allowed roles)
+            successMessage = 'Sales Updated! ✅';
+        } else {
             response = await authenticatedFetch(`${API_BASE_URL}/sales`, {
                 method: 'POST',
                 body: JSON.stringify(saleData)
             });
+            successMessage = 'Sale Recorded! ✅';
         }
-        if (response) {
-            await response.json(); // Consume response body
-            showMessage('Sale recorded successfully!');
-            const saleForm = document.getElementById('sale-form');
-            if (saleForm) saleForm.reset();
-            if (idInput) idInput.value = ''; // Clear ID after submission
-            // Re-set the date filter to today after successful submission for convenience
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            if (salesDateFilterInput) salesDateFilterInput.value = `${yyyy}-${mm}-${dd}`;
-            fetchSales(); // Re-fetch to update table after successful operation
+
+        if (response.ok) {
+            await response.json();
+            showMessage(successMessage);
+            submitButton.innerHTML = successMessage;
+
+            // Wait for 2 seconds, then reset the form and button
+            setTimeout(() => {
+                const saleForm = document.getElementById('sale-form');
+                if (saleForm) saleForm.reset();
+                if (idInput) idInput.value = '';
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                if (salesDateFilterInput) salesDateFilterInput.value = `${yyyy}-${mm}-${dd}`;
+                
+                submitButton.innerHTML = originalButtonText;
+                submitButton.disabled = false;
+                fetchSales(); // Re-fetch data after reset
+            }, 2000); // 2000 milliseconds = 2 seconds
+
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Server error occurred.');
         }
+
     } catch (error) {
         console.error('Error saving sale entry:', error);
         showMessage('Failed to save sale entry: ' + error.message);
+        submitButton.innerHTML = originalButtonText;
+        submitButton.disabled = false;
     }
 }
-
-
 function populateSaleForm(sale) {
     const idInput = document.getElementById('sale-id');
     const itemInput = document.getElementById('sale-item');
