@@ -544,7 +544,6 @@ function renderPagination(current, totalPages) {
  * @param {Array<Object>} inventory - An array of inventory item objects.
  */
 
-
 function renderInventoryTable(inventory) {
     console.log('Current User Role:', currentUserRole);
     console.log('Inventory Data:', inventory);
@@ -553,15 +552,6 @@ function renderInventoryTable(inventory) {
     if (!tbody) return;
 
     tbody.innerHTML = '';
-
-    // Get the current date in 'YYYY-MM-DD' format for comparison
-    const today = new Date().toISOString().slice(0, 10);
-
-    // Determine the inventory date from the first item, if available
-    const inventoryDate = inventory.length > 0 ? new Date(inventory[0].date).toISOString().slice(0, 10) : null;
-
-    // Check if the inventory data is for today
-    const isToday = (inventoryDate === today);
 
     // Filter to include only items where the 'item' name starts with 'bar' (case-insensitive)
     const filteredInventory = inventory.filter(item =>
@@ -586,22 +576,22 @@ function renderInventoryTable(inventory) {
         const sales = item.sales || 0;
         const spoilage = item.spoilage || 0;
 
-        // Calculate closing stock only if it's not the current day
-        const calculatedClosing = opening + purchases - sales - spoilage;
+        // The calculated closing value is now provided by the backend, or is null.
+        const closing = item.closing;
 
         row.insertCell().textContent = opening;
         row.insertCell().textContent = purchases;
         row.insertCell().textContent = sales;
         row.insertCell().textContent = spoilage;
 
-        // Conditionally render closing stock
+        // Conditionally render closing stock based on the value from the backend
         const closingStockCell = row.insertCell();
-        if (isToday) {
+        if (closing === null) {
             closingStockCell.textContent = 'N/A';
             closingStockCell.style.fontStyle = 'italic';
             closingStockCell.style.color = 'gray';
         } else {
-            closingStockCell.textContent = calculatedClosing;
+            closingStockCell.textContent = closing;
         }
 
         const actionsCell = row.insertCell();
@@ -621,6 +611,8 @@ function renderInventoryTable(inventory) {
         }
     });
 }
+
+
 /**
  * Deletes an inventory item after confirming with the user.
  * @param {string} id The unique ID of the inventory item to delete.
