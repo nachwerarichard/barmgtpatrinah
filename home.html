@@ -439,21 +439,20 @@ document.getElementById('edit-inventory-form').addEventListener('submit', submit
     </script>
 
     <script>
-        const closeButtons = modal.querySelectorAll('.close-button');
+function closeEditModal() {
+  document.getElementById('edit-inventory-modal').style.display = 'none';
+}
 
-        // Event listener to close the modal using the 'x' button
-closeButtons.forEach(button => {
-    button.onclick = function() {
-        modal.style.display = 'none';
-    };
+// Attach the close function to the close button
+document.querySelector('#edit-inventory-modal .close-button').addEventListener('click', closeEditModal);
+
+// Attach the close function to a click on the modal background
+window.addEventListener('click', function(event) {
+  const modal = document.getElementById('edit-inventory-modal');
+  if (event.target === modal) {
+    closeEditModal();
+  }
 });
-
-// Event listener to close the modal when clicking outside of it
-window.onclick = function(event) {
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-};
     </script>
         <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="script.js" defer></script>
