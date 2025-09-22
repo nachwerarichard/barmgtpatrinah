@@ -543,7 +543,9 @@ function renderPagination(current, totalPages) {
  * to ensure accuracy, especially when viewing a daily report.
  * @param {Array<Object>} inventory - An array of inventory item objects.
  */
-function renderInventoryTable(inventory) {
+
+
+function renderInventoryTable(inventory, inventoryDate) {
     console.log('Current User Role:', currentUserRole);
     console.log('Inventory Data:', inventory);
 
@@ -552,8 +554,14 @@ function renderInventoryTable(inventory) {
 
     tbody.innerHTML = '';
 
+    // Get the current date in 'YYYY-MM-DD' format for comparison
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Determine if the provided inventory date is today
+    const isToday = (inventoryDate === today);
+
     // Filter to include only items where the 'item' name starts with 'bar' (case-insensitive)
-    const filteredInventory = inventory.filter(item => 
+    const filteredInventory = inventory.filter(item =>
         item.item.toLowerCase().startsWith('bar')
     );
 
@@ -569,19 +577,30 @@ function renderInventoryTable(inventory) {
     filteredInventory.forEach(item => {
         const row = tbody.insertRow();
         row.insertCell().textContent = item.item;
-        
+
         const opening = item.opening || 0;
         const purchases = item.purchases || 0;
         const sales = item.sales || 0;
         const spoilage = item.spoilage || 0;
-        
+
+        // Calculate closing stock only if it's not the current day
         const calculatedClosing = opening + purchases - sales - spoilage;
 
         row.insertCell().textContent = opening;
         row.insertCell().textContent = purchases;
         row.insertCell().textContent = sales;
         row.insertCell().textContent = spoilage;
-        row.insertCell().textContent = calculatedClosing; 
+
+        // Conditionally render closing stock
+        const closingStockCell = row.insertCell();
+        if (isToday) {
+            closingStockCell.textContent = 'N/A';
+            closingStockCell.style.fontStyle = 'italic';
+            closingStockCell.style.color = 'gray';
+        } else {
+            closingStockCell.textContent = calculatedClosing;
+        }
+
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
@@ -593,7 +612,7 @@ function renderInventoryTable(inventory) {
             editButton.className = 'edit';
             editButton.onclick = () => openEditModal(item);
             actionsCell.appendChild(editButton);
-            
+
         } else {
             actionsCell.textContent = 'View Only';
         }
