@@ -545,7 +545,7 @@ function renderPagination(current, totalPages) {
  */
 
 
-function renderInventoryTable(inventory, inventoryDate) {
+function renderInventoryTable(inventory) {
     console.log('Current User Role:', currentUserRole);
     console.log('Inventory Data:', inventory);
 
@@ -557,7 +557,10 @@ function renderInventoryTable(inventory, inventoryDate) {
     // Get the current date in 'YYYY-MM-DD' format for comparison
     const today = new Date().toISOString().slice(0, 10);
 
-    // Determine if the provided inventory date is today
+    // Determine the inventory date from the first item, if available
+    const inventoryDate = inventory.length > 0 ? new Date(inventory[0].date).toISOString().slice(0, 10) : null;
+
+    // Check if the inventory data is for today
     const isToday = (inventoryDate === today);
 
     // Filter to include only items where the 'item' name starts with 'bar' (case-insensitive)
@@ -618,8 +621,6 @@ function renderInventoryTable(inventory, inventoryDate) {
         }
     });
 }
-
-
 /**
  * Deletes an inventory item after confirming with the user.
  * @param {string} id The unique ID of the inventory item to delete.
