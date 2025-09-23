@@ -544,6 +544,7 @@ function renderPagination(current, totalPages) {
  * to ensure accuracy, especially when viewing a daily report.
  * @param {Array<Object>} inventory - An array of inventory item objects.
  */
+
 function renderInventoryTable(inventory) {
     console.log('Current User Role:', currentUserRole);
     console.log('Inventory Data:', inventory);
@@ -553,16 +554,16 @@ function renderInventoryTable(inventory) {
 
     tbody.innerHTML = '';
 
-    // Filter out items where the 'item' name starts with 'rest' (case-insensitive)
-    const filteredInventory = inventory.filter(item => 
-        !item.item.toLowerCase().startsWith('rest')
+    // Filter to include only items where the 'item' name starts with 'bar' (case-insensitive)
+    const filteredInventory = inventory.filter(item =>
+        item.item.toLowerCase().startsWith('bar')
     );
 
     if (filteredInventory.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell();
         cell.colSpan = 7;
-        cell.textContent = 'No inventory items found, or all items were filtered out.';
+        cell.textContent = 'No inventory items starting with "bar" were found.';
         cell.style.textAlign = 'center';
         return;
     }
@@ -570,41 +571,47 @@ function renderInventoryTable(inventory) {
     filteredInventory.forEach(item => {
         const row = tbody.insertRow();
         row.insertCell().textContent = item.item;
-        
-        // Use a default of 0 if a field is not present to prevent errors.
+
         const opening = item.opening || 0;
         const purchases = item.purchases || 0;
         const sales = item.sales || 0;
         const spoilage = item.spoilage || 0;
-        
-        // --- KEY CHANGE: Recalculate closing stock here on the frontend ---
-        const calculatedClosing = opening + purchases - sales - spoilage;
+
+        // The calculated closing value is now provided by the backend, or is null.
+        const closing = item.closing;
 
         row.insertCell().textContent = opening;
         row.insertCell().textContent = purchases;
         row.insertCell().textContent = sales;
         row.insertCell().textContent = spoilage;
-        // Display the newly calculated closing stock
-        row.insertCell().textContent = calculatedClosing; 
+
+        // Conditionally render closing stock based on the value from the backend
+        const closingStockCell = row.insertCell();
+        if (closing === null) {
+            closingStockCell.textContent = 'N/A';
+            closingStockCell.style.fontStyle = 'italic';
+            closingStockCell.style.color = 'gray';
+        } else {
+            closingStockCell.textContent = closing;
+        }
+
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
 
-        // We only create an edit button if the user has permission AND the item has an _id
         if (adminRoles.includes(currentUserRole) && item._id) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
             editButton.onclick = () => openEditModal(item);
             actionsCell.appendChild(editButton);
-            
+
         } else {
             actionsCell.textContent = 'View Only';
         }
     });
 }
-
 
 
 /**
