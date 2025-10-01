@@ -474,7 +474,19 @@ async function logout() {
 }
 
 // --- Inventory Functions ---
+// Function to update the search button text
+function updateSearchButton(text, iconClass) {
+    const searchButton = document.querySelector('.filter-controls button[onclick="fetchInventory()"]');
+    if (searchButton) {
+        // Clear existing content and set new text and icon
+        searchButton.innerHTML = `${text} <i class="${iconClass}"></i>`;
+    }
+}
+
 async function fetchInventory() {
+    // 1. Change button text to 'Searching'
+    updateSearchButton('Searching', 'fas fa-spinner fa-spin'); // fa-spinner fa-spin provides a loading animation
+
     try {
         const itemFilterInput = document.getElementById('search-inventory-item');
         const lowFilterInput = document.getElementById('search-inventory-low');
@@ -489,13 +501,20 @@ async function fetchInventory() {
         if (itemFilter) params.append('item', itemFilter);
         if (lowFilter) params.append('low', lowFilter);
         if (dateFilter) params.append('date', dateFilter); // Add date to params
-        params.append('page', currentPage);
-        params.append('limit', itemsPerPage);
+        // Only append pagination params if a date filter is NOT present
+        if (!dateFilter) {
+            params.append('page', currentPage);
+            params.append('limit', itemsPerPage);
+        }
 
         url += `?${params.toString()}`;
 
         const response = await authenticatedFetch(url);
-        if (!response) return;
+        if (!response) {
+            // Restore button on error or non-response
+            updateSearchButton('Search', 'fas fa-search');
+            return;
+        }
 
         const result = await response.json();
 
@@ -515,9 +534,20 @@ async function fetchInventory() {
         // Pass the correct data array to the rendering function
         renderInventoryTable(inventoryData);
 
+        // 2. Change button text to 'Done' after successful display
+        updateSearchButton('Done', 'fas fa-check');
+
+        // 3. Set a timeout to revert the button text back to 'Search' after 2 seconds
+        setTimeout(() => {
+            updateSearchButton('Search', 'fas fa-search');
+        }, 2000); // 2000 milliseconds = 2 seconds
+
     } catch (error) {
         console.error('Error fetching inventory:', error);
         showMessage('Failed to fetch inventory: ' + error.message);
+        
+        // Ensure the button is reverted to 'Search' on error
+        updateSearchButton('Search', 'fas fa-search');
     }
 }
 
