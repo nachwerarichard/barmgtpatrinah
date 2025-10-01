@@ -113,8 +113,8 @@ cursor: pointer;
                 <h3> Inventory</h3>
                 <div class="filter-controls">
                     <input type="date" id="search-inventory-date" placeholder="Filter by date">
-                    <input type="text" id="search-inventory-item" placeholder="Search by item name">
-                    <input type="number" id="search-inventory-low" placeholder="Filter by closing stock <">
+                    <input type="text" class="hidden" id="search-inventory-item" placeholder="Search by item name">
+                    <input type="number" class="hidden" id="search-inventory-low" placeholder="Filter by closing stock <">
                     <button onclick="fetchInventory()"> Search<i class="fas fa-search"></i></button>
                 </div>
                 <div class="table-responsive" id="table-responsive">
