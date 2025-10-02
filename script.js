@@ -767,7 +767,20 @@ async function submitInventoryForm(event) {
 
 
 // --- Sales Functions ---
+// Helper function to update the sales search button text and icon
+function updateSalesSearchButton(text, iconClass) {
+    // Select the search button within the sales filter controls
+    const searchButton = document.querySelector('.sales-filter-controls button[onclick="fetchSales()"]');
+    if (searchButton) {
+        // Clear existing content and set new text and icon
+        searchButton.innerHTML = `${text} <i class="${iconClass}"></i>`;
+    }
+}
+
 async function fetchSales() {
+    // 1. Change button text to 'Searching'
+    updateSalesSearchButton('Searching', 'fas fa-spinner fa-spin'); // Spinning icon for loading
+
     try {
         const dateFilterInput = document.getElementById('sales-date-filter');
         const dateFilter = dateFilterInput ? dateFilterInput.value : '';
@@ -780,17 +793,34 @@ async function fetchSales() {
         url += `?${params.toString()}`;
 
         const response = await authenticatedFetch(url);
-        if (!response) return;
+        if (!response) {
+            // Restore button on non-response
+            updateSalesSearchButton('Search', 'fas fa-search');
+            return;
+        }
 
         const result = await response.json();
-        renderSalesTable(result.data);
+        
+        // Assuming renderSalesTable and renderSalesPagination are defined elsewhere
+        renderSalesTable(result.data); 
         renderSalesPagination(result.page, result.pages);
+
+        // 2. Change button text to 'Done' after successful display
+        updateSalesSearchButton('Done', 'fas fa-check');
+
+        // 3. Set a timeout to revert the button text back to 'Search' after 2 seconds
+        setTimeout(() => {
+            updateSalesSearchButton('Search', 'fas fa-search');
+        }, 2000); // 2000 milliseconds = 2 seconds
+        
     } catch (error) {
         console.error('Error fetching sales:', error);
         showMessage('Failed to fetch sales: ' + error.message);
+        
+        // Ensure the button is reverted to 'Search' on error
+        updateSalesSearchButton('Search', 'fas fa-search');
     }
 }
-
 function renderSalesPagination(current, totalPages) {
     const container = document.getElementById('sales-pagination');
     if (!container) return; // Exit if container not found
