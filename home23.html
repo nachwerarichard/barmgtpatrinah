@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrinah Hotel Management System</title>
+    <link rel="stylesheet" href="styles.css"/>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+
+.modal {
+  display: none; /* This ensures the modal is hidden by default */
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+background-color: #fefefe;
+padding: 20px;
+border: 1px solid #888;
+width: 80%;
+max-width: 500px;
+border-radius: 8px;
+position: relative;
+}
+
+.close-button {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+color: black;
+text-decoration: none;
+cursor: pointer;
+}
+.hidden{
+    display:none;
+}
+    </style>
+</head>
+<body>
+    <div id="login-section">
+        <img src="patrinah.png" alt="Patrinah Hotel Logo" class="login-logo">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+         <button type="submit" onclick="login()">Login</button>
+        <p id="login-message"></p>
+    </div>
+
+    <div id="main-container" class="container" style="display: none;">
+       
+ <header class="app-header">
+            <div class="header-left">
+                <img src="patrina.png" alt="Patrinah Hotel Logo" class="header-logo">
+            </div>
+            <div class="header-right">
+                <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
+                <nav id="main-nav">
+                    <button id="nav-inventory" onclick="showSection('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
+                    <button id="nav-sales" onclick="showSection('sales')"><i class="fas fa-chart-line"></i> Sales</button>
+                    <button id="nav-expenses" onclick="showSection('expenses')"><i class="fas fa-money-bill-wave"></i> Expenses</button>
+                    <button id="nav-cash-management" onclick="showSection('cash-management')"><i class="fas fa-wallet"></i> Cash Management</button>
+                    <button id="nav-reports" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar"></i> Reports</button>
+                    <button id="nav-audit-logs" onclick="showSection('audit-logs')"><i class="fas fa-history"></i> Audit Logs</button>
+                </nav>
+                <div class="header-user-controls">
+                    <span id="current-user-display" class="username-display"></span>
+                    <button id="logout-button" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </header>
+        <nav id="mobile-nav">  
+             <img src="patrina.png" alt="Patrinah Hotel Logo" class="login-logo">
+             <a id="mobil-nav"></a>
+             <a href="#" onclick="showSection('inventory')">Inventory</a> 
+             <a href="#" onclick="showSection('sales')">Sales</a> 
+             <a href="#" onclick="showSection('expenses')">Expenses</a>  
+             <a href="#" onclick="showSection('reports')">Reports</a>
+            <a href="#" onclick="showSection('cash-management')">Cash</a>
+             <a href="#" onclick="showSection('audit-logs')">Audits</a>
+             <a href="#" onclick="logout()">Logout</a>
+        </nav>
+        <div id="main-content">
+            <div id="inventory-section" class="section active">
+                <h2>Inventory Management</h2>
+                <h3>Add/Update Inventory Item</h3>
+                <form id="inventory-form">
+                    <input type="hidden" id="inventory-id">
+                    <label for="item">Item:</label>
+                    <input type="text" id="item" required>
+                    <label for="opening">Opening Stock:</label>
+                    <input type="number" id="opening" min="0" required>
+                    <label for="purchases">Purchases:</label>
+                    <input type="number" id="purchases" min="0" required>
+                    <label for="inventory-sales">Sales (deducted from inventory):</label>
+                    <input type="number" id="inventory-sales" min="0" required>
+                    <label for="spoilage">Spoilage:</label>
+                    <input type="number" id="spoilage" min="0" required>
+                    <button type="submit"><i class="fas fa-save"></i> Save Inventory</button>
+                </form>
+                <h3> Inventory</h3>
+                <div class="filter-controls">
+                    <input type="date" id="search-inventory-date" placeholder="Filter by date">
+                    <input type="text" class="hidden" id="search-inventory-item" placeholder="Search by item name">
+                    <input type="number" class="hidden" id="search-inventory-low" placeholder="Filter by closing stock <">
+                    <button onclick="fetchInventory()"> Search<i class="fas fa-search"></i></button>
+                </div>
+                <div class="table-responsive" id="table-responsive">
+
+                                        <table id="inventory-table">
+                                               <button class="export-button" onclick="exportTableToExcel('table-responsive', 'Inventory_Report_SheetJS')">Export to Excel (XLSX)</button>
+ 
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Opening</th>
+                                <th>Purchases</th>
+                                <th>Sales</th>
+                                <th>Spoilage</th>
+                                <th>Closing</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="pagination" class="pagination-controls"></div>
+            </div>
+
+            <div id="edit-inventory-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <h3>Edit Inventory Item</h3>
+    <form id="edit-inventory-form">
+      <input type="hidden" id="edit-inventory-id">
+      <label for="edit-item">Item:</label>
+      <input type="text" id="edit-item" required>
+      <label for="edit-opening">Opening Stock:</label>
+      <input type="number" id="edit-opening" min="0" required>
+      <label for="edit-purchases">Purchases:</label>
+      <input type="number" id="edit-purchases" min="0" required>
+      <label for="edit-inventory-sales">Sales (deducted from inventory):</label>
+      <input type="number" id="edit-inventory-sales" min="0" required>
+      <label for="edit-spoilage">Spoilage:</label>
+      <input type="number" id="edit-spoilage" min="0" required>
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+</div>
+            <div id="sales-section" class="section">
+    <h2>Sales Management</h2>
+    <h3>Record New Sale</h3>
+    <form id="sale-form">
+        <input type="hidden" id="sale-id">
+        <label for="sale-item">Item:</label>
+        <input type="text" id="sale-item" list="item-suggestions" required>
+        <datalist id="item-suggestions"></datalist>
+        <label for="sale-number">Number Sold:</label>
+        <input type="number" id="sale-number" min="1" required>
+        <label for="sale-bp">Buying Price (BP):</label>
+        <input type="number" id="sale-bp" step="0.01" min="0" required>
+        <label for="sale-sp">Selling Price (SP):</label>
+        <input type="number" id="sale-sp" step="0.01" min="0" required>
+        <button type="submit"><i class="fas fa-plus-circle"></i> Record Sale</button>
+    </form>
+    <h3 class="sales-records-heading">Sales Records</h3>
+    <div class="filter-controls sales-filter-controls">
+        <label for="sales-date-filter" style="margin-bottom:0;">Filter by Date:</label>
+        <input type="date" id="sales-date-filter">
+        <button onclick="fetchSales()"> Search<i class="fas fa-search"></i></button>
+    </div>
+    <button class="export-button" onclick="exportTableToExcel('sales-table', 'Inventory_Report_SheetJS')">Export to Excel (XLSX)</button>
+    <div class="table-responsive">
+        <table id="sales-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Number</th>
+                    <th>BP (UGX)</th>
+                    <th>SP (UGX)</th>
+                     <th>Total SP (UGX)</th>
+                    <th>Profit (UGX)</th>
+                    <th>%Profit</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <div id="sales-summary"></div>
+        </table>
+    </div>
+    <div id="sales-pagination" class="pagination-controls"></div>
+</div>
+            <div id="expenses-section" class="section">
+                <h2>Expenses Management</h2>
+                <h3>Record New Expense</h3>
+                <form id="expense-form">
+                    <input type="hidden" id="expense-id">
+                    <label for="expense-description">Description:</label>
+                    <input type="text" id="expense-description" required>
+                    <label for="expense-amount">Amount:</label>
+                    <input type="number" id="expense-amount" step="0.01" min="0" required>
+                    <label for="expense-receiptId">Receipt ID (Optional):</label>
+                    <input type="text" id="expense-receiptId">
+                    <label for="expense-source">Source (Optional):</label>
+                    <input type="text" id="expense-source">
+                    <button type="submit"><i class="fas fa-plus-circle"></i> Record Expense</button>
+                </form>
+                <h3 class="expenses-records-heading">Expense Records</h3>
+                <div class="filter-controls expenses-filter-controls">
+                    <label for="expenses-date-filter" style="margin-bottom:0;">Filter by Date:</label>
+                    <input type="date" id="expenses-date-filter">
+                    <button onclick="fetchExpenses()">Search<i class="fas fa-search"></i></button>
+                </div>
+                <div class="table-responsive">
+                    <table id="expenses-table" class="expenses-table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Receipt ID</th>
+                                <th>Source</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="expenses-pagination" class="pagination-controls"></div>
+            </div>
+            <div id="cash-management-section" class="section">
+                <h2>Cash Management</h2>
+                <h3>Record Cash Movement</h3>
+                <form id="cash-journal-form">
+                    <input type="hidden" id="cash-journal-id">
+                    <label for="cash-at-hand">Cash At Hand:</label>
+                    <input type="number" id="cash-at-hand" step="0.01" min="0" required>
+                    <label for="cash-banked">Cash Banked:</label>
+                    <input type="number" id="cash-banked" step="0.01" min="0" required>
+                    <label for="bank-receipt-id">Bank Receipt ID:</label>
+                    <input type="text" id="bank-receipt-id" required>
+                    <label for="cash-date">Date:</label>
+                    <input type="date" id="cash-date" required>
+                    <button type="submit"><i class="fas fa-money-check-alt"></i> Save Cash Entry</button>
+                </form>
+                <h3 class="cash-header">Cash Records</h3>
+                <div class="filter-controls">
+                    <label for="cash-filter-date">Filter by Date:</label>
+                    <input type="date" id="cash-filter-date">
+                    <!--<label for="cash-filter-responsible">Filter by Responsible Person:</label>
+                    <input type="text" id="cash-filter-responsible" placeholder="e.g., John Doe">-->
+                    <button onclick="fetchCashJournal()">Search<i class="fas fa-search"></i></button>
+                </div>
+                <div class="table-responsive">
+                    <table id="cash-journal-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Cash At Hand</th>
+                                <th>Cash Banked</th>
+                                <th>Bank Receipt ID</th>
+                                <!--<th>Responsible Person</th>-->
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="reports-section" class="section">
+                <h2>Financial Reports</h2>
+                <div class="filter-controls">
+                    <label for="report-start-date">Start Date:</label>
+                    <input type="date" id="report-start-date">
+                    <label for="report-end-date">End Date:</label>
+                    <input type="date" id="report-end-date">
+                    <button onclick="generateReports()"><i class="fas fa-chart-pie"></i> Generate Reports</button>
+                </div>
+                <h3>Department  Totals</h3>
+                 <button class="export-button" onclick="exportTableToExcel('department-table', 'Department_Report')">Export Department Report</button>
+                <div class="table-responsive">
+                   <table id="department-table">
+                     <thead >
+                         <tr>
+                            <th>Department</th>
+                             <th>Sales</th>
+                             <th>Expenses</th>
+                             <th>Balance</th>
+                           </tr>
+                     </thead>
+                      <tbody id="department-report-tbody"></tbody>
+                   </table>
+
+                  <h3> Overall sales</h3>
+                  <button class="export-button" onclick="exportTableToExcel('overall-reports-table', 'Overall_Summary_Report')">Export Overall Summary</button>
+                    <table id="overall-reports-table">
+                        <thead>
+                            <tr>
+                                <th>Total Sales</th>
+                                <th>Total Expenses</th>
+                                <th>Net Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="overall-sales">0</td>
+                                <td id="overall-expenses">0</td>
+                                <td id="overall-balance">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="audit-logs-section" class="section">
+                <h2>Audit Logs</h2>
+                <div class="search-container">
+                    <input type="text" id="audit-search-input" placeholder="Search audit logs...">
+                </div>
+                <div class="table-responsive">
+                    <table id="audit-logs-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="audit-pagination" class="pagination-controls"></div>
+            </div>
+        </div>
+    </div>
+    <script src="script3.js"></script>
+    <script>
+        // New function to handle the modal display and population
+// New function to handle the modal display and population
+function openEditModal(item) {
+    // Check permission
+    const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
+    if (!allowedToEditInventory.includes(currentUserRole)) {
+        showMessage('Permission Denied: You cannot edit inventory items.');
+        return;
+    }
+
+    // --- ADDED VALIDATION HERE ---
+    if (!item || !item._id) {
+        showMessage('Error: Inventory item data is missing or invalid.');
+        return;
+    }
+
+    // Get the modal and form elements
+    const modal = document.getElementById('edit-inventory-modal');
+    const idInput = document.getElementById('edit-inventory-id');
+    const itemInput = document.getElementById('edit-item');
+    const openingInput = document.getElementById('edit-opening');
+    const purchasesInput = document.getElementById('edit-purchases');
+    const salesInput = document.getElementById('edit-inventory-sales');
+    const spoilageInput = document.getElementById('edit-spoilage');
+
+    // Populate the form with the item's data
+    idInput.value = item._id;
+    itemInput.value = item.item;
+    openingInput.value = item.opening;
+    purchasesInput.value = item.purchases;
+    salesInput.value = item.sales;
+    spoilageInput.value = item.spoilage;
+
+    // Show the modal
+    modal.style.display = 'flex'; // Use 'flex' here if that's what your CSS expects for centering
+}
+        
+// New function to handle the form submission for the modal
+async function submitEditForm(event) {
+  event.preventDefault();
+
+  const idInput = document.getElementById('edit-inventory-id');
+  const itemInput = document.getElementById('edit-item');
+  const openingInput = document.getElementById('edit-opening');
+  const purchasesInput = document.getElementById('edit-purchases');
+  const salesInput = document.getElementById('edit-inventory-sales');
+  const spoilageInput = document.getElementById('edit-spoilage');
+
+  // Basic validation
+  if (!idInput.value || isNaN(openingInput.value) || isNaN(purchasesInput.value) || isNaN(salesInput.value) || isNaN(spoilageInput.value)) {
+    showMessage('Please fill in all fields correctly with valid numbers.');
+    return;
+  }
+  
+  const inventoryData = {
+    item: itemInput.value,
+    opening: parseInt(openingInput.value),
+    purchases: parseInt(purchasesInput.value),
+    sales: parseInt(salesInput.value),
+    spoilage: parseInt(spoilageInput.value)
+  };
+
+  try {
+    const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${idInput.value}`, {
+      method: 'PUT',
+      body: JSON.stringify(inventoryData)
+    });
+
+    if (response) {
+      await response.json();
+      showMessage('Inventory item updated successfully!');
+      document.getElementById('edit-inventory-modal').style.display = 'none';
+      fetchInventory(); // Refresh the table
+    }
+  } catch (error) {
+    console.error('Error updating inventory item:', error);
+    showMessage('Failed to update inventory item: ' + error.message);
+  }
+}
+
+// Add an event listener to the new edit form
+document.getElementById('edit-inventory-form').addEventListener('submit', submitEditForm);
+        
+        
+    </script>
+
+    <script>
+function closeEditModal() {
+  document.getElementById('edit-inventory-modal').style.display = 'none';
+}
+
+// Attach the close function to the close button
+document.querySelector('#edit-inventory-modal .close-button').addEventListener('click', closeEditModal);
+
+// Attach the close function to a click on the modal background
+window.addEventListener('click', function(event) {
+  const modal = document.getElementById('edit-inventory-modal');
+  if (event.target === modal) {
+    closeEditModal();
+  }
+});
+    </script>
+        <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="script.js" defer></script>
+</body>
+</html>
