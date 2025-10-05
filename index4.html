@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrinah Hotel Bar Management System</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  .section { display: none; }
+  .section.active { display: block; }
+  #sidebar button.active { background-color: #10b981; color: white; font-weight: 700; }
+</style>
+</head>
+<body class="bg-gray-100">
+
+<div class="flex h-screen">
+  <!-- Sidebar -->
+  <nav id="sidebar" class="w-64 bg-gray-800 text-white p-4 space-y-2 overflow-y-auto">
+    
+    <!-- INVENTORY -->
+    <div>
+      <button onclick="toggleMenu('inventory-menu')" class="w-full flex justify-between items-center p-3 rounded-lg hover:bg-gray-700">
+        <span><i class="fas fa-boxes mr-2"></i> Inventory</span>
+        <i class="fas fa-chevron-down text-sm"></i>
+      </button>
+      <div id="inventory-menu" class="pl-8 space-y-1 hidden">
+        <button onclick="showSection('add-inventory')" class="block w-full text-left hover:text-emerald-400">Add / Update</button>
+        <button onclick="showSection('inventory-records')" class="block w-full text-left hover:text-emerald-400">Records</button>
+      </div>
+    </div>
+
+    <!-- SALES -->
+    <div>
+      <button onclick="toggleMenu('sales-menu')" class="w-full flex justify-between items-center p-3 rounded-lg hover:bg-gray-700">
+        <span><i class="fas fa-chart-line mr-2"></i> Sales</span>
+        <i class="fas fa-chevron-down text-sm"></i>
+      </button>
+      <div id="sales-menu" class="pl-8 space-y-1 hidden">
+        <button onclick="showSection('record-sale')" class="block w-full text-left hover:text-emerald-400">Record Sale</button>
+        <button onclick="showSection('sales-records')" class="block w-full text-left hover:text-emerald-400">Records</button>
+      </div>
+    </div>
+
+    <!-- EXPENSES -->
+    <div>
+      <button onclick="toggleMenu('expenses-menu')" class="w-full flex justify-between items-center p-3 rounded-lg hover:bg-gray-700">
+        <span><i class="fas fa-money-bill-wave mr-2"></i> Expenses</span>
+        <i class="fas fa-chevron-down text-sm"></i>
+      </button>
+      <div id="expenses-menu" class="pl-8 space-y-1 hidden">
+        <button onclick="showSection('record-expense')" class="block w-full text-left hover:text-emerald-400">Record Expense</button>
+        <button onclick="showSection('expense-records')" class="block w-full text-left hover:text-emerald-400">Records</button>
+      </div>
+    </div>
+
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="flex-1 p-6 overflow-y-auto">
+    <div id="add-inventory" class="section active bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600">Add or Update Inventory</h2>
+      <p>Form for adding or updating inventory items will go here.</p>
+    </div>
+
+    <div id="inventory-records" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600">Inventory Records</h2>
+      <p>Table of inventory items here.</p>
+    </div>
+
+    <div id="record-sale" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600">Record Sale</h2>
+      <p>Form to record sales.</p>
+    </div>
+
+    <div id="sales-records" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600">Sales Records</h2>
+      <p>Sales table here.</p>
+    </div>
+
+    <div id="record-expense" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600">Record Expense</h2>
+      <p>Form to record new expense.</p>
+    </div>
+
+    <div id="expense-records" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600">Expense Records</h2>
+      <p>Expense table here.</p>
+    </div>
+  </main>
+</div>
+
+<script>
+function toggleMenu(menuId) {
+  const menu = document.getElementById(menuId);
+  const isHidden = menu.classList.contains('hidden');
+  document.querySelectorAll('#sidebar div[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+  if (isHidden) menu.classList.remove('hidden');
+}
+
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+}
+</script>
+
+</body>
+</html>
