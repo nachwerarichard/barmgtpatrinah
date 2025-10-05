@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrinah Hotel Bar Management System</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  .section { display: none; }
+  .section.active { display: block; }
+  #sidebar button.active { background-color: #10b981; color: white; font-weight: 700; }
+</style>
+</head>
+<body class="bg-gray-100">
+
+<div class="flex h-screen">
+  <!-- Sidebar -->
+  <nav id="sidebar" class="w-64 bg-gray-800 text-white p-4 space-y-2 overflow-y-auto">
+    
+    <!-- INVENTORY -->
+    <div>
+      <button onclick="toggleMenu('inventory-menu')" class="w-full flex justify-between items-center p-3 rounded-lg hover:bg-gray-700">
+        <span><i class="fas fa-boxes mr-2"></i> Inventory</span>
+        <i class="fas fa-chevron-down text-sm"></i>
+      </button>
+      <div id="inventory-menu" class="pl-8 space-y-1 hidden">
+        <button onclick="showSection('add-inventory')" class="block w-full text-left hover:text-emerald-400">Add / Update</button>
+        <button onclick="showSection('inventory-records')" class="block w-full text-left hover:text-emerald-400">Records</button>
+      </div>
+    </div>
+
+    <!-- SALES -->
+    <div>
+      <button onclick="toggleMenu('sales-menu')" class="w-full flex justify-between items-center p-3 rounded-lg hover:bg-gray-700">
+        <span><i class="fas fa-chart-line mr-2"></i> Sales</span>
+        <i class="fas fa-chevron-down text-sm"></i>
+      </button>
+      <div id="sales-menu" class="pl-8 space-y-1 hidden">
+        <button onclick="showSection('record-sale')" class="block w-full text-left hover:text-emerald-400">Record Sale</button>
+        <button onclick="showSection('sales-records')" class="block w-full text-left hover:text-emerald-400">Records</button>
+      </div>
+    </div>
+
+    <!-- EXPENSES -->
+    <div>
+      <button onclick="toggleMenu('expenses-menu')" class="w-full flex justify-between items-center p-3 rounded-lg hover:bg-gray-700">
+        <span><i class="fas fa-money-bill-wave mr-2"></i> Expenses</span>
+        <i class="fas fa-chevron-down text-sm"></i>
+      </button>
+      <div id="expenses-menu" class="pl-8 space-y-1 hidden">
+        <button onclick="showSection('record-expense')" class="block w-full text-left hover:text-emerald-400">Record Expense</button>
+        <button onclick="showSection('expense-records')" class="block w-full text-left hover:text-emerald-400">Records</button>
+      </div>
+    </div>
+
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="flex-1 p-6 overflow-y-auto">
+
+    <!-- ADD / UPDATE INVENTORY -->
+    <div id="add-inventory" class="section active bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600 mb-4">Add or Update Inventory</h2>
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold mb-1">Item Name</label>
+          <input type="text" class="w-full border rounded-lg p-2" placeholder="Enter item name">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Category</label>
+          <input type="text" class="w-full border rounded-lg p-2" placeholder="e.g. Beverage, Wine, etc.">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Quantity</label>
+          <input type="number" class="w-full border rounded-lg p-2" placeholder="Enter quantity">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Unit Price</label>
+          <input type="number" class="w-full border rounded-lg p-2" placeholder="Enter price per unit">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Supplier</label>
+          <input type="text" class="w-full border rounded-lg p-2" placeholder="Supplier name">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Date Received</label>
+          <input type="date" class="w-full border rounded-lg p-2">
+        </div>
+        <div class="md:col-span-2 text-right mt-2">
+          <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700">
+            Save Item
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- INVENTORY RECORDS -->
+    <div id="inventory-records" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600 mb-4">Inventory Records</h2>
+      <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+        <thead class="bg-emerald-600 text-white">
+          <tr>
+            <th class="p-3 text-left">Item Name</th>
+            <th class="p-3 text-left">Category</th>
+            <th class="p-3 text-left">Quantity</th>
+            <th class="p-3 text-left">Unit Price</th>
+            <th class="p-3 text-left">Supplier</th>
+            <th class="p-3 text-left">Date Received</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-t">
+            <td class="p-3">Coca-Cola</td>
+            <td class="p-3">Beverage</td>
+            <td class="p-3">100</td>
+            <td class="p-3">$1.50</td>
+            <td class="p-3">ABC Distributors</td>
+            <td class="p-3">2025-10-05</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RECORD SALE -->
+    <div id="record-sale" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600 mb-4">Record Sale</h2>
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold mb-1">Item Sold</label>
+          <input type="text" class="w-full border rounded-lg p-2" placeholder="Item name">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Quantity Sold</label>
+          <input type="number" class="w-full border rounded-lg p-2" placeholder="Enter quantity">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Selling Price per Unit</label>
+          <input type="number" class="w-full border rounded-lg p-2" placeholder="Price per unit">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Total Amount</label>
+          <input type="number" class="w-full border rounded-lg p-2" placeholder="Auto or manual entry">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Date of Sale</label>
+          <input type="date" class="w-full border rounded-lg p-2">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Sold By</label>
+          <input type="text" class="w-full border rounded-lg p-2" placeholder="Staff name">
+        </div>
+        <div class="md:col-span-2 text-right mt-2">
+          <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700">
+            Record Sale
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- SALES RECORDS -->
+    <div id="sales-records" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600 mb-4">Sales Records</h2>
+      <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+        <thead class="bg-emerald-600 text-white">
+          <tr>
+            <th class="p-3 text-left">Item Sold</th>
+            <th class="p-3 text-left">Quantity</th>
+            <th class="p-3 text-left">Price/Unit</th>
+            <th class="p-3 text-left">Total</th>
+            <th class="p-3 text-left">Date</th>
+            <th class="p-3 text-left">Sold By</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-t">
+            <td class="p-3">Coca-Cola</td>
+            <td class="p-3">5</td>
+            <td class="p-3">$2.00</td>
+            <td class="p-3">$10.00</td>
+            <td class="p-3">2025-10-05</td>
+            <td class="p-3">James</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RECORD EXPENSE -->
+    <div id="record-expense" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600 mb-4">Record Expense</h2>
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold mb-1">Expense Description</label>
+          <input type="text" class="w-full border rounded-lg p-2" placeholder="e.g. Electricity Bill">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Category</label>
+          <input type="text" class="w-full border rounded-lg p-2" placeholder="e.g. Utilities, Maintenance">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Amount</label>
+          <input type="number" class="w-full border rounded-lg p-2" placeholder="Enter amount">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Date</label>
+          <input type="date" class="w-full border rounded-lg p-2">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Approved By</label>
+          <input type="text" class="w-full border rounded-lg p-2" placeholder="Manager name">
+        </div>
+        <div class="md:col-span-2 text-right mt-2">
+          <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700">
+            Record Expense
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- EXPENSE RECORDS -->
+    <div id="expense-records" class="section bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-emerald-600 mb-4">Expense Records</h2>
+      <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+        <thead class="bg-emerald-600 text-white">
+          <tr>
+            <th class="p-3 text-left">Description</th>
+            <th class="p-3 text-left">Category</th>
+            <th class="p-3 text-left">Amount</th>
+            <th class="p-3 text-left">Date</th>
+            <th class="p-3 text-left">Approved By</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-t">
+            <td class="p-3">Electricity Bill</td>
+            <td class="p-3">Utilities</td>
+            <td class="p-3">$150.00</td>
+            <td class="p-3">2025-10-03</td>
+            <td class="p-3">Manager</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function toggleMenu(menuId) {
+  const menu = document.getElementById(menuId);
+  const isHidden = menu.classList.contains('hidden');
+  document.querySelectorAll('#sidebar div[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+  if (isHidden) menu.classList.remove('hidden');
+}
+
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+}
+</script>
+
+</body>
+</html>
