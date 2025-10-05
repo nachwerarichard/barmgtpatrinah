@@ -6,164 +6,103 @@
     <title>Patrinah Hotel Bar Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Basic styles for sections and active state (can be done in JS/Tailwind) */
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        /* Style for the active nav button */
+        .nav-link.active {
+            @apply bg-blue-700 text-white; /* Tailwind class for active link */
+        }
+    </style>
 </head>
-<body>
-    
-    <div id="login-section" class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+<body class="bg-gray-100 min-h-screen">
+    <div id="login-section" class="flex flex-col items-center justify-center h-screen bg-white shadow-xl max-w-sm mx-auto p-8 rounded-lg">
         <img src="patrinah.png" alt="Patrinah Hotel Logo" class="w-24 h-24 mb-6">
-        <h2 class="text-3xl font-bold mb-4 text-gray-800">Login</h2>
-        <input type="text" id="username" placeholder="Username" class="mb-3 p-3 border border-gray-300 rounded-lg w-full max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <input type="password" id="password" placeholder="Password" class="mb-4 p-3 border border-gray-300 rounded-lg w-full max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button type="submit" onclick="login()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 w-full max-w-xs">Login</button>
+        <h2 class="text-2xl font-bold mb-4">Login</h2>
+        <input type="text" id="username" placeholder="Username" class="mb-4 p-2 border border-gray-300 rounded w-full">
+        <input type="password" id="password" placeholder="Password" class="mb-6 p-2 border border-gray-300 rounded w-full">
+        <button type="submit" onclick="login()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full">Login</button>
         <p id="login-message" class="mt-4 text-red-500"></p>
     </div>
 
-    <div id="main-container" class="hidden min-h-screen bg-gray-50">
+    <div id="main-container" class="hidden h-screen flex">
         
-        <header class="flex items-center justify-between p-4 bg-white shadow-md">
-            <div class="flex items-center">
-                <img src="patrina.png" alt="Patrinah Hotel Logo" class="h-10 w-auto mr-4">
-                <span class="text-xl font-semibold text-gray-700 hidden sm:block">Bar Management System</span>
+        <nav id="sidebar" class="w-64 bg-gray-800 text-white flex flex-col shadow-lg">
+            <div class="p-4 border-b border-gray-700 flex items-center">
+                <img src="patrina.png" alt="Logo" class="w-8 h-8 mr-3">
+                <span class="text-xl font-semibold">Bar System</span>
             </div>
-            <div class="flex items-center space-x-4">
-                <button id="menu-toggle" class="text-gray-600 lg:hidden text-2xl"><i class="fas fa-bars"></i></button>
-                <div class="flex items-center space-x-2">
-                    <span id="current-user-display" class="username-display text-sm text-gray-600"></span>
-                    <button id="logout-button" onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-1 px-3 rounded-lg transition duration-300">
-                        Logout <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
+            
+            <div id="main-nav" class="flex flex-col p-2 space-y-1">
+                <button id="nav-inventory" onclick="showSection('inventory', this)" class="nav-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition duration-150 active">
+                    <i class="fas fa-boxes w-5 mr-3"></i> Inventory
+                </button>
+                <button id="nav-sales" onclick="showSection('sales', this)" class="nav-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition duration-150">
+                    <i class="fas fa-chart-line w-5 mr-3"></i> Sales
+                </button>
+                <button id="nav-expenses" onclick="showSection('expenses', this)" class="nav-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition duration-150">
+                    <i class="fas fa-money-bill-wave w-5 mr-3"></i> Expenses
+                </button>
+                <button id="nav-cash-management" onclick="showSection('cash-management', this)" class="nav-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition duration-150">
+                    <i class="fas fa-wallet w-5 mr-3"></i> Cash Management
+                </button>
+                <button id="nav-reports" onclick="showSection('reports', this)" class="nav-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition duration-150">
+                    <i class="fas fa-file-invoice-dollar w-5 mr-3"></i> Reports
+                </button>
+                <button id="nav-audit-logs" onclick="showSection('audit-logs', this)" class="nav-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition duration-150">
+                    <i class="fas fa-history w-5 mr-3"></i> Audit Logs
+                </button>
             </div>
-        </header>
 
-        <div class="flex flex-col lg:flex-row">
+            <div class="mt-auto p-4 border-t border-gray-700">
+                <span id="current-user-display" class="text-sm block mb-2"></span>
+                <button id="logout-button" onclick="logout()" class="w-full text-left p-3 rounded-lg bg-red-600 hover:bg-red-700 transition duration-150 flex items-center">
+                    Logout <i class="fas fa-sign-out-alt ml-auto"></i>
+                </button>
+            </div>
+        </nav>
 
-            <nav id="main-nav" class="hidden lg:block w-full lg:w-64 bg-gray-800 text-white flex-shrink-0 min-h-screen">
-                <div class="p-4 space-y-2">
-                    <button id="nav-inventory" onclick="showSection('inventory')" class="nav-item-btn">
-                        <i class="fas fa-boxes w-5"></i> Inventory
-                    </button>
-                    <button id="nav-sales" onclick="showSection('sales')" class="nav-item-btn">
-                        <i class="fas fa-chart-line w-5"></i> Sales
-                    </button>
-                    <button id="nav-expenses" onclick="showSection('expenses')" class="nav-item-btn">
-                        <i class="fas fa-money-bill-wave w-5"></i> Expenses
-                    </button>
-                    <button id="nav-cash-management" onclick="showSection('cash-management')" class="nav-item-btn">
-                        <i class="fas fa-wallet w-5"></i> Cash Management
-                    </button>
-                    <button id="nav-reports" onclick="showSection('reports')" class="nav-item-btn">
-                        <i class="fas fa-file-invoice-dollar w-5"></i> Reports
-                    </button>
-                    <button id="nav-audit-logs" onclick="showSection('audit-logs')" class="nav-item-btn">
-                        <i class="fas fa-history w-5"></i> Audit Logs
-                    </button>
-                </div>
-            </nav>
-
-            <nav id="mobile-nav" class="fixed top-0 left-0 w-64 h-full bg-gray-800 text-white z-50 transform -translate-x-full transition-transform duration-300 lg:hidden p-4 space-y-4 shadow-xl">
-                 <img src="patrina.png" alt="Patrinah Hotel Logo" class="w-12 h-12 mb-4">
-                 <a href="#" onclick="showSection('inventory')" class="block py-2 hover:bg-gray-700 rounded transition duration-150">Inventory</a> 
-                 <a href="#" onclick="showSection('sales')" class="block py-2 hover:bg-gray-700 rounded transition duration-150">Sales</a> 
-                 <a href="#" onclick="logout()" class="block py-2 hover:bg-red-700 rounded transition duration-150">Logout</a>
-             </nav>
-
-
-            <div id="main-content" class="flex-grow p-6">
-                
-                <div id="inventory-section" class="section active bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Inventory Management</h2>
-                    <form id="inventory-form" class="space-y-4">
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300"><i class="fas fa-save"></i> Save Inventory</button>
-                    </form>
-                    
-                    <h3 class="text-xl font-medium mt-6 mb-3">Inventory</h3>
-                    <div class="flex flex-wrap gap-4 mb-4">
-                        <input type="date" id="search-inventory-date" placeholder="Filter by date" class="p-2 border rounded">
-                        <input type="text" class="hidden p-2 border rounded" id="search-inventory-item" placeholder="Search by item name">
-                        <button onclick="fetchInventory()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded transition duration-300">
-                            Search<i class="fas fa-search ml-2"></i>
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto bg-white border border-gray-200 rounded-lg">
-                        <button class="export-button bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded m-4 transition duration-300" onclick="exportTableToExcel('table-responsive', 'Inventory_Report_SheetJS')">Export to Excel (XLSX)</button>
-                        <table id="inventory-table" class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="pagination" class="flex justify-end mt-4"></div>
+        <div id="main-content-area" class="flex-1 overflow-y-auto p-6">
+            
+            <div id="inventory-section" class="section active bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Inventory Management</h2>
                 </div>
 
-                <div id="sales-section" class="section hidden bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Sales Management</h2>
-                    </div>
-                
-                <div id="expenses-section" class="section hidden bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Expenses Management</h2>
-                    </div>
-
+            <div id="sales-section" class="section bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Sales Management</h2>
                 </div>
+
+            <div id="expenses-section" class="section bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Expenses Management</h2>
+                </div>
+
+            <div id="cash-management-section" class="section bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Cash Management</h2>
+                </div>
+            
+            <div id="reports-section" class="section bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Financial Reports</h2>
+                </div>
+            
+            <div id="audit-logs-section" class="section bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Audit Logs</h2>
+                </div>
+
         </div>
     </div>
     
-    <div id="edit-inventory-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="flex justify-between items-center pb-3">
-                <h3 class="text-xl font-semibold">Edit Inventory Item</h3>
-                <span class="close-button text-2xl cursor-pointer" onclick="document.getElementById('edit-inventory-modal').classList.add('hidden')">&times;</span>
+    <div id="edit-inventory-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
             </div>
-            <form id="edit-inventory-form" class="space-y-4">
-                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Changes</button>
-            </form>
-        </div>
     </div>
-
 
     <script src="script3.js"></script>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="script.js" defer></script>
-    
-    <script>
-        document.getElementById('menu-toggle').onclick = function() {
-            document.getElementById('mobile-nav').classList.toggle('-translate-x-full');
-        };
-        // Also ensure your `showSection` function handles showing/hiding the main nav buttons and content sections correctly.
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            // Show the requested section
-            document.getElementById(sectionId + '-section').classList.remove('hidden');
-            document.getElementById(sectionId + '-section').classList.add('active'); // Keep your 'active' class for other styling/JS logic
-            
-            // Highlight the active nav item
-            document.querySelectorAll('#main-nav button, #mobile-nav a').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white');
-                btn.classList.add('hover:bg-gray-700');
-            });
-            const activeNavButton = document.getElementById('nav-' + sectionId);
-            if (activeNavButton) {
-                activeNavButton.classList.add('bg-blue-600', 'text-white');
-                activeNavButton.classList.remove('hover:bg-gray-700');
-            }
-            // For mobile, hide the menu after selection
-            document.getElementById('mobile-nav').classList.add('-translate-x-full');
-        }
-        // Initialize: Show the inventory section on load
-        document.addEventListener('DOMContentLoaded', () => {
-            showSection('inventory');
-            document.getElementById('main-container').classList.remove('hidden'); // Show main container
-            document.getElementById('login-section').style.display = 'none'; // Hide login (assuming login() handles this)
-        });
-    </script>
 </body>
 </html>
