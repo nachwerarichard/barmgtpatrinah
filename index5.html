@@ -108,92 +108,90 @@
 
     <div class="flex flex-1 h-[calc(100vh-64px)]">
       <!-- SIDEBAR -->
-      <nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
-        <div class="p-4">
-          <div class="mb-4 text-center font-bold text-lg">Patrinah Hotel</div>
+     <nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
+    <div class="p-4">
+        <div class="mb-4 text-center font-bold text-lg">Patrinah Hotel</div>
 
-          <!-- Inventory -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
-              <span class="tilt-content">
-                <i class="fas fa-boxes w-5"></i>
-                <span>Inventory</span>
-              </span>
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
+                <span class="tilt-content flex items-center">
+                    <i class="fas fa-boxes w-5"></i>
+                    <span class="ml-3">Inventory</span>
+                </span>
+                <i class="fas fa-chevron-down ml-auto arrow-icon"></i>
             </button>
             <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add / Update Inventory</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add / Update Inventory</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
             </ul>
-          </div>
+        </div>
 
-          <!-- Sales -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
-              <span class="tilt-content">
-                <i class="fas fa-chart-line w-5"></i>
-                <span>Sales</span>
-              </span>
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
+                <span class="tilt-content flex items-center">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span class="ml-3">Sales</span>
+                </span>
+                <i class="fas fa-chevron-down ml-auto arrow-icon"></i>
             </button>
             <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
             </ul>
-          </div>
+        </div>
 
-          <!-- Expenses -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
-              <span class="tilt-content">
-                <i class="fas fa-money-bill-wave w-5"></i>
-                <span>Expenses</span>
-              </span>
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
+                <span class="tilt-content flex items-center">
+                    <i class="fas fa-money-bill-wave w-5"></i>
+                    <span class="ml-3">Expenses</span>
+                </span>
+                <i class="fas fa-chevron-down ml-auto arrow-icon"></i>
             </button>
             <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
             </ul>
-          </div>
+        </div>
 
-          <!-- Cash Management -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
-              <span class="tilt-content">
-                <i class="fas fa-wallet w-5"></i>
-                <span>Cash Management</span>
-              </span>
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
+                <span class="tilt-content flex items-center">
+                    <i class="fas fa-wallet w-5"></i>
+                    <span class="ml-3">Cash Management</span>
+                </span>
+                <i class="fas fa-chevron-down ml-auto arrow-icon"></i>
             </button>
             <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
             </ul>
-          </div>
+        </div>
 
-          <!-- Reports -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
-              <span class="tilt-content">
-                <i class="fas fa-file-invoice-dollar w-5"></i>
-                <span>Reports</span>
-              </span>
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
+                <span class="tilt-content flex items-center">
+                    <i class="fas fa-file-invoice-dollar w-5"></i>
+                    <span class="ml-3">Reports</span>
+                </span>
+                <i class="fas fa-chevron-down ml-auto arrow-icon"></i>
             </button>
             <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
             </ul>
-          </div>
-
-          <!-- Audit Logs (no subsections) -->
-          <div class="mb-1">
-            <button id="nav-audit-logs" class="tilt-btn w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" onclick="showSubSection('audit-logs','nav-audit-logs', true)">
-              <span class="tilt-content">
-                <i class="fas fa-history w-5"></i>
-                <span>Audit Logs</span>
-              </span>
-            </button>
-          </div>
         </div>
-      </nav>
 
+        <div class="mb-1">
+            <button id="nav-audit-logs" class="tilt-btn w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs', true)">
+                <span class="tilt-content flex items-center">
+                    <i class="fas fa-history w-5"></i>
+                    <span class="ml-3">Audit Logs</span>
+                </span>
+            </button>
+        </div>
+    </div>
+</nav>
       <!-- MAIN CONTENT -->
       <main id="main-content" class="flex-1 p-6 overflow-y-auto">
         <!-- INVENTORY - split into two sub sections -->
@@ -544,20 +542,55 @@
 
     // Toggle submenu accordion style
     function toggleSubmenu(submenuId, navButtonId) {
-      // close other submenus
-      document.querySelectorAll('.submenu').forEach(s => {
-        if (s.id !== submenuId) s.classList.remove('open');
-      });
-      // open/close target
-      const submenu = document.getElementById(submenuId);
-      submenu.classList.toggle('open');
+    // 1. Get the target submenu and button
+    const submenu = document.getElementById(submenuId);
+    const navButton = document.querySelector(`[data-target="${submenuId}"]`);
 
-      // highlight main nav button when opened; remove highlight for others
-      document.querySelectorAll('.nav-main').forEach(btn => btn.classList.remove('active'));
-      const navButton = document.querySelector(`[data-target="${submenuId}"]`);
-      if (submenu.classList.contains('open') && navButton) navButton.classList.add('active');
-      else if (navButton) navButton.classList.remove('active');
+    // 2. Find all main nav buttons and submenus
+    const allSubmenus = document.querySelectorAll('.submenu');
+    const allNavButtons = document.querySelectorAll('.nav-main');
+
+    // 3. Close other submenus and reset their arrows
+    allSubmenus.forEach(s => {
+        if (s.id !== submenuId) {
+            s.classList.remove('open');
+            // Find and reset the arrow for the closed submenu's button
+            const relatedBtn = document.querySelector(`[data-target="${s.id}"]`);
+            const relatedArrow = relatedBtn?.querySelector('.arrow-icon');
+            if (relatedArrow) {
+                relatedArrow.classList.remove('fa-chevron-up');
+                relatedArrow.classList.add('fa-chevron-down');
+            }
+        }
+    });
+    
+    // 4. Reset highlight for all main nav buttons
+    allNavButtons.forEach(btn => btn.classList.remove('active'));
+
+    // 5. Open/close target submenu
+    submenu.classList.toggle('open');
+    
+    // 6. Toggle the target nav button's highlight and arrow icon
+    if (navButton) {
+        const arrow = navButton.querySelector('.arrow-icon');
+        
+        if (submenu.classList.contains('open')) {
+            navButton.classList.add('active');
+            // Change arrow to UP 👆
+            if (arrow) {
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-up');
+            }
+        } else {
+            navButton.classList.remove('active');
+            // Change arrow back to DOWN 👇
+            if (arrow) {
+                arrow.classList.remove('fa-chevron-up');
+                arrow.classList.add('fa-chevron-down');
+            }
+        }
     }
+}
 
     // Show a specific sub-section in the main area
     // parentNavId is optional; if provided, it will highlight the parent main button
