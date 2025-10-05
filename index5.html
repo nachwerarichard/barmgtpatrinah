@@ -113,91 +113,87 @@
     <div class="flex flex-1 h-[calc(100vh-64px)]">
       <!-- SIDEBAR -->
       <nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
-        <div class="p-4">
-          <div class="mb-4 text-center font-bold text-lg">Patrinah Hotel</div>
+    <div class="p-4">
+        <div class="mb-4 text-center font-bold text-lg">Patrinah Hotel</div>
 
-          <!-- Inventory -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
-              <span class="tilt-content">
-                <i class="fas fa-boxes w-5"></i>
-                <span>Inventory</span>
-              </span>
+        <div class="mb-1">
+            <button class="accordion-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="inventory-submenu" aria-expanded="false" onclick="toggleAccordion('inventory-submenu')">
+                <span class="flex items-center">
+                    <i class="fas fa-boxes w-5 mr-3"></i>
+                    <span>Inventory</span>
+                </span>
+                <i class="fas fa-chevron-down accordion-icon transition-transform duration-300"></i>
             </button>
-            <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add / Update Inventory</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
+            <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1 hidden">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add / Update Inventory</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
             </ul>
-          </div>
-
-          <!-- Sales -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
-              <span class="tilt-content">
-                <i class="fas fa-chart-line w-5"></i>
-                <span>Sales</span>
-              </span>
-            </button>
-            <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
-            </ul>
-          </div>
-
-          <!-- Expenses -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
-              <span class="tilt-content">
-                <i class="fas fa-money-bill-wave w-5"></i>
-                <span>Expenses</span>
-              </span>
-            </button>
-            <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
-            </ul>
-          </div>
-
-          <!-- Cash Management -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
-              <span class="tilt-content">
-                <i class="fas fa-wallet w-5"></i>
-                <span>Cash Management</span>
-              </span>
-            </button>
-            <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
-            </ul>
-          </div>
-
-          <!-- Reports -->
-          <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
-              <span class="tilt-content">
-                <i class="fas fa-file-invoice-dollar w-5"></i>
-                <span>Reports</span>
-              </span>
-            </button>
-            <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
-              <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
-            </ul>
-          </div>
-
-          <!-- Audit Logs (no subsections) -->
-          <div class="mb-1">
-            <button id="nav-audit-logs" class="tilt-btn w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" onclick="showSubSection('audit-logs','nav-audit-logs', true)">
-              <span class="tilt-content">
-                <i class="fas fa-history w-5"></i>
-                <span>Audit Logs</span>
-              </span>
-            </button>
-          </div>
         </div>
-      </nav>
 
+        <div class="mb-1">
+            <button class="accordion-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="sales-submenu" aria-expanded="false" onclick="toggleAccordion('sales-submenu')">
+                <span class="flex items-center">
+                    <i class="fas fa-chart-line w-5 mr-3"></i>
+                    <span>Sales</span>
+                </span>
+                <i class="fas fa-chevron-down accordion-icon transition-transform duration-300"></i>
+            </button>
+            <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1 hidden">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
+            </ul>
+        </div>
+
+        <div class="mb-1">
+            <button class="accordion-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="expenses-submenu" aria-expanded="false" onclick="toggleAccordion('expenses-submenu')">
+                <span class="flex items-center">
+                    <i class="fas fa-money-bill-wave w-5 mr-3"></i>
+                    <span>Expenses</span>
+                </span>
+                <i class="fas fa-chevron-down accordion-icon transition-transform duration-300"></i>
+            </button>
+            <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1 hidden">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
+            </ul>
+        </div>
+
+        <div class="mb-1">
+            <button class="accordion-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="cash-submenu" aria-expanded="false" onclick="toggleAccordion('cash-submenu')">
+                <span class="flex items-center">
+                    <i class="fas fa-wallet w-5 mr-3"></i>
+                    <span>Cash Management</span>
+                </span>
+                <i class="fas fa-chevron-down accordion-icon transition-transform duration-300"></i>
+            </button>
+            <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1 hidden">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
+            </ul>
+        </div>
+
+        <div class="mb-1">
+            <button class="accordion-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="reports-submenu" aria-expanded="false" onclick="toggleAccordion('reports-submenu')">
+                <span class="flex items-center">
+                    <i class="fas fa-file-invoice-dollar w-5 mr-3"></i>
+                    <span>Reports</span>
+                </span>
+                <i class="fas fa-chevron-down accordion-icon transition-transform duration-300"></i>
+            </button>
+            <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1 hidden">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
+            </ul>
+        </div>
+
+        <div class="mb-1">
+            <button id="nav-audit-logs" class="nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" onclick="showSubSection('audit-logs','nav-audit-logs', true)">
+                <i class="fas fa-history w-5 mr-3"></i>
+                <span>Audit Logs</span>
+            </button>
+        </div>
+    </div>
+</nav>
       <!-- MAIN CONTENT -->
       <main id="main-content" class="flex-1 p-6 overflow-y-auto">
         <!-- INVENTORY - split into two sub sections -->
@@ -641,6 +637,51 @@
       console.log(`Exporting table ${tableId} to ${filename}.xlsx`);
       // Keep your SheetJS integration or implementation here.
     }
+
+
+
+    // Function to toggle the accordion (show/hide submenu)
+function toggleAccordion(submenuId) {
+    const submenu = document.getElementById(submenuId);
+    const button = submenu.previousElementSibling; // The button is the element right before the submenu
+    const icon = button.querySelector('.accordion-icon');
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+    // 1. Close all other open submenus and reset their icons
+    document.querySelectorAll('.accordion-btn').forEach(btn => {
+        const targetId = btn.getAttribute('data-target');
+        if (targetId !== submenuId) {
+            const openSubmenu = document.getElementById(targetId);
+            if (openSubmenu && !openSubmenu.classList.contains('hidden')) {
+                openSubmenu.classList.add('hidden');
+                btn.setAttribute('aria-expanded', 'false');
+                btn.querySelector('.accordion-icon').classList.remove('rotate-180');
+            }
+        }
+    });
+
+    // 2. Toggle the current submenu
+    if (isExpanded) {
+        // Close it
+        submenu.classList.add('hidden');
+        button.setAttribute('aria-expanded', 'false');
+        icon.classList.remove('rotate-180'); // Rotate icon back to normal
+    } else {
+        // Open it
+        submenu.classList.remove('hidden');
+        button.setAttribute('aria-expanded', 'true');
+        icon.classList.add('rotate-180'); // Rotate icon to indicate it's open
+    }
+}
+
+// NOTE: Ensure your existing 'showSubSection' function still works for handling main content changes.
+// It is not changed here, but you should verify it handles the active state properly.
+/*
+function showSubSection(sectionId, navButtonId, isSingleItem = false) {
+    // ... your existing logic for showing the main content section ...
+    // ... your existing logic for handling active navigation states ...
+}
+*/
   </script>
 
   <!-- keep your script includes (if used) -->
