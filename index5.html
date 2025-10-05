@@ -30,7 +30,6 @@
       position: absolute;
       inset: 0;
       /* create a diagonal panel */
-      transform: skewX(-18deg);
       transform-origin: left;
       background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(16,185,129,0.18));
       z-index: -1;
@@ -52,9 +51,7 @@
       justify-content: flex-start;
     }
     /* counter the counter-skew for icon / text inside */
-    .tilt-content > * {
-      transform: skewX(-18deg);
-    }
+    
 
     /* submenu visibility */
     .submenu { display: none; }
