@@ -108,18 +108,17 @@
 
     <div class="flex flex-1 h-[calc(100vh-64px)]">
       <!-- SIDEBAR -->
-     
 <nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
     <div class="p-4">
         <div class="mb-4 text-center font-bold text-lg">Patrinah Hotel</div>
 
         <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
-                <span class="tilt-content flex items-center">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
+                <span class="tilt-content flex items-center mr-auto">
                     <i class="fas fa-boxes w-5"></i>
                     <span class="ml-3">Inventory</span>
                 </span>
-                <i class="fas fa-chevron-down arrow-icon"></i>
+                <i class="fas fa-chevron-down arrow-icon mr-2"></i>
             </button>
             <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
                 <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add / Update Inventory</button></li>
@@ -128,12 +127,12 @@
         </div>
 
         <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
-                <span class="tilt-content flex items-center">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
+                <span class="tilt-content flex items-center mr-auto">
                     <i class="fas fa-chart-line w-5"></i>
                     <span class="ml-3">Sales</span>
                 </span>
-                <i class="fas fa-chevron-down arrow-icon"></i>
+                <i class="fas fa-chevron-down arrow-icon mr-2"></i>
             </button>
             <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
                 <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
@@ -142,12 +141,12 @@
         </div>
 
         <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
-                <span class="tilt-content flex items-center">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
+                <span class="tilt-content flex items-center mr-auto">
                     <i class="fas fa-money-bill-wave w-5"></i>
                     <span class="ml-3">Expenses</span>
                 </span>
-                <i class="fas fa-chevron-down arrow-icon"></i>
+                <i class="fas fa-chevron-down arrow-icon mr-2"></i>
             </button>
             <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
                 <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
@@ -156,12 +155,12 @@
         </div>
 
         <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
-                <span class="tilt-content flex items-center">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
+                <span class="tilt-content flex items-center mr-auto">
                     <i class="fas fa-wallet w-5"></i>
                     <span class="ml-3">Cash Management</span>
                 </span>
-                <i class="fas fa-chevron-down arrow-icon"></i>
+                <i class="fas fa-chevron-down arrow-icon mr-2"></i>
             </button>
             <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
                 <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
@@ -170,12 +169,12 @@
         </div>
 
         <div class="mb-1">
-            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
-                <span class="tilt-content flex items-center">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
+                <span class="tilt-content flex items-center mr-auto">
                     <i class="fas fa-file-invoice-dollar w-5"></i>
                     <span class="ml-3">Reports</span>
                 </span>
-                <i class="fas fa-chevron-down arrow-icon"></i>
+                <i class="fas fa-chevron-down arrow-icon mr-2"></i>
             </button>
             <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
                 <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
@@ -192,7 +191,8 @@
             </button>
         </div>
     </div>
-</nav>
+</nav>     
+
       <!-- MAIN CONTENT -->
       <main id="main-content" class="flex-1 p-6 overflow-y-auto">
         <!-- INVENTORY - split into two sub sections -->
