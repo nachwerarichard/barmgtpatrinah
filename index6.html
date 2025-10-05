@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Patrinah Hotel Bar Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .section { display: none; }
+    .section.active { display: block; }
+    .submenu { display: none; }
+    .submenu.open { display: block; }
+    .sub-item.active { background-color: rgba(16,185,129,0.12); font-weight:700; color:#065f46; }
+    #main-content, #sidebar { -ms-overflow-style:none; scrollbar-width:none; }
+    #main-content::-webkit-scrollbar, #sidebar::-webkit-scrollbar { display:none; }
+    .tilt-btn { position: relative; overflow:hidden; z-index:0; }
+    .tilt-btn::before {
+      content:""; position:absolute; inset:0;
+      transform:skewX(-18deg); transform-origin:left;
+      background:linear-gradient(90deg, rgba(16,185,129,0.12), rgba(16,185,129,0.18));
+      z-index:-1; transition: transform .25s ease, opacity .25s ease; opacity:0.95;
+    }
+    .tilt-btn.active::before { background:linear-gradient(90deg, rgba(16,185,129,0.95), rgba(6,182,129,0.95)); }
+    .tilt-content { display:inline-flex; align-items:center; gap:0.75rem; transform:skewX(18deg); width:100%; justify-content:flex-start; }
+    .tilt-content > * { transform:skewX(-18deg); }
+    .sidebar-sublist button { padding-left: 1.75rem; }
+    @media (max-width: 1024px) { #sidebar { position:absolute; z-index:40; } }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- LOGIN -->
+<div id="login-section" class="flex flex-col items-center justify-center h-screen bg-gray-100">
+  <img src="patrinah.png" alt="Patrinah Hotel Logo" class="w-24 h-24 mb-6 rounded-full shadow-lg">
+  <h2 class="text-3xl font-bold mb-4 text-gray-800">Login</h2>
+  <input type="text" id="username" placeholder="Username" class="mb-4 p-3 border border-gray-300 rounded-lg w-80 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150">
+  <input type="password" id="password" placeholder="Password" class="mb-6 p-3 border border-gray-300 rounded-lg w-80 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150">
+  <button type="submit" onclick="login()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg w-80 transition duration-300 shadow-md">Login</button>
+  <p id="login-message" class="mt-4 text-red-500 font-medium"></p>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-container" class="hidden h-screen overflow-hidden">
+  <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center space-x-3">
+      <img src="patrina.png" alt="Patrinah Hotel Logo" class="w-10 h-10 rounded-full">
+      <h1 class="text-xl font-bold text-gray-800 hidden sm:block">Bar Management</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+      <button id="menu-toggle" class="text-gray-600 hover:text-emerald-600 text-2xl lg:hidden">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="flex items-center space-x-3">
+        <span id="current-user-display" class="username-display text-sm font-medium text-gray-700 hidden sm:block"></span>
+        <button id="logout-button" onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center space-x-1">
+          <span>Logout</span>
+          <i class="fas fa-sign-out-alt ml-1"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 h-[calc(100vh-64px)]">
+    <!-- SIDEBAR -->
+    <nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
+      <div class="p-4">
+        <div class="mb-4 text-center font-bold text-lg">Patrinah Hotel</div>
+
+        <!-- Sidebar Items -->
+        <div class="sidebar-items">
+          <!-- Example: Inventory -->
+          <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu', this)">
+              <span class="tilt-content"><i class="fas fa-boxes w-5"></i> Inventory</span>
+            </button>
+            <ul id="inventory-submenu" class="submenu mt-2 rounded-lg bg-gray-900 p-1">
+              <li><button class="sub-item w-full text-left p-3 rounded-md hover:bg-gray-800" onclick="showSubSection('inventory-add', this)">Add / Update Inventory</button></li>
+              <li><button class="sub-item w-full text-left p-3 rounded-md hover:bg-gray-800" onclick="showSubSection('inventory-records', this)">Inventory Records</button></li>
+            </ul>
+          </div>
+
+          <!-- Sales -->
+          <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu', this)">
+              <span class="tilt-content"><i class="fas fa-chart-line w-5"></i> Sales</span>
+            </button>
+            <ul id="sales-submenu" class="submenu mt-2 rounded-lg bg-gray-900 p-1">
+              <li><button class="sub-item w-full text-left p-3 rounded-md hover:bg-gray-800" onclick="showSubSection('sales-new', this)">Record New Sale</button></li>
+              <li><button class="sub-item w-full text-left p-3 rounded-md hover:bg-gray-800" onclick="showSubSection('sales-records', this)">Sales Records</button></li>
+            </ul>
+          </div>
+
+          <!-- Repeat for Expenses, Cash, Reports, Audit Logs... -->
+
+          <!-- Audit Logs -->
+          <div class="mb-1">
+            <button class="tilt-btn w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" onclick="showSubSection('audit-logs', this)">
+              <span class="tilt-content"><i class="fas fa-history w-5"></i> Audit Logs</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content" class="flex-1 p-6 overflow-y-auto">
+      <!-- Sections: Add all inventory, sales, expenses, cash, reports, audit logs sections here (copy from your current code) -->
+      <section id="inventory-add" class="section">Inventory Add/Update Section</section>
+      <section id="inventory-records" class="section">Inventory Records Section</section>
+      <section id="sales-new" class="section">Sales New Section</section>
+      <section id="sales-records" class="section">Sales Records Section</section>
+      <section id="expenses-add" class="section">Expenses Add Section</section>
+      <section id="expenses-records" class="section">Expenses Records Section</section>
+      <section id="cash-record" class="section">Cash Record Section</section>
+      <section id="cash-records" class="section">Cash Records Section</section>
+      <section id="reports-department" class="section">Reports Department Section</section>
+      <section id="reports-overall" class="section">Reports Overall Section</section>
+      <section id="audit-logs" class="section">Audit Logs Section</section>
+    </main>
+  </div>
+</div>
+
+<script>
+  // LOGIN
+  function login() {
+    const username = document.getElementById('username').value;
+    if(username.trim() === '') {
+      document.getElementById('login-message').textContent = 'Enter username';
+      return;
+    }
+    document.getElementById('login-section').classList.add('hidden');
+    document.getElementById('main-container').classList.remove('hidden');
+    document.getElementById('current-user-display').textContent = username;
+    showSubSection('inventory-add'); // default section
+  }
+
+  function logout() {
+    document.getElementById('main-container').classList.add('hidden');
+    document.getElementById('login-section').classList.remove('hidden');
+  }
+
+  // SIDEBAR TOGGLE
+  document.getElementById('menu-toggle').addEventListener('click', () => {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('-translate-x-full');
+  });
+
+  // Toggle submenu
+  function toggleSubmenu(id, btn) {
+    const submenu = document.getElementById(id);
+    submenu.classList.toggle('open');
+    btn.classList.toggle('active');
+  }
+
+  // Show section
+  function showSubSection(sectionId, btn=null) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    const section = document.getElementById(sectionId);
+    if(section) section.classList.add('active');
+
+    // mark active sub-item
+    document.querySelectorAll('.sub-item').forEach(item => item.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
