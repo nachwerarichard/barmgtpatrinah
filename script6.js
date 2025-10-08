@@ -2,25 +2,30 @@
 
 // 1. Define the privileged users and the default sections
 const PRIVILEGED_USERS = ['Nachwera Richard', 'Nelson', 'Florence'];
+
+// Updated constants to use the form IDs and their assumed parent navigation
 const DEFAULT_SECTION_PRIVILEGED = {
-    section: 'inventory-add',
+    // New default for privileged users (Nachwera, Nelson, Florence)
+    section: 'inventory-form', // <-- Use the inventory form ID
     parentNav: 'nav-inventory',
     submenuId: 'inventory-submenu'
 };
 const DEFAULT_SECTION_OTHERS = {
-    section: 'sale-new',
+    // New default for all other users
+    section: 'sale-form', // <-- Use the sale form ID
     parentNav: 'nav-sales',
-    submenuId: 'sales-submenu' // Assuming 'sale-new' is under a 'sales-submenu'
+    submenuId: 'sales-submenu' 
 };
 
 let currentUserRole = null; // Variable to store the current user's role/name
 
 // Login/logout placeholders
-function login(username) { // MODIFIED: Added username parameter
+// NOTE: You'll need to modify your login process to pass the actual username here.
+function login(username) { 
     currentUserRole = username; // Store the username
     document.getElementById('login-section').classList.add('hidden');
     document.getElementById('main-container').classList.remove('hidden');
-    document.getElementById('current-user-display').textContent = username || 'Admin User'; // Use the provided username
+    document.getElementById('current-user-display').textContent = username || 'Admin User';
     // Initialise sidebar state after login
     initSidebarState();
 }
@@ -36,7 +41,7 @@ document.getElementById('menu-toggle').addEventListener('click', () => {
     document.getElementById('sidebar').classList.toggle('-translate-x-full');
 });
 
-// Toggle submenu accordion style (No change needed here)
+// Toggle submenu accordion style (No change needed)
 function toggleSubmenu(submenuId, navButtonId) {
     // 1. Get the target submenu and button
     const submenu = document.getElementById(submenuId);
@@ -50,7 +55,6 @@ function toggleSubmenu(submenuId, navButtonId) {
     allSubmenus.forEach(s => {
         if (s.id !== submenuId) {
             s.classList.remove('open');
-            // Find and reset the arrow for the closed submenu's button
             const relatedBtn = document.querySelector(`[data-target="${s.id}"]`);
             const relatedArrow = relatedBtn?.querySelector('.arrow-icon');
             if (relatedArrow) {
@@ -72,14 +76,12 @@ function toggleSubmenu(submenuId, navButtonId) {
 
         if (submenu.classList.contains('open')) {
             navButton.classList.add('active');
-            // Change arrow to UP 👆
             if (arrow) {
                 arrow.classList.remove('fa-chevron-down');
                 arrow.classList.add('fa-chevron-up');
             }
         } else {
             navButton.classList.remove('active');
-            // Change arrow back to DOWN 👇
             if (arrow) {
                 arrow.classList.remove('fa-chevron-up');
                 arrow.classList.add('fa-chevron-down');
@@ -88,8 +90,7 @@ function toggleSubmenu(submenuId, navButtonId) {
     }
 }
 
-// Show a specific sub-section in the main area (No change needed here)
-// parentNavId is optional; if provided, it will highlight the parent main button
+// Show a specific sub-section in the main area (No change needed)
 function showSubSection(sectionId, parentNavId = null, isSingle = false) {
     // hide all sub sections
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -108,14 +109,11 @@ function showSubSection(sectionId, parentNavId = null, isSingle = false) {
     // highlight parent main nav button (if parentNavId provided)
     document.querySelectorAll('.nav-main').forEach(btn => btn.classList.remove('active'));
     if (parentNavId) {
-        // highlight the main button that corresponds to the parent nav id
         const mainBtn = document.querySelector(`[data-target="${parentNavId.replace('nav-','') + '-submenu'}"], #${parentNavId}`);
-        // fallback: find by nav id as provided
         const fallback = document.getElementById(parentNavId);
         if (mainBtn) mainBtn.classList.add('active');
         else if (fallback) fallback.classList.add('active');
     } else {
-        // remove highlight from main buttons if no parent provided (e.g., audit logs)
         document.querySelectorAll('.nav-main').forEach(btn => btn.classList.remove('active'));
     }
 
@@ -136,38 +134,36 @@ function showSubSection(sectionId, parentNavId = null, isSingle = false) {
 }
 
 // Initialize default open section & styles
-function initSidebarState() { // MODIFIED: Logic added to check user role
+function initSidebarState() {
     let defaultView;
+    // Check if the current user is in the privileged list
     const isPrivileged = PRIVILEGED_USERS.includes(currentUserRole);
 
     if (isPrivileged) {
         defaultView = DEFAULT_SECTION_PRIVILEGED;
-        console.log(`User ${currentUserRole} logged in. Defaulting to: ${defaultView.section}`);
+        console.log(`User ${currentUserRole} logged in. Defaulting to: ${defaultView.section} (Inventory Form)`);
     } else {
         defaultView = DEFAULT_SECTION_OTHERS;
-        console.log(`User ${currentUserRole} logged in. Defaulting to: ${defaultView.section}`);
+        console.log(`User ${currentUserRole} logged in. Defaulting to: ${defaultView.section} (Sale Form)`);
     }
 
-    // Show the determined default section
+    // Show the determined default section ('inventory-form' or 'sale-form')
     showSubSection(defaultView.section, defaultView.parentNav);
 
-    // Pre-open the corresponding submenu
+    // Pre-open the corresponding submenu and set active states
     document.getElementById(defaultView.submenuId)?.classList.add('open');
-    // Mark main button active
     document.querySelector(`[data-target="${defaultView.submenuId}"]`)?.classList.add('active');
-    // Mark sub-item active
     document.querySelector(`[data-show="${defaultView.section}"]`)?.classList.add('active');
 }
 
-// Ensure close button of modal works (No change needed here)
+// Ensure close button of modal works (No change needed)
 document.addEventListener('DOMContentLoaded', () => {
-    // If already logged-in state desired in dev, call initSidebarState() here.
-    // but we keep default login screen until login() called.
+    // The original code called initSidebarState() here if needed.
     const closeBtn = document.querySelector('#edit-inventory-modal .close-button');
     if (closeBtn) closeBtn.addEventListener('click', () => document.getElementById('edit-inventory-modal').classList.add('hidden'));
 });
 
-// --- Placeholder functions (No change needed here) ---
+// --- Placeholder functions (No change needed) ---
 function fetchInventory() { console.log('Fetching inventory...'); }
 function fetchSales() { console.log('Fetching sales...'); }
 function fetchExpenses() { console.log('Fetching expenses...'); }
@@ -178,15 +174,4 @@ function exportTableToExcel(tableId, filename) {
     // Keep your SheetJS integration or implementation here.
 }
 
-// --- EXAMPLE USAGE (For testing purposes) ---
-// To test, call login() with a user name:
-// login('Nachwera Richard'); // Should show 'inventory-add'
-// login('John Doe'); // Should show 'sale-new'
-// login('Nelson'); // Should show 'inventory-add'
-// login('Florence'); // Should show 'inventory-add'
-
-// NOTE: You will need to make sure your HTML uses the IDs:
-// 'sale-new' for the sale section,
-// 'nav-sales' for the sales main nav ID (or data-target for sales-submenu),
-// 'sales-submenu' for the sales submenu ID.
 // --- MODIFIED CODE END ---
