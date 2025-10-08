@@ -70,12 +70,6 @@
     @media (max-width: 1024px) {
       #sidebar { position: absolute; z-index: 40; }
     }
-
-
-  acordion-btn i:last-child {
-  margin-left: auto;
-}
-
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -110,55 +104,99 @@
 
     <div class="flex flex-1 h-[calc(100vh-64px)]">
       <!-- SIDEBAR -->
-<nav class="flex-1 p-4 space-y-1">
-  <!-- Dashboard -->
-  <button class="nav-item flex items-center justify-between w-full p-3 rounded-lg text-gray-700">
-    <span class="flex items-center">
-      <i class="fa-solid fa-chart-line w-6 text-emerald-600"></i>
-      <span class="ml-3">Dashboard</span>
-    </span>
-    <i class="fa-solid fa-chevron-right transition-transform duration-200"></i>
-  </button>
+<nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
+    <div class="p-4">
+        <div class="mb-4 text-center font-bold text-lg">Patrinah Hotel</div>
 
-  <!-- Inventory -->
-  <button class="nav-item flex items-center justify-between w-full p-3 rounded-lg text-gray-700 accordion-btn">
-    <span class="flex items-center">
-      <i class="fa-solid fa-wine-bottle w-6 text-emerald-600"></i>
-      <span class="ml-3">Inventory</span>
-    </span>
-    <i class="fa-solid fa-chevron-right transition-transform duration-200"></i>
-  </button>
-  <div class="accordion-content hidden pl-10 space-y-2">
-    <a href="#" class="block text-gray-600 hover:text-emerald-600">Add Stock</a>
-    <a href="#" class="block text-gray-600 hover:text-emerald-600">View Stock</a>
-  </div>
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
+                <span class="tilt-content flex items-center mr-auto">
+                    <i class="fas fa-boxes w-5"></i>
+                    <span class="ml-3">Inventory</span>
+                                  <i class="fas fa-chevron-down arrow-icon mr-2"></i>
 
-  <!-- Staff -->
-  <button class="nav-item flex items-center justify-between w-full p-3 rounded-lg text-gray-700 accordion-btn">
-    <span class="flex items-center">
-      <i class="fa-solid fa-user-tie w-6 text-emerald-600"></i>
-      <span class="ml-3">Staff</span>
-    </span>
-    <i class="fa-solid fa-chevron-right transition-transform duration-200"></i>
-  </button>
-  <div class="accordion-content hidden pl-10 space-y-2">
-    <a href="#" class="block text-gray-600 hover:text-emerald-600">Add Staff</a>
-    <a href="#" class="block text-gray-600 hover:text-emerald-600">View Staff</a>
-  </div>
+                </span>
+            </button>
+            <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add / Update Inventory</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
+            </ul>
+        </div>
 
-  <!-- Reports -->
-  <button class="nav-item flex items-center justify-between w-full p-3 rounded-lg text-gray-700 accordion-btn">
-    <span class="flex items-center">
-      <i class="fa-solid fa-clipboard-list w-6 text-emerald-600"></i>
-      <span class="ml-3">Reports</span>
-    </span>
-    <i class="fa-solid fa-chevron-right transition-transform duration-200"></i>
-  </button>
-  <div class="accordion-content hidden pl-10 space-y-2">
-    <a href="#" class="block text-gray-600 hover:text-emerald-600">Daily</a>
-    <a href="#" class="block text-gray-600 hover:text-emerald-600">Monthly</a>
-  </div>
-</nav>
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
+                <span class="tilt-content flex items-center mr-auto">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span class="ml-3">Sales</span>
+                                  <i class="fas fa-chevron-down arrow-icon mr-2"></i>
+
+                </span>
+            </button>
+            <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
+            </ul>
+        </div>
+
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
+                <span class="tilt-content flex items-center mr-auto">
+                    <i class="fas fa-money-bill-wave w-5"></i>
+                    <span class="ml-3">Expenses</span>
+                                  <i class="fas fa-chevron-down arrow-icon mr-2"></i>
+
+                </span>
+            </button>
+            <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
+            </ul>
+        </div>
+
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
+                <span class="tilt-content flex items-center mr-auto">
+                    <i class="fas fa-wallet w-5"></i>
+                    <span class="ml-3">Cash Management</span>
+                                  <i class="fas fa-chevron-down arrow-icon mr-2"></i>
+
+                </span>
+            </button>
+            <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
+            </ul>
+        </div>
+
+        <div class="mb-1">
+            <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
+                <span class="tilt-content flex items-center mr-auto">
+                    <i class="fas fa-file-invoice-dollar w-5"></i>
+                    <span class="ml-3">Reports</span>
+                                  <i class="fas fa-chevron-down arrow-icon mr-2"></i>
+
+                </span>
+            </button>
+            <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
+            </ul>
+        </div>
+
+        <div class="mb-1">
+            <button id="nav-audit-logs" class="tilt-btn w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs', true)">
+                <span class="tilt-content flex items-center">
+                    <i class="fas fa-history w-5"></i>
+                    <span class="ml-3">Audit Logs</span>
+                </span>
+            </button>
+        </div>
+      <button id="logout-button" onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center space-x-1">
+            <span>Logout</span>
+            <i class="fas fa-sign-out-alt ml-1"></i>
+          </button>
+    </div>
+</nav>     
 
       <!-- MAIN CONTENT -->
       <main id="main-content" class="flex-1 p-6 overflow-y-auto">
@@ -490,7 +528,6 @@
   </div>
 
  <script src="script4.js"></script>
-
   <!-- keep your script includes (if used) -->
   <script src="script3.js"></script>
   <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
