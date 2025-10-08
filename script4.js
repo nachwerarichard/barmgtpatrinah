@@ -1,11 +1,5 @@
     // Login/logout placeholders
-    function login() {
-      document.getElementById('login-section').classList.add('hidden');
-      document.getElementById('main-container').classList.remove('hidden');
-      document.getElementById('current-user-display').textContent = 'Admin User';
-      // Initialise sidebar state after login
-      initSidebarState();
-    }
+
     function logout() {
       document.getElementById('main-container').classList.add('hidden');
       document.getElementById('login-section').classList.remove('hidden');
