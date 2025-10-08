@@ -385,6 +385,11 @@ async function authenticatedFetch(url, options = {}) {
 // --- Login/Logout ---
 
 async function login() {
+    document.getElementById('login-section').classList.add('hidden');
+      document.getElementById('main-container').classList.remove('hidden');
+      document.getElementById('current-user-display').textContent = 'Admin User';
+      // Initialise sidebar state after login
+      initSidebarState();
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const loginMessage = document.getElementById('login-message');
