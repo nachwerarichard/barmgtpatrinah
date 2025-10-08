@@ -19,36 +19,38 @@
     #main-content, #sidebar { -ms-overflow-style: none; scrollbar-width: none; }
     #main-content::-webkit-scrollbar, #sidebar::-webkit-scrollbar { display: none; }
 
-    /* Sidebar tilt design - diagonal background while keeping text horizontal */
-    .tilt-btn {
-      position: relative;
-      overflow: hidden;
-      z-index: 0;
-    }
-    .tilt-btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      /* create a diagonal panel */
-      transform-origin: left;
-      background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(16,185,129,0.18));
-      z-index: -1;
-      transition: transform .25s ease, opacity .25s ease;
-      opacity: 0.95;
-    }
-    /* stronger background when active */
-    .tilt-btn.active::before {
-      background: linear-gradient(90deg, rgba(16,185,129,0.95), rgba(6,182,129,0.95));
-    }
 
-    /* keep inner text / icon horizontal by counter-skewing */
-    .tilt-content {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      justify-content: flex-start;
-    }
-    /* counter the counter-skew for icon / text inside */
+
+    /* Sidebar tilt design - diagonal background while keeping text horizontal */
+.tilt-btn {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+.tilt-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* create a diagonal panel */
+  transform-origin: left;
+  background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(16,185,129,0.18));
+  z-index: -1;
+  transition: transform .25s ease, opacity .25s ease;
+  opacity: 0.95;
+}
+/* stronger background when active */
+.tilt-btn.active::before {
+  background: linear-gradient(90deg, rgba(16,185,129,0.95), rgba(6,182,129,0.95));
+}
+
+/* keep inner text / icon horizontal by counter-skewing */
+.tilt-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  /* REMOVED: width: 100%; */
+  justify-content: flex-start;
+}
     
 
     /* submenu visibility */
@@ -122,14 +124,19 @@
         <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
     </ul>
 </div>
-      <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" ...>
-    <span class="tilt-content flex items-center">
-        <i class="fas fa-boxes w-5"></i> 
-        <span class="ml-3">Inventory</span>
-    </span>
-    
-    <i class="fas fa-chevron-down arrow-icon"></i> 
-</button>
+
+      <div class="mb-1">
+    <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
+        
+        <span class="tilt-content flex items-center">
+            <i class="fas fa-boxes w-5"></i> 
+            <span class="ml-3">Inventory</span>
+        </span>
+        
+        <i class="fas fa-chevron-down arrow-icon"></i> 
+        
+    </button>
+    </div>
 
         <div class="mb-1">
             <button class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
