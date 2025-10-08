@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patrinah Hotel Bar Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar {
+      transition: all 0.3s ease;
+    }
+    .nav-item:hover {
+      background-color: rgba(16, 185, 129, 0.1);
+    }
+    .nav-item.active {
+      background-color: rgba(16, 185, 129, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="sidebar w-64 bg-white shadow-xl flex flex-col fixed h-full">
+    <div class="p-6 border-b border-gray-200">
+      <h1 class="text-2xl font-bold text-emerald-600">Patrinah Hotel</h1>
+      <p class="text-sm text-gray-500">Bar Management System</p>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+      <a href="#" class="nav-item active flex items-center p-3 rounded-lg text-gray-700 hover:text-emerald-600">
+        <i class="fa-solid fa-house w-6 text-emerald-600"></i>
+        <span class="ml-3">Dashboard</span>
+      </a>
+      <a href="#" class="nav-item flex items-center p-3 rounded-lg text-gray-700 hover:text-emerald-600">
+        <i class="fa-solid fa-wine-bottle w-6 text-emerald-600"></i>
+        <span class="ml-3">Inventory</span>
+      </a>
+      <a href="#" class="nav-item flex items-center p-3 rounded-lg text-gray-700 hover:text-emerald-600">
+        <i class="fa-solid fa-user-tie w-6 text-emerald-600"></i>
+        <span class="ml-3">Staff</span>
+      </a>
+      <a href="#" class="nav-item flex items-center p-3 rounded-lg text-gray-700 hover:text-emerald-600">
+        <i class="fa-solid fa-cash-register w-6 text-emerald-600"></i>
+        <span class="ml-3">Sales</span>
+      </a>
+      <a href="#" class="nav-item flex items-center p-3 rounded-lg text-gray-700 hover:text-emerald-600">
+        <i class="fa-solid fa-clipboard-list w-6 text-emerald-600"></i>
+        <span class="ml-3">Reports</span>
+      </a>
+      <a href="#" class="nav-item flex items-center p-3 rounded-lg text-gray-700 hover:text-emerald-600">
+        <i class="fa-solid fa-gear w-6 text-emerald-600"></i>
+        <span class="ml-3">Settings</span>
+      </a>
+    </nav>
+    <div class="p-4 border-t border-gray-200">
+      <a href="#" class="flex items-center justify-center bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition">
+        <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="ml-64 flex-1 p-8">
+    <header class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-semibold text-gray-800">Dashboard</h2>
+      <div class="flex items-center gap-4">
+        <input type="text" placeholder="Search..." class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        <button class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition">
+          <i class="fa-solid fa-search"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Dashboard Cards -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-gray-500 text-sm">Total Sales</h3>
+            <p class="text-2xl font-bold text-gray-800">$12,540</p>
+          </div>
+          <div class="bg-emerald-100 text-emerald-600 p-3 rounded-full">
+            <i class="fa-solid fa-dollar-sign text-xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-gray-500 text-sm">Bottles in Stock</h3>
+            <p class="text-2xl font-bold text-gray-800">328</p>
+          </div>
+          <div class="bg-emerald-100 text-emerald-600 p-3 rounded-full">
+            <i class="fa-solid fa-boxes-stacked text-xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-gray-500 text-sm">Active Staff</h3>
+            <p class="text-2xl font-bold text-gray-800">15</p>
+          </div>
+          <div class="bg-emerald-100 text-emerald-600 p-3 rounded-full">
+            <i class="fa-solid fa-user-tie text-xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-gray-500 text-sm">Pending Orders</h3>
+            <p class="text-2xl font-bold text-gray-800">7</p>
+          </div>
+          <div class="bg-emerald-100 text-emerald-600 p-3 rounded-full">
+            <i class="fa-solid fa-clock text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Sales Table -->
+    <section class="bg-white p-6 rounded-2xl shadow-md">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Recent Sales</h3>
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-gray-100 text-gray-600 text-left">
+            <th class="p-3">Date</th>
+            <th class="p-3">Staff</th>
+            <th class="p-3">Item</th>
+            <th class="p-3">Quantity</th>
+            <th class="p-3">Amount</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700">
+          <tr class="hover:bg-gray-50">
+            <td class="p-3">2025-10-08</td>
+            <td class="p-3">Sarah</td>
+            <td class="p-3">Red Wine</td>
+            <td class="p-3">4</td>
+            <td class="p-3">$120</td>
+          </tr>
+          <tr class="hover:bg-gray-50">
+            <td class="p-3">2025-10-08</td>
+            <td class="p-3">John</td>
+            <td class="p-3">Whiskey</td>
+            <td class="p-3">2</td>
+            <td class="p-3">$90</td>
+          </tr>
+          <tr class="hover:bg-gray-50">
+            <td class="p-3">2025-10-07</td>
+            <td class="p-3">Lisa</td>
+            <td class="p-3">Beer</td>
+            <td class="p-3">10</td>
+            <td class="p-3">$70</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+</body>
+</html>
