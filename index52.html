@@ -526,10 +526,144 @@
     </div>
   </div>
 
+
+<!-- ================= EDIT FORMS ================= -->
+
+<!-- Edit Inventory Modal -->
+<div id="edit-inventory-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" style="display: none;">
+  <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
+    <button class="close-button absolute top-3 right-3 text-gray-400 hover:text-gray-600 focus:outline-none" onclick="closeEditModal()">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button>
+    <h2 class="text-xl font-bold text-emerald-600 mb-4">Edit Inventory Item</h2>
+    <form id="edit-inventory-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="hidden" id="edit-inventory-id">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Item:</label>
+        <input type="text" id="edit-item" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Opening Stock:</label>
+        <input type="number" id="edit-opening" min="0" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Purchases:</label>
+        <input type="number" id="edit-purchases" min="0" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Sales:</label>
+        <input type="number" id="edit-inventory-sales" min="0" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Spoilage:</label>
+        <input type="number" id="edit-spoilage" min="0" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
+      </div>
+      <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+        <button type="button" onclick="closeEditModal()" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Edit Sales Modal -->
+<div id="edit-sale-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
+    <h2 class="text-xl font-bold text-emerald-600 mb-4">Edit Sale Record</h2>
+    <form id="edit-sale-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="hidden" id="edit-sale-id">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Item:</label>
+        <input type="text" id="edit-sale-item" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Number Sold:</label>
+        <input type="number" id="edit-sale-number" min="1" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Buying Price (BP):</label>
+        <input type="number" id="edit-sale-bp" step="0.01" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Selling Price (SP):</label>
+        <input type="number" id="edit-sale-sp" step="0.01" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+        <button type="button" onclick="closeModal('edit-sale-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Expense Modal -->
+<div id="edit-expense-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
+    <h2 class="text-xl font-bold text-emerald-600 mb-4">Edit Expense</h2>
+    <form id="edit-expense-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="hidden" id="edit-expense-id">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Description:</label>
+        <input type="text" id="edit-expense-description" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Amount (UGX):</label>
+        <input type="number" id="edit-expense-amount" step="0.01" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+        <button type="button" onclick="closeModal('edit-expense-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Cash Modal -->
+<div id="edit-cash-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
+    <h2 class="text-xl font-bold text-emerald-600 mb-4">Edit Cash Record</h2>
+    <form id="edit-cash-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="hidden" id="edit-cash-id">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Cash At Hand:</label>
+        <input type="number" id="edit-cash-at-hand" step="0.01" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Cash Banked:</label>
+        <input type="number" id="edit-cash-banked" step="0.01" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Bank Receipt ID:</label>
+        <input type="text" id="edit-bank-receipt-id" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Date:</label>
+        <input type="date" id="edit-cash-date" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+        <button type="button" onclick="closeModal('edit-cash-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  
  <script src="script4.js"></script>
   <!-- keep your script includes (if used) -->
   <script src="script3.js"></script>
   <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+  <script>
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+</script>
+
   <script src="script12.js" defer></script>
 </body>
 </html>
