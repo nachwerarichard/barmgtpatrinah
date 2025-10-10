@@ -246,7 +246,6 @@ function populateSaleForm(sale) {
     const modal = document.getElementById('edit-sale-modal');
     const idInput = document.getElementById('sale-id');
     const itemInput = document.getElementById('sale-item');
-    const dateInput = document.getElementById('sales-date-filter');
     const numberInput = document.getElementById('sale-number');
     const bpInput = document.getElementById('sale-bp');
     const spInput = document.getElementById('sale-sp');
