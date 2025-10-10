@@ -217,6 +217,16 @@ function showModal(modalId) {
     }
 }
 
+
+
+function showModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+
 /**
  * 2. Function to populate the 'Edit Sale' form fields.
  * This function fills the form with the data from the 'sale' object.
