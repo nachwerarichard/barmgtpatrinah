@@ -250,18 +250,23 @@ function populateSaleForm(sale) {
     const bpInput = document.getElementById('sale-bp');
     const spInput = document.getElementById('sale-sp');
 
-    // 2. Populate the form fields with the sale data
-    
-    // The 'sale-id' is assumed to be a unique identifier for the database record.
-    // If your sale objects have a unique ID property (e.g., '_id' or 'id'), use it here.
-    // For this example, I'll assume it's 'sale.id'. Adjust if your property name is different.
-    if (sale.id) {
-        idInput.value = sale.id;
-    } else {
-        // Handle case where an ID might not exist, perhaps set a temporary value or alert
-        console.warn("Sale object is missing an 'id' property. Edit may not save correctly.");
-        idInput.value = ''; // Clear or set a default
-    }
+
+// The 'sale-id' input is where we store the unique ID for updating.
+
+// ... other code ...
+
+// 2. Populate the form fields with the sale data
+// Check for the unique ID. The common convention is '_id' from the database.
+if (sale._id) {
+    // Set the hidden input value to the unique ID of the sale record
+    idInput.value = sale._id; 
+} else {
+    // Fallback: This warning helps you debug if a record is missing its ID
+    console.warn("Sale object is missing an '_id' property. Edit may not save correctly.");
+    idInput.value = ''; // Ensure the field is empty, which will trigger a POST (new record) if submitted
+}
+
+// ... rest of the populateSaleForm function
     
     itemInput.value = sale.item;
     numberInput.value = sale.number;
