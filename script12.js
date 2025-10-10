@@ -1,8 +1,8 @@
 // --- Initialization Variables ---
-const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; // Base URL for API calls
-let authToken = localStorage.getItem('authToken') || ''; // Stores the authentication token
-let currentUsername = localStorage.getItem('username') || ''; // Stores the logged-in username
-let currentUserRole = localStorage.getItem('userRole') || ''; // Stores the logged-in user's role
+const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; 
+let authToken = localStorage.getItem('authToken') || ''; 
+let currentUsername = localStorage.getItem('username') || ''; 
+let currentUserRole = localStorage.getItem('userRole') || ''; 
 
 // Pagination variables (placeholders)
 let currentPage = 1; 
@@ -28,6 +28,7 @@ function exportTableToExcel(tableId, filename) { console.log(`Exporting table ${
 
 /**
  * Displays a custom alert message to the user.
+ * (Requires #message-modal, #message-text, #message-close-button in HTML)
  * @param {string} message The message to display.
  * @param {function} [callback] Optional callback function to execute after the message is dismissed.
  */
@@ -37,7 +38,7 @@ function showMessage(message, callback = null) {
     const closeButton = document.getElementById('message-close-button');
 
     if (!modal || !messageText || !closeButton) {
-        console.error("Message modal elements not found. Falling back to console log.");
+        console.error("Message modal elements not found.");
         console.log("Message:", message);
         if (callback) callback();
         return;
@@ -84,13 +85,12 @@ function logout() {
 
 /**
  * Wrapper for fetch API to include authentication token and handle errors.
- * Automatically logs out on 401/403 errors.
  */
 async function authenticatedFetch(url, options = {}) {
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`,
-        ...options.headers // Merge any custom headers
+        ...options.headers 
     };
 
     const fullOptions = { ...options, headers };
@@ -100,14 +100,14 @@ async function authenticatedFetch(url, options = {}) {
 
         if (response.status === 401 || response.status === 403) {
             showMessage('Session expired or unauthorized access. Logging out.', logout);
-            return { ok: false, status: response.status }; // Return a failure object
+            return { ok: false, status: response.status }; 
         }
 
         return response;
     } catch (error) {
         console.error('Authenticated fetch error:', error);
         showMessage('Network error or unable to reach the server.');
-        return { ok: false, status: 0 }; // Return a failure object for network issues
+        return { ok: false, status: 0 }; 
     }
 }
 
@@ -141,7 +141,7 @@ async function login() {
 
             // Update UI and show the main application
             updateUIForUserRole();
-            initSidebarState(); // Initialize the default navigation view
+            initSidebarState(); 
 
             loginMessage.textContent = '';
         } else {
@@ -157,7 +157,7 @@ async function login() {
 // --- Sidebar and Navigation Functions ---
 
 /**
- * Applies specific UI restrictions for 'Martha', 'Mercy', and 'Joshua' roles (Bar Staff).
+ * Applies specific UI restrictions for Bar Staff roles.
  * @param {string} mainSectionId The ID of the main section (e.g., 'sales', 'inventory').
  */
 function applyBarStaffUIRestrictions(mainSectionId) {
@@ -166,25 +166,19 @@ function applyBarStaffUIRestrictions(mainSectionId) {
     const isJoshua = currentUserRole === 'Joshua';
     const isBarStaff = isMartha || isJoshua || isMercy;
 
-    // Elements that might need hiding/showing based on roles
     const salesExportBtn = document.querySelector('#sales-list .export-button');
 
-    // Reset display for elements initially
     if (salesExportBtn) salesExportBtn.style.display = '';
 
-    // Apply specific restrictions if the user is Bar Staff
     if (isBarStaff) {
-        // Bar staff can see sales records, but CANNOT export
         if (mainSectionId === 'sales' && salesExportBtn) {
             salesExportBtn.style.display = 'none';
         }
     } else {
-        // Full access roles: ensure export button is visible
         if (mainSectionId === 'sales' && salesExportBtn) {
             salesExportBtn.style.display = 'block';
         }
     }
-    // You can add more role-specific hiding/showing logic here for other sections.
 }
 
 /**
@@ -214,7 +208,6 @@ function toggleSubmenu(submenuId) {
     // 3. Update main nav button class and arrow
     if (navButton) {
         const arrow = navButton.querySelector('.arrow-icon');
-        // Toggle the main button's 'active' state based on submenu open status
         navButton.classList.toggle('active', submenu.classList.contains('open'));
 
         if (arrow) {
@@ -234,12 +227,10 @@ function toggleSubmenu(submenuId) {
 
 /**
  * Hides all sections and shows the specified sub-section.
- * Includes role-based access checks and triggers data fetching/UI restrictions.
- * @param {string} sectionId The ID of the sub-section to show (e.g., 'inventory-add', 'sales-list').
+ * @param {string} sectionId The ID of the sub-section to show.
  * @param {string} [parentNavId] The ID of the parent navigation button (e.g., 'nav-inventory').
  */
 function showSubSection(sectionId, parentNavId = null) {
-    // Determine the main section ID for access checks
     const mainSectionId = sectionId.split('-')[0];
 
     // --- Role-based Access Check ---
@@ -252,18 +243,17 @@ function showSubSection(sectionId, parentNavId = null) {
         'Joshua': ['inventory', 'sales']
     };
 
-    // 'cash-management-journal' maps to 'cash', 'audit-logs' maps to 'audit'
     const checkSectionId = mainSectionId.startsWith('cash') ? 'cash' : (mainSectionId === 'audit' ? 'audit' : mainSectionId);
 
     if (currentUserRole && !allowedSections[currentUserRole]?.includes(checkSectionId)) {
         showMessage('Access Denied: You do not have permission to view this section.');
         
-        // Redirect to a default allowed section
+        // Redirect logic to ensure a safe landing page
         const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (fullAccessRoles.includes(currentUserRole)) {
-            initSidebarState(); // Admin default
+            initSidebarState(); 
         } else if (currentUserRole === 'Martha' || currentUserRole === 'Mercy' || currentUserRole === 'Joshua') {
-            showSubSection('sales-new', 'nav-sales'); // Bar Staff default
+            showSubSection('sales-new', 'nav-sales'); 
         }
         return;
     }
@@ -279,11 +269,9 @@ function showSubSection(sectionId, parentNavId = null) {
     }
 
     // --- Highlighting Logic ---
-    // Clear active on all sub-items and main items
     document.querySelectorAll('.sub-item').forEach(si => si.classList.remove('active'));
     document.querySelectorAll('.nav-main').forEach(btn => btn.classList.remove('active'));
 
-    // Set active for the clicked sub-item (if applicable)
     const clicked = document.querySelector(`.sub-item[data-show="${sectionId}"]`);
     if (clicked) clicked.classList.add('active');
 
@@ -292,7 +280,6 @@ function showSubSection(sectionId, parentNavId = null) {
         const mainBtn = document.getElementById(parentNavId);
         if (mainBtn) mainBtn.classList.add('active');
     } else {
-         // For single top-level buttons like Audit Logs (nav-audit-logs)
          const singleBtn = document.getElementById(`nav-${mainSectionId}-logs`) || document.getElementById(`nav-${sectionId}`);
          if (singleBtn) singleBtn.classList.add('active');
     }
@@ -365,7 +352,7 @@ function initSidebarState() {
  * Updates the UI based on the logged-in user's role, toggling nav visibility.
  */
 function updateUIForUserRole() {
-    // Mapping of roles to their permitted top-level navigation IDs
+    // MAPPING FIX: Confirmed all 6 main nav items for full-access roles.
     const rolePermissions = {
         'Nachwera Richard': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs'],
         'Nelson': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs'],
@@ -384,6 +371,7 @@ function updateUIForUserRole() {
         if (userNavs.includes(navId)) {
             btn.classList.remove('hidden');
         } else {
+            // Hide if not in permissions list
             btn.classList.add('hidden');
         }
     });
@@ -399,7 +387,6 @@ function updateUIForUserRole() {
         document.getElementById('login-section').classList.add('hidden');
         document.getElementById('main-container').classList.remove('hidden');
     } else {
-        // Should only happen during logout
         document.getElementById('login-section').classList.remove('hidden');
         document.getElementById('main-container').classList.add('hidden');
     }
@@ -426,9 +413,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Set up click listener for the message modal close button
-    document.getElementById('message-close-button').addEventListener('click', () => {
-        document.getElementById('message-modal').classList.add('hidden');
-    });
+    const messageCloseBtn = document.getElementById('message-close-button');
+    if (messageCloseBtn) {
+        messageCloseBtn.addEventListener('click', () => {
+            document.getElementById('message-modal').classList.add('hidden');
+        });
+    }
 
     // Set up click listener for the sales export button
     const salesExportBtn = document.querySelector('#sales-list .export-button');
@@ -438,13 +428,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // NOTE: If you add an 'edit-inventory-modal', remember to add its close button logic here.
+    // Listener for inventory edit modal close button (if it exists)
     const editModal = document.getElementById('edit-inventory-modal');
     if (editModal) {
          const closeBtn = editModal.querySelector('.close-button');
          if (closeBtn) closeBtn.addEventListener('click', () => editModal.classList.add('hidden'));
     }
 });
+
 
 async function logout() {
     try {
