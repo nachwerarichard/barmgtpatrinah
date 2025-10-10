@@ -849,21 +849,19 @@ function showModal(modalId) {
  * Utility function to close the modal.
  * (Assumed to be called by the Cancel button in your HTML)
  */
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-}
 
-function populateSaleForm(sale) {
+/**
+ * Populates the Edit Sale form with sale data and then displays the modal.
+ */
+function populateSaleForm(sale, modalId) { // NOTE: Added modalId parameter
+    // ----------------------------------------------------------------------
+    // 1. POPULATE FORM FIELDS (Ensure these IDs match your HTML)
+    // ----------------------------------------------------------------------
     const idInput = document.getElementById('sale-id');
     const itemInput = document.getElementById('sale-item');
     const numberInput = document.getElementById('sale-number');
     const bpInput = document.getElementById('sale-bp');
     const spInput = document.getElementById('sale-sp');
-    // NOTE: sales-date-filter is the ID used in the previous HTML revision for the Date input
     const salesDateFilterInput = document.getElementById('sales-date-filter');
 
     if (idInput) idInput.value = sale._id;
@@ -871,11 +869,22 @@ function populateSaleForm(sale) {
     if (numberInput) numberInput.value = sale.number;
     if (bpInput) bpInput.value = sale.bp;
     if (spInput) spInput.value = sale.sp;
+
     if (salesDateFilterInput && sale.date) {
         // Formats the date to 'YYYY-MM-DD' for the date input field
         salesDateFilterInput.value = new Date(sale.date).toISOString().split('T')[0];
     }
+    
+    // ----------------------------------------------------------------------
+    // 2. SHOW MODAL
+    // ----------------------------------------------------------------------
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex'); // Assumes your modal uses flex for centering
+    }
 }
+
 
 // ... (Other functions like populateBuyingPrice, populateDatalist, populateSellingPrice remain here) ...
 
