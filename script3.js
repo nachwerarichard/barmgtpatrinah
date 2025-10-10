@@ -244,65 +244,44 @@ function showModal(modalId) {
 
 
 function populateSaleForm(sale) {
-    console.log('START: Attempting to populate form with data:', sale);
-
-    // 1. Check for missing elements (IDs must match your HTML)
+    // 1. Get references to the form elements - USE THE NEW IDs
     const modal = document.getElementById('edit-sale-modal');
+    
     if (!modal) {
-        console.error("🔴 ERROR: Modal 'edit-sale-modal' not found.");
+        console.error("Edit modal 'edit-sale-modal' not found.");
         return; 
     }
-    console.log('🟢 FOUND: Modal element.');
-
-    const idInput = document.getElementById('sale-id');
-    const itemInput = document.getElementById('sale-item');
-    const numberInput = document.getElementById('sale-number');
-    const bpInput = document.getElementById('sale-bp');
-    const spInput = document.getElementById('sale-sp');
-
-    // 2. Data Population
     
-    // Set the unique ID for the PUT request (Using the confirmed '_id' property)
-    if (sale && sale._id) { 
-        idInput.value = sale._id;
-        console.log('🟢 ID set:', sale._id);
-    } else {
-        console.warn("🟡 WARNING: Sale ID is missing, treating as a new record on submit.");
-        idInput.value = ''; 
+    // 🚨 UPDATED IDs HERE
+    const idInput     = document.getElementById('edit-sale-id');
+    const itemInput   = document.getElementById('edit-sale-item');
+    const numberInput = document.getElementById('edit-sale-number');
+    const bpInput     = document.getElementById('edit-sale-bp');
+    const spInput     = document.getElementById('edit-sale-sp');
+
+    // Safety check for the sale object
+    if (!sale || typeof sale !== 'object') {
+        console.error("Invalid or missing sale object passed to populateSaleForm.", sale);
+        return;
     }
 
-    // Populate Item
-    console.log('Attempting to set item:', sale.item);
-    if (itemInput) itemInput.value = sale.item;
-
-    // Populate Number
-    console.log('Attempting to set number:', sale.number);
-    if (numberInput) numberInput.value = sale.number;
-
-    // Populate Buying Price (BP) with error handling
-    if (sale.bp !== undefined && sale.bp !== null) {
-        bpInput.value = Number(sale.bp).toFixed(2);
-        console.log('🟢 BP set:', bpInput.value);
-    } else {
-        console.warn('🟡 WARNING: BP is missing or invalid.');
-        if (bpInput) bpInput.value = '';
-    }
-
-    // Populate Selling Price (SP) with error handling
-    if (sale.sp !== undefined && sale.sp !== null) {
-        spInput.value = Number(sale.sp).toFixed(2);
-        console.log('🟢 SP set:', spInput.value);
-    } else {
-        console.warn('🟡 WARNING: SP is missing or invalid.');
-        if (spInput) spInput.value = '';
-    }
+    // 2. Populate the form fields 
+    
+    // Set ID
+    idInput.value = sale._id || sale.id || '';
+    
+    // Populate simple fields
+    itemInput.value = sale.item;
+    numberInput.value = sale.number;
+    
+    // Populate price fields with safety checks
+    bpInput.value = sale.bp ? Number(sale.bp).toFixed(2) : '';
+    spInput.value = sale.sp ? Number(sale.sp).toFixed(2) : '';
     
     // 3. Display the modal
     modal.classList.remove('hidden');
-    console.log('🟢 Modal visibility set to UNHIDDEN.');
     
     itemInput.focus();
-    console.log('END: populateSaleForm complete.');
 }
 
 
