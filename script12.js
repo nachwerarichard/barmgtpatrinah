@@ -853,42 +853,7 @@ function showModal(modalId) {
 /**
  * Populates the Edit Sale form with sale data and then displays the modal.
  */
-function populateSaleForm(sale, modalId) { // NOTE: Added modalId parameter
-    // ----------------------------------------------------------------------
-    // 1. POPULATE FORM FIELDS (Ensure these IDs match your HTML)
-    // ----------------------------------------------------------------------
-    const idInput = document.getElementById('sale-id');
-    const itemInput = document.getElementById('sale-item');
-    const numberInput = document.getElementById('sale-number');
-    const bpInput = document.getElementById('sale-bp');
-    const spInput = document.getElementById('sale-sp');
-    const salesDateFilterInput = document.getElementById('sales-date-filter');
 
-    if (idInput) idInput.value = sale._id;
-    if (itemInput) itemInput.value = sale.item;
-    if (numberInput) numberInput.value = sale.number;
-    if (bpInput) bpInput.value = sale.bp;
-    if (spInput) spInput.value = sale.sp;
-
-    if (salesDateFilterInput && sale.date) {
-        // Formats the date to 'YYYY-MM-DD' for the date input field
-        salesDateFilterInput.value = new Date(sale.date).toISOString().split('T')[0];
-    }
-    
-    // ----------------------------------------------------------------------
-    // 2. SHOW MODAL
-    // ----------------------------------------------------------------------
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex'); // Assumes your modal uses flex for centering
-    }
-}
-
-
-// ... (Other functions like populateBuyingPrice, populateDatalist, populateSellingPrice remain here) ...
-
-// ---
 
 function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
