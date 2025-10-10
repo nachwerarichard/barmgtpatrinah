@@ -905,7 +905,9 @@ function renderSalesTable(sales) {
     }
 
     const hideProfitColumns = ['Martha', 'Mercy','Joshua'].includes(currentUserRole);
+    // Initialize a variable to hold the total of all selling prices
     let totalSellingPriceSum = 0;
+    // Initialize an object to hold departmental totals
     const departmentTotals = {
         bar: 0,
         rest: 0,
@@ -931,8 +933,10 @@ function renderSalesTable(sales) {
 
         const totalSellingPrice = sale.sp * sale.number;
         row.insertCell().textContent = totalSellingPrice.toFixed(2);
+        // Add the current sale's total selling price to the sum
         totalSellingPriceSum += totalSellingPrice;
 
+        // Categorize and add to department totals
         if (sale.item.toLowerCase().startsWith('bar')) {
             departmentTotals.bar += totalSellingPrice;
         } else if (sale.item.toLowerCase().startsWith('rest')) {
@@ -957,21 +961,20 @@ function renderSalesTable(sales) {
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
-            editButton.className = 'edit';
+            editButton.className = 'edit bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-xs'; // Added Tailwind classes for styling
+            // --- MODIFICATION HERE ---
             editButton.onclick = () => {
-                // 1. Populate the form with sale data
-                populateSaleForm(sale);
-                // 2. Show the modal
-                showModal('edit-sale-modal'); // <-- This is the key change!
+                populateSaleForm(sale); // Populate the form
+                showModal('edit-sale-modal'); // Show the modal
             };
+            // --- END MODIFICATION ---
             actionsCell.appendChild(editButton);
+
 
         } else {
             actionsCell.textContent = 'View Only';
         }
     });
-    
-    // ... (Code for department totals and grand total remains here) ...
 
     // Insert an empty row for spacing before the totals
     tbody.insertRow();
@@ -982,12 +985,14 @@ function renderSalesTable(sales) {
             const totalRow = tbody.insertRow();
             const totalCell = totalRow.insertCell();
             totalCell.colSpan = 4;
+            // --- MODIFICATION HERE ---
             let departmentName;
             if (department === 'rest') {
                 departmentName = 'Restaurant';
             } else {
                 departmentName = department.charAt(0).toUpperCase() + department.slice(1);
             }
+            // --- END MODIFICATION ---
             totalCell.textContent = `${departmentName} Total Sales:`;
             totalCell.style.fontWeight = 'bold';
             totalCell.style.textAlign = 'right';
@@ -1016,38 +1021,57 @@ function renderSalesTable(sales) {
     grandTotalValueCell.style.fontWeight = 'bold';
 }
 
+function populateSaleForm(sale) {
+    const idInput = document.getElementById('sale-id');
+    const itemInput = document.getElementById('sale-item');
+    const numberInput = document.getElementById('sale-number');
+    const bpInput = document.getElementById('sale-bp');
+    const spInput = document.getElementById('sale-sp');
+    const salesDateFilterInput = document.getElementById('sales-date-filter');
 
+    if (idInput) idInput.value = sale._id;
+    if (itemInput) itemInput.value = sale.item;
+    if (numberInput) numberInput.value = sale.number;
+    if (bpInput) bpInput.value = sale.bp;
+    if (spInput) spInput.value = sale.sp;
 
+    // Convert date to 'YYYY-MM-DD' format required for HTML date input
+    if (salesDateFilterInput && sale.date) {
+        const dateObj = new Date(sale.date);
+        const year = dateObj.getFullYear();
+        // Month is 0-indexed, so add 1 and pad with '0'
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        salesDateFilterInput.value = `${year}-${month}-${day}`;
+    }
 
+    // NOTE: This function no longer explicitly calls showModal, 
+    // it's now handled directly in the editButton.onclick event handler in renderSalesTable.
+}
 
-
-
-
+// --- NEW HELPER FUNCTIONS ---
 
 /**
- * Utility function to display the modal.
- * It removes the 'hidden' class and adds 'flex' to make it visible and centered.
+ * Displays the modal with the given ID.
+ * Assumes the modal has a 'hidden' class for hiding it (as in your HTML).
  */
 function showModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove('hidden');
-        modal.classList.add('flex'); // Assumes your modal uses flex for centering
     }
 }
 
 /**
- * Utility function to close the modal.
- * (Used by the Cancel button in your HTML)
+ * Hides the modal with the given ID.
+ * This is the function referenced in your HTML's 'Cancel' button.
  */
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.add('hidden');
-        modal.classList.remove('flex');
     }
 }
-
 
 
 
