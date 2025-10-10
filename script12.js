@@ -1021,58 +1021,6 @@ function renderSalesTable(sales) {
     grandTotalValueCell.style.fontWeight = 'bold';
 }
 
-function populateSaleForm(sale) {
-    const idInput = document.getElementById('sale-id');
-    const itemInput = document.getElementById('sale-item');
-    const numberInput = document.getElementById('sale-number');
-    const bpInput = document.getElementById('sale-bp');
-    const spInput = document.getElementById('sale-sp');
-    const salesDateFilterInput = document.getElementById('sales-date-filter');
-
-    if (idInput) idInput.value = sale._id;
-    if (itemInput) itemInput.value = sale.item;
-    if (numberInput) numberInput.value = sale.number;
-    if (bpInput) bpInput.value = sale.bp;
-    if (spInput) spInput.value = sale.sp;
-
-    // Convert date to 'YYYY-MM-DD' format required for HTML date input
-    if (salesDateFilterInput && sale.date) {
-        const dateObj = new Date(sale.date);
-        const year = dateObj.getFullYear();
-        // Month is 0-indexed, so add 1 and pad with '0'
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        salesDateFilterInput.value = `${year}-${month}-${day}`;
-    }
-
-    // NOTE: This function no longer explicitly calls showModal, 
-    // it's now handled directly in the editButton.onclick event handler in renderSalesTable.
-}
-
-// --- NEW HELPER FUNCTIONS ---
-
-/**
- * Displays the modal with the given ID.
- * Assumes the modal has a 'hidden' class for hiding it (as in your HTML).
- */
-function showModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('hidden');
-    }
-}
-
-/**
- * Hides the modal with the given ID.
- * This is the function referenced in your HTML's 'Cancel' button.
- */
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('hidden');
-    }
-}
-
 
 
 function showConfirm(message, onConfirm, onCancel = null) {
