@@ -81,10 +81,7 @@ async function submitEditForm(event) {
 // Add an event listener to the new edit form
 document.getElementById('edit-inventory-form').addEventListener('submit', submitEditForm);
         
-        
-    </script>
-
-    <script>
+    
 function closeEditModal() {
   document.getElementById('edit-inventory-modal').style.display = 'none';
 }
