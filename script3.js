@@ -241,55 +241,56 @@ function showModal(modalId) {
  * @param {object} sale - The sale object containing the data to be edited.
  * Assumes 'sale.date' is a timestamp or date string.
  */
+
+
+
 function populateSaleForm(sale) {
     // 1. Get references to the form elements
     const modal = document.getElementById('edit-sale-modal');
+    
+    // Safety check for the modal
+    if (!modal) {
+        console.error("Edit modal 'edit-sale-modal' not found.");
+        return; 
+    }
+    
+    // All these IDs match your HTML: sale-id, sale-item, sale-number, sale-bp, sale-sp
     const idInput = document.getElementById('sale-id');
     const itemInput = document.getElementById('sale-item');
     const numberInput = document.getElementById('sale-number');
     const bpInput = document.getElementById('sale-bp');
     const spInput = document.getElementById('sale-sp');
 
-
-// The 'sale-id' input is where we store the unique ID for updating.
-
-// ... other code ...
-
-// 2. Populate the form fields with the sale data
-// Check for the unique ID. The common convention is '_id' from the database.
-if (sale._id) {
-    // Set the hidden input value to the unique ID of the sale record
-    idInput.value = sale._id; 
-} else {
-    // Fallback: This warning helps you debug if a record is missing its ID
-    console.warn("Sale object is missing an '_id' property. Edit may not save correctly.");
-    idInput.value = ''; // Ensure the field is empty, which will trigger a POST (new record) if submitted
-}
-
-// ... rest of the populateSaleForm function
+    // 2. Populate the form fields 
     
-    itemInput.value = sale.item;
-    numberInput.value = sale.number;
-    
-    // For prices, use 'toFixed(2)' to ensure they populate with a standard decimal format
-    // for the number input fields, though they are stored as numbers in the object.
-    bpInput.value = sale.bp.toFixed(2);
-    spInput.value = sale.sp.toFixed(2);
-    
-    // Convert the date timestamp or string into the 'YYYY-MM-DD' format required by the <input type="date">
-    const saleDate = new Date(sale.date);
-    const year = saleDate.getFullYear();
-    // getMonth() is 0-indexed, so add 1. padStart ensures two digits (e.g., '01', '12').
-    const month = String(saleDate.getMonth() + 1).padStart(2, '0');
-    const day = String(saleDate.getDate()).padStart(2, '0');
-    
+    // Crucial: Set the unique ID for the PUT request. 
+    // Assumes the unique database identifier is '_id' on the sale object.
+    if (sale && sale._id) { 
+        idInput.value = sale._id; 
+    } else if (sale && sale.id) {
+        idInput.value = sale.id;
+    } else {
+        console.warn("Sale object is missing a unique ID. Edit will fail without one.");
+        idInput.value = ''; 
+    }
 
+    // Populate the other fields. Check your console for property case if this fails.
+    if (sale) {
+        itemInput.value = sale.item;
+        numberInput.value = sale.number;
+        
+        // Use toFixed(2) to ensure price inputs are formatted correctly
+        bpInput.value = sale.bp.toFixed(2);
+        spInput.value = sale.sp.toFixed(2);
+    }
+    
     // 3. Display the modal
     modal.classList.remove('hidden');
     
-    // Optional: Focus on the first editable field for a better user experience
+    // Focus on the first field for quick editing
     itemInput.focus();
 }
+
 
 /**
  * A utility function to hide the modal. This is called by the 'Cancel' button.
