@@ -245,6 +245,7 @@ function showModal(modalId) {
 
 
 function populateSaleForm(sale) {
+    console.log('Sale data being passed:', sale);
     // 1. Get references to the form elements
     const modal = document.getElementById('edit-sale-modal');
     
