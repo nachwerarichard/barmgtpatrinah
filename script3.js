@@ -227,70 +227,49 @@ function showModal(modalId) {
 }
 
 
-/**
- * 2. Function to populate the 'Edit Sale' form fields.
- * This function fills the form with the data from the 'sale' object.
- * @param {object} sale - The sale record object to be edited.
- */
-
-
-/**
- * Populates the edit sale form with data from a selected sale record
- * and displays the edit modal.
- *
- * @param {object} sale - The sale object containing the data to be edited.
- * Assumes 'sale.date' is a timestamp or date string.
- */
-
-
 function populateSaleForm(sale) {
-    // 1. Get references to the form elements - USE THE NEW IDs
+    console.log('START: Attempting to populate form with data:', sale);
+
     const modal = document.getElementById('edit-sale-modal');
-    
     if (!modal) {
-        console.error("Edit modal 'edit-sale-modal' not found.");
+        console.error("🔴 ERROR: Modal 'edit-sale-modal' not found.");
         return; 
     }
     
-    // 🚨 UPDATED IDs HERE
+    // 🚨 CRITICAL FIX: Use the NEW unique IDs from the modal
     const idInput     = document.getElementById('edit-sale-id');
     const itemInput   = document.getElementById('edit-sale-item');
     const numberInput = document.getElementById('edit-sale-number');
     const bpInput     = document.getElementById('edit-sale-bp');
     const spInput     = document.getElementById('edit-sale-sp');
 
-    // Safety check for the sale object
     if (!sale || typeof sale !== 'object') {
-        console.error("Invalid or missing sale object passed to populateSaleForm.", sale);
+        console.error("Invalid or missing sale object passed.", sale);
         return;
     }
 
-    // 2. Populate the form fields 
+    // Populate Fields
     
-    // Set ID
+    // Set ID (The unique key from your console output was '_id')
     idInput.value = sale._id || sale.id || '';
     
     // Populate simple fields
     itemInput.value = sale.item;
     numberInput.value = sale.number;
     
-    // Populate price fields with safety checks
+    // Populate price fields with safety checks (to prevent the toFixed error)
+    // Your console log confirmed sale.bp and sale.sp exist.
     bpInput.value = sale.bp ? Number(sale.bp).toFixed(2) : '';
     spInput.value = sale.sp ? Number(sale.sp).toFixed(2) : '';
     
-    // 3. Display the modal
+    // Display the modal
     modal.classList.remove('hidden');
     
     itemInput.focus();
+    console.log('END: populateSaleForm complete. Data should be visible now.');
 }
 
 
-/**
- * A utility function to hide the modal. This is called by the 'Cancel' button.
- * You should ensure this function exists in your main script.
- *
- * @param {string} modalId - The ID of the modal to close.
- */
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
