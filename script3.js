@@ -245,11 +245,9 @@ function showModal(modalId) {
 
 
 function populateSaleForm(sale) {
-    console.log('Sale data being passed:', sale);
     // 1. Get references to the form elements
     const modal = document.getElementById('edit-sale-modal');
     
-    // Safety check for the modal
     if (!modal) {
         console.error("Edit modal 'edit-sale-modal' not found.");
         return; 
@@ -262,35 +260,35 @@ function populateSaleForm(sale) {
     const bpInput = document.getElementById('sale-bp');
     const spInput = document.getElementById('sale-sp');
 
-    // 2. Populate the form fields 
-    
-    // Crucial: Set the unique ID for the PUT request. 
-    // Assumes the unique database identifier is '_id' on the sale object.
-    if (sale && sale._id) { 
-        idInput.value = sale._id; 
-    } else if (sale && sale.id) {
-        idInput.value = sale.id;
-    } else {
-        console.warn("Sale object is missing a unique ID. Edit will fail without one.");
-        idInput.value = ''; 
+    // Safety check for the sale object
+    if (!sale || typeof sale !== 'object') {
+        console.error("Invalid or missing sale object passed to populateSaleForm.", sale);
+        return;
     }
 
-    // Populate the other fields. Check your console for property case if this fails.
-    if (sale) {
-        itemInput.value = sale.item;
-        numberInput.value = sale.number;
-        
-        // Use toFixed(2) to ensure price inputs are formatted correctly
-        bpInput.value = sale.bp.toFixed(2);
-        spInput.value = sale.sp.toFixed(2);
-    }
+    // 2. Populate the form fields 
     
+    // 💡 Fix for ID: Use sale._id as confirmed by your console log.
+    idInput.value = sale._id || sale.id || '';
+    
+    // Populate simple string/integer fields (item and number are confirmed to exist)
+    itemInput.value = sale.item;
+    numberInput.value = sale.number;
+    
+    // 🚨 Critical Fix for Price Fields: Ensure values are numbers before using toFixed(2).
+    // The conditional check (sale.bp ? sale.bp.toFixed(2) : '') prevents an error if bp is missing/null/undefined.
+    bpInput.value = sale.bp ? Number(sale.bp).toFixed(2) : '';
+    spInput.value = sale.sp ? Number(sale.sp).toFixed(2) : '';
+    
+    // Since you removed the date input from the modal, we skip the date population.
+
     // 3. Display the modal
     modal.classList.remove('hidden');
     
     // Focus on the first field for quick editing
     itemInput.focus();
 }
+
 
 
 /**
