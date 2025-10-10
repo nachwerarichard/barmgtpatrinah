@@ -278,7 +278,6 @@ function populateSaleForm(sale) {
     const month = String(saleDate.getMonth() + 1).padStart(2, '0');
     const day = String(saleDate.getDate()).padStart(2, '0');
     
-    dateInput.value = `${year}-${month}-${day}`;
 
     // 3. Display the modal
     modal.classList.remove('hidden');
