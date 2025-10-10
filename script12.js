@@ -2171,3 +2171,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+
+
+
+
+
+
+/**
+ * Hides all main content sections and shows the one specified by sectionId.
+ * @param {string} sectionId - The ID of the section element to show (e.g., 'inventory', 'sales').
+ */
+function showSection(sectionId) {
+
+    // 3. Show the requested section
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.style.display = 'block'; // Or 'flex', 'grid', depending on your layout
+    } else {
+        console.error(`Section with ID '${sectionId}' not found.`);
+    }
+}
+
