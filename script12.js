@@ -829,6 +829,192 @@ function renderSalesPagination(current, totalPages) {
     }
 }
 
+
+
+
+
+/**
+ * Utility function to display the modal.
+ * It removes the 'hidden' class and adds 'flex' to make it visible and centered.
+ */
+function showModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex'); // Assumes your modal uses flex for centering
+    }
+}
+
+/**
+ * Utility function to close the modal.
+ * (Assumed to be called by the Cancel button in your HTML)
+ */
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function populateSaleForm(sale) {
+    const idInput = document.getElementById('sale-id');
+    const itemInput = document.getElementById('sale-item');
+    const numberInput = document.getElementById('sale-number');
+    const bpInput = document.getElementById('sale-bp');
+    const spInput = document.getElementById('sale-sp');
+    // NOTE: sales-date-filter is the ID used in the previous HTML revision for the Date input
+    const salesDateFilterInput = document.getElementById('sales-date-filter');
+
+    if (idInput) idInput.value = sale._id;
+    if (itemInput) itemInput.value = sale.item;
+    if (numberInput) numberInput.value = sale.number;
+    if (bpInput) bpInput.value = sale.bp;
+    if (spInput) spInput.value = sale.sp;
+    if (salesDateFilterInput && sale.date) {
+        // Formats the date to 'YYYY-MM-DD' for the date input field
+        salesDateFilterInput.value = new Date(sale.date).toISOString().split('T')[0];
+    }
+}
+
+// ... (Other functions like populateBuyingPrice, populateDatalist, populateSellingPrice remain here) ...
+
+// ---
+
+function renderSalesTable(sales) {
+    const tbody = document.querySelector('#sales-table tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    if (sales.length === 0) {
+        const row = tbody.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 9;
+        cell.textContent = 'No sales records found for this date. Try adjusting the filter.';
+        cell.style.textAlign = 'center';
+        return;
+    }
+
+    const hideProfitColumns = ['Martha', 'Mercy','Joshua'].includes(currentUserRole);
+    let totalSellingPriceSum = 0;
+    const departmentTotals = {
+        bar: 0,
+        rest: 0,
+        others: 0
+    };
+
+    sales.forEach(sale => {
+        if (sale.profit === undefined || sale.percentageprofit === undefined) {
+            const totalBuyingPrice = sale.bp * sale.number;
+            const totalSellingPrice = sale.sp * sale.number;
+            sale.profit = totalSellingPrice - totalBuyingPrice;
+            sale.percentageprofit = 0;
+            if (totalBuyingPrice !== 0) {
+                sale.percentageprofit = (sale.profit / totalBuyingPrice) * 100;
+            }
+        }
+
+        const row = tbody.insertRow();
+        row.insertCell().textContent = sale.item;
+        row.insertCell().textContent = sale.number;
+        row.insertCell().textContent = sale.bp;
+        row.insertCell().textContent = sale.sp;
+
+        const totalSellingPrice = sale.sp * sale.number;
+        row.insertCell().textContent = totalSellingPrice.toFixed(2);
+        totalSellingPriceSum += totalSellingPrice;
+
+        if (sale.item.toLowerCase().startsWith('bar')) {
+            departmentTotals.bar += totalSellingPrice;
+        } else if (sale.item.toLowerCase().startsWith('rest')) {
+            departmentTotals.rest += totalSellingPrice;
+        } else {
+            departmentTotals.others += totalSellingPrice;
+        }
+
+        if (hideProfitColumns) {
+            row.insertCell().textContent = 'N/A';
+            row.insertCell().textContent = 'N/A';
+        } else {
+            row.insertCell().textContent = Math.round(sale.profit);
+            row.insertCell().textContent = Math.round(sale.percentageprofit) + '%';
+        }
+
+        row.insertCell().textContent = new Date(sale.date).toLocaleDateString();
+        const actionsCell = row.insertCell();
+        actionsCell.className = 'actions';
+
+        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        if (adminRoles.includes(currentUserRole)) {
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.className = 'edit';
+            editButton.onclick = () => {
+                // 1. Populate the form with sale data
+                populateSaleForm(sale);
+                // 2. Show the modal
+                showModal('edit-sale-modal'); // <-- This is the key change!
+            };
+            actionsCell.appendChild(editButton);
+
+        } else {
+            actionsCell.textContent = 'View Only';
+        }
+    });
+    
+    // ... (Code for department totals and grand total remains here) ...
+
+    // Insert an empty row for spacing before the totals
+    tbody.insertRow();
+
+    // Create a new row for each departmental total
+    for (const department in departmentTotals) {
+        if (departmentTotals[department] > 0) {
+            const totalRow = tbody.insertRow();
+            const totalCell = totalRow.insertCell();
+            totalCell.colSpan = 4;
+            let departmentName;
+            if (department === 'rest') {
+                departmentName = 'Restaurant';
+            } else {
+                departmentName = department.charAt(0).toUpperCase() + department.slice(1);
+            }
+            totalCell.textContent = `${departmentName} Total Sales:`;
+            totalCell.style.fontWeight = 'bold';
+            totalCell.style.textAlign = 'right';
+
+            const totalValueCell = totalRow.insertCell();
+            totalValueCell.textContent = departmentTotals[department].toFixed(2);
+            totalValueCell.style.fontWeight = 'bold';
+        }
+    }
+
+    // Insert an empty row for spacing between departmental totals and the grand total
+    if (Object.values(departmentTotals).some(total => total > 0)) {
+        tbody.insertRow();
+    }
+
+    // Create a new row for the grand total selling price at the bottom
+    const grandTotalRow = tbody.insertRow();
+    const grandTotalCell = grandTotalRow.insertCell();
+    grandTotalCell.colSpan = 4;
+    grandTotalCell.textContent = 'Grand Total Sales:';
+    grandTotalCell.style.fontWeight = 'bold';
+    grandTotalCell.style.textAlign = 'right';
+
+    const grandTotalValueCell = grandTotalRow.insertCell();
+    grandTotalValueCell.textContent = totalSellingPriceSum.toFixed(2);
+    grandTotalValueCell.style.fontWeight = 'bold';
+}
+
+
+
+
+
+
+
+
+
 function renderSalesTable(sales) {
     const tbody = document.querySelector('#sales-table tbody');
     if (!tbody) return;
