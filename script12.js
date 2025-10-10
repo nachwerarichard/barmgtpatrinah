@@ -930,7 +930,6 @@ function renderSalesTable(sales) {
             // --- MODIFICATION HERE ---
             editButton.onclick = () => {
                 populateSaleForm(sale); // Populate the form
-                showModal('edit-sale-modal'); // Show the modal
             };
             // --- END MODIFICATION ---
             actionsCell.appendChild(editButton);
