@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Patrinah Hotel Bar Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* Base section visibility logic */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* Scrollbar hiding for main content and sidebar for a cleaner look */
+        #main-content, #sidebar { -ms-overflow-style: none; scrollbar-width: none; }
+        #main-content::-webkit-scrollbar, #sidebar::-webkit-scrollbar { display: none; }
+
+        /* Table styling for better readability */
+        .table-responsive { overflow-x: auto; }
+        table th, table td { text-align: left; padding: 12px 24px; white-space: nowrap; }
+        
+        /* Custom tilt button for main sidebar navigation (Aesthetic) */
+        .tilt-btn {
+            position: relative;
+            overflow: hidden;
+            z-index: 0;
+            transition: all 0.15s ease-in-out;
+        }
+        .tilt-btn::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(16,185,129,0.18));
+            z-index: -1;
+            transition: transform .25s ease, opacity .25s ease;
+            opacity: 0.95;
+        }
+        .tilt-btn.active::before {
+            background: linear-gradient(90deg, rgba(16,185,129,0.95), rgba(6,182,129,0.95));
+            color: white; /* Ensure active text is white */
+        }
+        .tilt-btn.active .tilt-content {
+            color: white; /* Keep content text white when active */
+        }
+        .tilt-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: flex-start;
+        }
+        
+        /* Submenu and active state styling */
+        .submenu { display: none; }
+        .submenu.open { display: block; }
+        .sub-item.active {
+            background-color: rgba(16,185,129,0.12);
+            font-weight: 700;
+            color: #065f46;
+        }
+
+        /* Responsive Sidebar Overlay */
+        @media (max-width: 1024px) {
+            #sidebar { 
+                position: fixed; /* Changed to fixed for better mobile experience */
+                z-index: 50; 
+                height: 100vh;
+                top: 0;
+                left: 0;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="login-section" class="flex flex-col items-center justify-center h-screen bg-gray-100">
+        <img src="patrinah.png" alt="Patrinah Hotel Logo" class="w-24 h-24 mb-6 rounded-full shadow-lg">
+        <h2 class="text-3xl font-bold mb-4 text-gray-800">System Login</h2>
+        <input type="text" id="username" placeholder="Username" class="mb-4 p-3 border border-gray-300 rounded-xl w-80 shadow-sm focus:ring-emerald-500 focus:border-emerald-500 transition duration-150">
+        <input type="password" id="password" placeholder="Password" class="mb-6 p-3 border border-gray-300 rounded-xl w-80 shadow-sm focus:ring-emerald-500 focus:border-emerald-500 transition duration-150">
+        <button type="submit" onclick="login()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl w-80 transition duration-300 shadow-lg">Login</button>
+        <p id="login-message" class="mt-4 text-red-500 font-medium"></p>
+    </div>
+
+    <div id="main-container" class="hidden h-screen overflow-hidden">
+        
+        <header class="bg-white shadow-lg p-4 flex justify-between items-center sticky top-0 z-40">
+            <div class="flex items-center space-x-3">
+                <button id="menu-toggle-open" class="text-gray-600 hover:text-emerald-600 text-2xl lg:hidden focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <img src="patrina.png" alt="Patrinah Hotel Logo" class="w-10 h-10 rounded-full hidden sm:block">
+                <h1 class="text-xl font-bold text-gray-800">Patrinah Bar Management</h1>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <span id="current-user-display" class="username-display text-sm font-medium text-gray-700 hidden sm:block"></span>
+                <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center space-x-1 shadow-md">
+                    <span>Logout</span>
+                    <i class="fas fa-sign-out-alt ml-1"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex flex-1 h-[calc(100vh-64px)] relative">
+            
+            <nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-30">
+                <div class="p-4">
+                    <div class="mb-6 text-center font-extrabold text-2xl text-emerald-400 border-b border-gray-700 pb-3">BMS</div>
+
+                    <div class="space-y-2">
+                        <div class="mb-1">
+                            <button id="nav-dashboard" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between active" onclick="showSubSection('dashboard','nav-dashboard')">
+                                <span class="tilt-content flex items-center">
+                                    <i class="fas fa-tachometer-alt w-5"></i>
+                                    <span class="ml-3">Dashboard</span>
+                                </span>
+                            </button>
+                        </div>
+
+                        <div class="mb-1">
+                            <button id="nav-inventory" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
+                                <span class="tilt-content flex items-center">
+                                    <i class="fas fa-warehouse w-5"></i>
+                                    <span class="ml-3">Inventory</span>
+                                </span>
+                                <i class="fas fa-chevron-down arrow-icon text-sm transition-transform duration-300"></i> 
+                            </button>
+                            <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add / Update Item</button></li>
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Records</button></li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-1">
+                            <button id="nav-sales" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
+                                <span class="tilt-content flex items-center">
+                                    <i class="fas fa-chart-line w-5"></i>
+                                    <span class="ml-3">Sales</span>
+                                </span>
+                                <i class="fas fa-chevron-down arrow-icon text-sm transition-transform duration-300"></i>
+                            </button>
+                            <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-1">
+                            <button id="nav-expenses" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
+                                <span class="tilt-content flex items-center">
+                                    <i class="fas fa-file-invoice-dollar w-5"></i>
+                                    <span class="ml-3">Expenses</span>
+                                </span>
+                                <i class="fas fa-chevron-down arrow-icon text-sm transition-transform duration-300"></i>
+                            </button>
+                            <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-1">
+                            <button id="nav-cash-management" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
+                                <span class="tilt-content flex items-center">
+                                    <i class="fas fa-money-check-alt w-5"></i>
+                                    <span class="ml-3">Cash Management</span>
+                                </span>
+                                <i class="fas fa-chevron-down arrow-icon text-sm transition-transform duration-300"></i>
+                            </button>
+                            <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-1">
+                            <button id="nav-reports" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
+                                <span class="tilt-content flex items-center">
+                                    <i class="fas fa-chart-bar w-5"></i>
+                                    <span class="ml-3">Reports</span>
+                                </span>
+                                <i class="fas fa-chevron-down arrow-icon text-sm transition-transform duration-300"></i>
+                            </button>
+                            <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
+                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-1">
+                            <button id="nav-audit-logs" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs')">
+                                <span class="tilt-content flex items-center">
+                                    <i class="fas fa-history w-5"></i>
+                                    <span class="ml-3">Audit Logs</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <main id="main-content" class="flex-1 p-6 overflow-y-auto">
+                <section id="dashboard" class="section active bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Dashboard</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
+                            <p class="text-lg font-semibold text-gray-500">Total Sales Today</p>
+                            <p id="dashboard-sales" class="text-3xl font-bold text-blue-700">UGX 0</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-xl shadow-sm border-l-4 border-green-500">
+                            <p class="text-lg font-semibold text-gray-500">Net Profit</p>
+                            <p id="dashboard-profit" class="text-3xl font-bold text-green-700">UGX 0</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-xl shadow-sm border-l-4 border-yellow-500">
+                            <p class="text-lg font-semibold text-gray-500">Cash at Hand</p>
+                            <p id="dashboard-cash" class="text-3xl font-bold text-yellow-700">UGX 0</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-xl shadow-sm border-l-4 border-red-500">
+                            <p class="text-lg font-semibold text-gray-500">Low Stock Items</p>
+                            <p id="dashboard-low-stock" class="text-3xl font-bold text-red-700">0</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="inventory-add" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Inventory — Add / Update Item</h2>
+                    <form id="inventory-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border rounded-xl bg-gray-50">
+                        <input type="hidden" id="inventory-id">
+                        <div>
+                            <label for="item" class="block text-sm font-medium text-gray-700">Item:</label>
+                            <input type="text" id="item" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label for="opening" class="block text-sm font-medium text-gray-700">Opening Stock:</label>
+                            <input type="number" id="opening" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label for="purchases" class="block text-sm font-medium text-gray-700">Purchases:</label>
+                            <input type="number" id="purchases" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label for="inventory-sales" class="block text-sm font-medium text-gray-700">Sales (deducted from inventory):</label>
+                            <input type="number" id="inventory-sales" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label for="spoilage" class="block text-sm font-medium text-gray-700">Spoilage:</label>
+                            <input type="number" id="spoilage" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div class="md:col-span-2 flex justify-end pt-4">
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 flex items-center space-x-2 shadow-md">
+                                <i class="fas fa-save"></i> <span>Save Inventory</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="inventory-records" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Inventory — Records</h2>
+                    <div class="filter-controls flex flex-wrap gap-4 mb-4 items-end p-4 border rounded-xl bg-gray-50">
+                        <label for="search-inventory-date" class="text-sm font-medium text-gray-700">Filter by Date:</label>
+                        <input type="date" id="search-inventory-date" class="p-2 border border-gray-300 rounded-lg">
+                        <button onclick="fetchInventory()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                            <i class="fas fa-search"></i> <span>Search</span>
+                        </button>
+                    </div>
+                    <div class="table-responsive" id="table-responsive">
+                        <button class="export-button bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3 shadow-md transition duration-300" onclick="exportTableToExcel('inventory-table', 'Inventory_Report_SheetJS')">Export to Excel</button>
+                        <table id="inventory-table" class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Item</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Opening</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Purchases</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Sales</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Spoilage</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Closing</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="sales-new" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Sales — Record New Sale</h2>
+                    <form id="sale-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border rounded-xl bg-gray-50">
+                        <input type="hidden" id="sale-id">
+                        <div>
+                            <label for="sale-item" class="block text-sm font-medium text-gray-700">Item:</label>
+                            <input type="text" id="sale-item" list="item-suggestions" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                            <datalist id="item-suggestions"></datalist>
+                        </div>
+                        <div>
+                            <label for="sale-number" class="block text-sm font-medium text-gray-700">Number Sold:</label>
+                            <input type="number" id="sale-number" min="1" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="sale-bp" class="block text-sm font-medium text-gray-700">Buying Price (BP):</label>
+                            <input type="number" id="sale-bp" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="sale-sp" class="block text-sm font-medium text-gray-700">Selling Price (SP):</label>
+                            <input type="number" id="sale-sp" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="md:col-span-2 flex justify-end pt-4">
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                                <i class="fas fa-plus-circle"></i> Record Sale
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="sales-records" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Sales — Records</h2>
+                    <div class="filter-controls flex flex-wrap gap-4 mb-4 items-end p-4 border rounded-xl bg-gray-50">
+                        <label for="sales-date-filter" class="text-sm font-medium text-gray-700">Filter by Date:</label>
+                        <input type="date" id="sales-date-filter" class="p-2 border border-gray-300 rounded-lg">
+                        <button onclick="fetchSales()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                    <div class="table-responsive">
+                        <button class="export-button bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3 shadow-md transition duration-300" onclick="exportTableToExcel('sales-table', 'Sales_Report_SheetJS')">Export to Excel</button>
+                        <table id="sales-table" class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Item</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Number</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">BP (UGX)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">SP (UGX)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Total SP (UGX)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Profit (UGX)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">%Profit</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100"></tbody>
+                        </table>
+                        <div id="sales-summary" class="mt-4 p-4 bg-yellow-50 rounded-xl border border-yellow-200 font-semibold text-gray-700 shadow-sm"></div>
+                    </div>
+                </section>
+
+                <section id="expenses-add" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Expenses — Record New Expense</h2>
+                    <form id="expense-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border rounded-xl bg-gray-50">
+                        <input type="hidden" id="expense-id">
+                        <div>
+                            <label for="expense-description" class="block text-sm font-medium text-gray-700">Description:</label>
+                            <input type="text" id="expense-description" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="expense-amount" class="block text-sm font-medium text-gray-700">Amount:</label>
+                            <input type="number" id="expense-amount" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="md:col-span-2 flex justify-end pt-4">
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                                <i class="fas fa-plus-circle"></i> Record Expense
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="expenses-records" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Expenses — Records</h2>
+                    <div class="filter-controls flex flex-wrap gap-4 mb-4 items-end p-4 border rounded-xl bg-gray-50">
+                        <label for="expenses-date-filter" class="text-sm font-medium text-gray-700">Filter by Date:</label>
+                        <input type="date" id="expenses-date-filter" class="p-2 border border-gray-300 rounded-lg">
+                        <button onclick="fetchExpenses()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                    <div class="table-responsive">
+                        <button class="export-button bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3 shadow-md transition duration-300" onclick="exportTableToExcel('expenses-table', 'Expenses_Report')">Export to Excel</button>
+                        <table id="expenses-table" class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Description</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Receipt ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Source</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="cash-record" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Cash — Record Movement</h2>
+                    <form id="cash-journal-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border rounded-xl bg-gray-50">
+                        <input type="hidden" id="cash-journal-id">
+                        <div>
+                            <label for="cash-at-hand" class="block text-sm font-medium text-gray-700">Cash At Hand:</label>
+                            <input type="number" id="cash-at-hand" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="cash-banked" class="block text-sm font-medium text-gray-700">Cash Banked:</label>
+                            <input type="number" id="cash-banked" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="bank-receipt-id" class="block text-sm font-medium text-gray-700">Bank Receipt ID:</label>
+                            <input type="text" id="bank-receipt-id" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="cash-date" class="block text-sm font-medium text-gray-700">Date:</label>
+                            <input type="date" id="cash-date" required class="mt-1 p-2 block w-full border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="md:col-span-2 flex justify-end pt-4">
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                                <i class="fas fa-money-check-alt"></i> Save Cash Entry
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="cash-records" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Cash — Records</h2>
+                    <div class="filter-controls flex flex-wrap gap-4 mb-4 items-end p-4 border rounded-xl bg-gray-50">
+                        <label for="cash-filter-date" class="text-sm font-medium text-gray-700">Filter by Date:</label>
+                        <input type="date" id="cash-filter-date" class="p-2 border border-gray-300 rounded-lg">
+                        <button onclick="fetchCashJournal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                    <div class="table-responsive">
+                        <button class="export-button bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3 shadow-md transition duration-300" onclick="exportTableToExcel('cash-journal-table', 'Cash_Journal_Report')">Export to Excel</button>
+                        <table id="cash-journal-table" class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Cash At Hand</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Cash Banked</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Bank Receipt ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="reports-department" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Reports — Department Totals</h2>
+                    <div class="filter-controls flex flex-wrap gap-4 mb-8 items-end p-4 border rounded-xl bg-gray-50">
+                        <label for="report-start-date" class="text-sm font-medium text-gray-700">Start Date:</label>
+                        <input type="date" id="report-start-date" class="p-2 border border-gray-300 rounded-lg">
+                        <label for="report-end-date" class="text-sm font-medium text-gray-700">End Date:</label>
+                        <input type="date" id="report-end-date" class="p-2 border border-gray-300 rounded-lg">
+                        <button onclick="generateReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"><i class="fas fa-chart-pie"></i> Generate Reports</button>
+                    </div>
+
+                    <div class="table-responsive mb-8">
+                        <button class="export-button bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3 shadow-md transition duration-300" onclick="exportTableToExcel('department-table', 'Department_Report')">Export Department Report</button>
+                        <table id="department-table" class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Department</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Sales</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Expenses</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="department-report-tbody" class="bg-white divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="reports-overall" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Reports — Overall Summary</h2>
+                    <div class="table-responsive">
+                        <button class="export-button bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3 shadow-md transition duration-300" onclick="exportTableToExcel('overall-reports-table', 'Overall_Summary_Report')">Export Overall Summary</button>
+                        <table id="overall-reports-table" class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Total Sales</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Total Expenses</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Net Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100">
+                                <tr class="bg-green-50 font-bold">
+                                    <td id="overall-sales" class="px-6 py-3 text-base">0</td>
+                                    <td id="overall-expenses" class="px-6 py-3 text-base">0</td>
+                                    <td id="overall-balance" class="px-6 py-3 text-base text-emerald-700">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="audit-logs" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Audit Logs</h2>
+                    <div class="search-container mb-4 p-4 border rounded-xl bg-gray-50">
+                        <input type="text" id="audit-search-input" placeholder="Search audit logs..." class="p-2 border border-gray-300 rounded-lg w-full max-w-sm">
+                    </div>
+                    <div class="table-responsive">
+                        <button class="export-button bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3 shadow-md transition duration-300" onclick="exportTableToExcel('audit-logs-table', 'Audit_Logs')">Export to Excel</button>
+                        <table id="audit-logs-table" class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Timestamp</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Action</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="edit-inventory-modal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6 relative m-4">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-emerald-600">Edit Inventory Item</h3>
+                <span class="close-button text-gray-500 text-2xl cursor-pointer hover:text-gray-800" onclick="closeModal('edit-inventory-modal')">&times;</span>
+            </div>
+            <form id="edit-inventory-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="edit-inventory-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Item:</label>
+                    <input type="text" id="edit-item" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Opening Stock:</label>
+                    <input type="number" id="edit-opening" min="0" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Purchases:</label>
+                    <input type="number" id="edit-purchases" min="0" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Sales (deducted):</label>
+                    <input type="number" id="edit-inventory-sales" min="0" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Spoilage:</label>
+                    <input type="number" id="edit-spoilage" min="0" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+                    <button type="button" onclick="closeModal('edit-inventory-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition duration-300">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-300 shadow-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-sale-modal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6 relative m-4">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-emerald-600">Edit Sale Record</h3>
+                <span class="close-button text-gray-500 text-2xl cursor-pointer hover:text-gray-800" onclick="closeModal('edit-sale-modal')">&times;</span>
+            </div>
+            <form id="edit-sale-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="edit-sale-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Item:</label>
+                    <input type="text" id="edit-sale-item" list="item-suggestions" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                    <datalist id="item-suggestions"></datalist>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Number Sold:</label>
+                    <input type="number" id="edit-sale-number" min="1" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Buying Price (BP):</label>
+                    <input type="number" id="edit-sale-bp" step="0.01" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Selling Price (SP):</label>
+                    <input type="number" id="edit-sale-sp" step="0.01" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+                    <button type="button" onclick="closeModal('edit-sale-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition duration-300">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-300 shadow-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-expense-modal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6 relative m-4">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-emerald-600">Edit Expense Record</h3>
+                <span class="close-button text-gray-500 text-2xl cursor-pointer hover:text-gray-800" onclick="closeModal('edit-expense-modal')">&times;</span>
+            </div>
+            <form id="edit-expense-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="edit-expense-id">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Description:</label>
+                    <input type="text" id="edit-expense-description" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Amount (UGX):</label>
+                    <input type="number" id="edit-expense-amount" step="0.01" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+                    <button type="button" onclick="closeModal('edit-expense-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition duration-300">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-300 shadow-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-cash-modal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6 relative m-4">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-emerald-600">Edit Cash Record</h3>
+                <span class="close-button text-gray-500 text-2xl cursor-pointer hover:text-gray-800" onclick="closeModal('edit-cash-modal')">&times;</span>
+            </div>
+            <form id="edit-cash-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="edit-cash-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Cash At Hand:</label>
+                    <input type="number" id="edit-cash-at-hand" step="0.01" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Cash Banked:</label>
+                    <input type="number" id="edit-cash-banked" step="0.01" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Bank Receipt ID:</label>
+                    <input type="text" id="edit-bank-receipt-id" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date:</label>
+                    <input type="date" id="edit-cash-date" required class="p-2 w-full border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+                    <button type="button" onclick="closeModal('edit-cash-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition duration-300">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-300 shadow-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="script4.js"></script> 
+    <script src="script3.js"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script> 
+    
+    <script>
+        // UX: Simplified functions for opening/closing modals 
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // UX: Sidebar Toggle for Mobile/Small Screens
+        const sidebar = document.getElementById('sidebar');
+        const menuToggleOpen = document.getElementById('menu-toggle-open');
+
+        menuToggleOpen.addEventListener('click', () => {
+            sidebar.classList.remove('-translate-x-full');
+        });
+
+        // Add a click listener to the main content area to close the sidebar when open on small screens
+        const mainContent = document.getElementById('main-content');
+        mainContent.addEventListener('click', () => {
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+
+        // UX: Function to handle sidebar navigation and section display
+        function showSubSection(sectionId, navId) {
+            // 1. Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            // 2. Show the target section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // 3. Update main navigation active state (removes old 'active', sets new 'active')
+            document.querySelectorAll('.nav-main').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.remove('text-white'); // ensure text color resets
+            });
+            const mainNav = document.getElementById(navId);
+            if (mainNav) {
+                 mainNav.classList.add('active');
+                 mainNav.classList.add('text-white'); // Apply white text color to active main nav
+            }
+
+            // 4. Update sub-item active state
+            document.querySelectorAll('.sub-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Find the specific button that was clicked using the sectionId to apply 'sub-item active'
+            const clickedSubItem = document.querySelector(`.sub-item[data-show="${sectionId}"]`);
+            if (clickedSubItem) {
+                clickedSubItem.classList.add('active');
+            }
+            
+            // 5. UX: Hide sidebar on small screens after clicking a link
+            if (window.innerWidth < 1024) {
+                 sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        // UX: Function to handle submenu open/close and arrow rotation
+        function toggleSubmenu(submenuId, navId) {
+            const submenu = document.getElementById(submenuId);
+            const navButton = document.getElementById(navId);
+            const arrowIcon = navButton ? navButton.querySelector('.arrow-icon') : null;
+
+            if (submenu.classList.contains('open')) {
+                submenu.classList.remove('open');
+                if (arrowIcon) {
+                    arrowIcon.style.transform = 'rotate(0deg)';
+                }
+            } else {
+                // Close all other submenus first (improved UX)
+                document.querySelectorAll('.submenu').forEach(sub => {
+                    sub.classList.remove('open');
+                    const parentButton = document.getElementById(sub.id.replace('-submenu', ''));
+                    if (parentButton) {
+                        const parentArrow = parentButton.querySelector('.arrow-icon');
+                        if (parentArrow) parentArrow.style.transform = 'rotate(0deg)';
+                    }
+                });
+
+                // Open the target submenu
+                submenu.classList.add('open');
+                if (arrowIcon) {
+                    arrowIcon.style.transform = 'rotate(180deg)';
+                }
+            }
+        }
+        
+        // UX: Set initial state on load
+        document.addEventListener('DOMContentLoaded', () => {
+             // 1. Show the Dashboard by default
+            showSubSection('dashboard', 'nav-dashboard');
+
+             // 2. Add an initial icon for the Dashboard if needed (as done in the main menu)
+             const navDashboard = document.getElementById('nav-dashboard');
+             if(navDashboard && !navDashboard.querySelector('.fa-tachometer-alt')) {
+                 navDashboard.querySelector('.tilt-content').insertAdjacentHTML('afterbegin', '<i class="fas fa-tachometer-alt w-5"></i>');
+             }
+
+        });
+    </script>
+    <script src="script12.js" defer></script>
+</body>
+</html>
