@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Patrinah Hotel Bar Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0f4f8, #d9e6f2);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Sidebar animation */
+    .sidebar {
+      transition: width 0.3s ease;
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .sidebar.collapsed {
+      width: 5rem;
+    }
+
+    .sidebar.collapsed .nav-text {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sidebar:hover .nav-text {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Smooth section transition */
+    section {
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="sidebar fixed top-0 left-0 h-full w-64 collapsed md:hover:w-64 flex flex-col p-4 shadow-xl rounded-r-2xl">
+    <div class="flex items-center space-x-3 mb-8">
+      <i class="fa-solid fa-hotel text-2xl text-blue-700"></i>
+      <span class="text-xl font-semibold nav-text">Patrinah Hotel</span>
+    </div>
+
+    <nav class="flex flex-col space-y-3">
+      <button class="flex items-center space-x-3 text-gray-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-gauge text-lg"></i>
+        <span class="nav-text">Dashboard</span>
+      </button>
+
+      <button class="flex items-center space-x-3 text-gray-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-wine-glass text-lg"></i>
+        <span class="nav-text">Inventory</span>
+      </button>
+
+      <button class="flex items-center space-x-3 text-gray-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-users text-lg"></i>
+        <span class="nav-text">Staff</span>
+      </button>
+
+      <button class="flex items-center space-x-3 text-gray-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-clipboard-list text-lg"></i>
+        <span class="nav-text">Orders</span>
+      </button>
+
+      <button class="flex items-center space-x-3 text-gray-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-file-invoice text-lg"></i>
+        <span class="nav-text">Reports</span>
+      </button>
+
+      <button class="flex items-center space-x-3 text-gray-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-lock text-lg"></i>
+        <span class="nav-text">Audit Log</span>
+      </button>
+    </nav>
+
+    <div class="mt-auto pt-8 border-t border-gray-200">
+      <button class="flex items-center space-x-3 text-red-600 hover:text-red-700 transition">
+        <i class="fa-solid fa-right-from-bracket text-lg"></i>
+        <span class="nav-text">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 ml-20 md:ml-64 p-8 transition-all">
+    <header class="mb-10 flex justify-between items-center">
+      <h1 class="text-3xl font-semibold text-gray-800">Dashboard Overview</h1>
+      <div class="flex items-center space-x-3">
+        <span class="text-gray-600">Welcome, <strong>Manager</strong></span>
+        <img src="https://i.pravatar.cc/40" alt="Profile" class="rounded-full w-10 h-10 shadow">
+      </div>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <h2 class="text-lg font-semibold mb-2">Total Sales</h2>
+        <p class="text-2xl font-bold text-blue-600">$25,430</p>
+      </div>
+
+      <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <h2 class="text-lg font-semibold mb-2">Stock Levels</h2>
+        <p class="text-2xl font-bold text-green-600">82%</p>
+      </div>
+
+      <div class="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <h2 class="text-lg font-semibold mb-2">Pending Orders</h2>
+        <p class="text-2xl font-bold text-yellow-600">14</p>
+      </div>
+    </section>
+
+    <section class="mt-10 bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+      <ul class="space-y-3 text-gray-700">
+        <li><i class="fa-solid fa-check text-green-500"></i> Order #203 completed</li>
+        <li><i class="fa-solid fa-box text-blue-500"></i> Stock updated in inventory</li>
+        <li><i class="fa-solid fa-user-plus text-purple-500"></i> New staff member added</li>
+        <li><i class="fa-solid fa-file-lines text-yellow-500"></i> Report generated for September</li>
+      </ul>
+    </section>
+  </main>
+
+</body>
+</html>
