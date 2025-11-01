@@ -6,9 +6,7 @@
     }
 
     // Mobile menu toggle
-    document.getElementById('menu-toggle').addEventListener('click', () => {
-      document.getElementById('sidebar').classList.toggle('-translate-x-full');
-    });
+
 
     // Toggle submenu accordion style
     function toggleSubmenu(submenuId, navButtonId) {
