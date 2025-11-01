@@ -403,10 +403,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Mobile menu toggle (Open)
-    document.getElementById('menu-toggle').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.remove('-translate-x-full');
-    });
-
+    //document.getElementById('menu-toggle').addEventListener('click', () => {
+       // document.getElementById('sidebar').classList.remove('-translate-x-full');
+   // });
+//
     // Mobile menu toggle (Close button inside sidebar)
     document.getElementById('menu-toggle-close').addEventListener('click', () => {
         document.getElementById('sidebar').classList.add('-translate-x-full');
