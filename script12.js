@@ -102,8 +102,12 @@ async function authenticatedFetch(url, options = {}) {
         // Your server.js expects 'Bearer <token>', where <token> is actually the base64-encoded 'username:password'
         // that the login route returns.
         headers['Authorization'] = `Bearer ${token}`; 
+            console.log("Sending Authorization Header:", headers['Authorization']); // <-- ADD THIS
+
     }
 
+
+    
     try {
         const response = await fetch(url, {
             ...options,
