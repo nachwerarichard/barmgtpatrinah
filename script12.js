@@ -1,8 +1,11 @@
+
+
 // --- Initialization Variables ---
 const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; 
-let authToken = localStorage.getItem('authToken') || ''; 
+let authToken = localStorage.getItem('authToken') || ''; // <-- Issue is here
 let currentUsername = localStorage.getItem('username') || ''; 
 let currentUserRole = localStorage.getItem('userRole') || ''; 
+// ...
 
 // Pagination variables (placeholders)
 let currentPage = 1; 
@@ -90,34 +93,40 @@ function logout() {
 /**
  * Wrapper for fetch API to include authentication token and handle errors.
  */
+/**
+ * Wrapper for fetch API to include authentication token and handle errors.
+ * * IMPORTANT FIX: It now retrieves the token directly from localStorage 
+ * every time it is called, preventing the 'Bearer undefined' error 
+ * if the global authToken variable is stale.
+ */
 async function authenticatedFetch(url, options = {}) {
-    const token = localStorage.getItem('authToken');
+    // FIX: Retrieve the token just before the request
+    const currentToken = localStorage.getItem('authToken'); 
+
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers // Merge any existing headers
     };
 
-    if (token) {
+    if (currentToken) {
         // Attach the token retrieved from the successful login to the Authorization header
-        // Your server.js expects 'Bearer <token>', where <token> is actually the base64-encoded 'username:password'
-        // that the login route returns.
-        headers['Authorization'] = `Bearer ${token}`; 
-            console.log("Sending Authorization Header:", headers['Authorization']); // <-- ADD THIS
-
+        // Your server.js expects 'Bearer <Base64-encoded credentials>'
+        headers['Authorization'] = `Bearer ${currentToken}`; 
+    } else {
+        // This warning is helpful for debugging when a token is expected but missing
+        console.warn("Sending Authorization Header: Bearer undefined (Token is missing or has not been stored)"); 
     }
 
-
-    
     try {
         const response = await fetch(url, {
             ...options,
             headers: headers
         });
 
-        // Centralized handling for 401/403 errors, leading to the messages you see in the log
+        // Centralized handling for 401/403 errors
         if (response.status === 401 || response.status === 403) {
             console.warn(`Authenticated fetch failed with status: ${response.status}.`);
-            // The logout logic is triggered here if the request is unauthorized
+            // Show message and trigger logout handler
             showMessage('Session expired or unauthorized access. Logging out.', logout);
             return null; 
         }
@@ -126,13 +135,17 @@ async function authenticatedFetch(url, options = {}) {
 
     } catch (error) {
         console.error('Network error during authenticated fetch:', error);
+        // Throw the error so the calling function can handle network issues
         throw error;
     }
 }
-
 /**
  * Handles the login process by sending credentials to the API.
  */
+
+
+// Example of what your successful login code should look like in script.js:
+
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
