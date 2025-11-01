@@ -1539,6 +1539,7 @@ async function fetchCashJournal() {
     }
 }
 
+
 function renderCashJournalTable(records) {
     const tbody = document.querySelector('#cash-journal-table tbody');
     if (!tbody) return;
@@ -1563,11 +1564,13 @@ function renderCashJournalTable(records) {
 
         // Only Nachwera Richard, Nelson, Florence can edit cash entries
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-        if (adminRoles.includes(currentUserRole)) {
+        // Assuming currentUserRole is defined globally/in scope
+        if (adminRoles.includes(currentUserRole)) { 
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
-            editButton.className = 'edit';
-            editButton.onclick = () => populateCashJournalForm(record);
+            editButton.className = 'edit bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-sm'; // Added Tailwind classes for styling
+            // --- CHANGE IS HERE ---
+            editButton.onclick = () => populateEditCashModal(record); 
             actionsCell.appendChild(editButton);
         } else {
             actionsCell.textContent = 'View Only';
@@ -1575,22 +1578,61 @@ function renderCashJournalTable(records) {
     });
 }
 
-async function submitCashJournalForm(event) {
+/**
+ * Populates the 'Edit Cash Record' modal with the selected record's data
+ * and displays the modal.
+ * @param {object} record - The cash journal record to be edited.
+ */
+function populateEditCashModal(record) {
+    // Target the new modal input IDs
+    const idInput = document.getElementById('edit-cash-id');
+    const cashAtHandInput = document.getElementById('edit-cash-at-hand');
+    const cashBankedInput = document.getElementById('edit-cash-banked');
+    const bankReceiptIdInput = document.getElementById('edit-bank-receipt-id');
+    const cashDateInput = document.getElementById('edit-cash-date');
+    const modal = document.getElementById('edit-cash-modal');
+
+    // Populate the form fields
+    if (idInput) idInput.value = record._id;
+    // Note: It's often safer to use the raw number for the input value
+    if (cashAtHandInput) cashAtHandInput.value = record.cashAtHand;
+    if (cashBankedInput) cashBankedInput.value = record.cashBanked;
+    if (bankReceiptIdInput) bankReceiptIdInput.value = record.bankReceiptId;
+    
+    // Format the date to 'YYYY-MM-DD' for the <input type="date">
+    if (cashDateInput && record.date) {
+        // new Date(record.date).toISOString().split('T')[0] ensures correct formatting
+        cashDateInput.value = new Date(record.date).toISOString().split('T')[0];
+    }
+    
+    // Show the modal
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+
+// Add this new function to handle the edit modal submission
+async function submitEditCashForm(event) {
     event.preventDefault();
-    // Roles allowed to record cash entries
-    const allowedToRecordCash = ['Nachwera Richard', 'Martha','Mercy', 'Joshua', 'Nelson', 'Florence'];
-    if (!allowedToRecordCash.includes(currentUserRole)) {
-        showMessage('Permission Denied: You do not have permission to record cash entries.');
+    const modal = document.getElementById('edit-cash-modal');
+    
+    // The existing adminRoles check from your original submitCashJournalForm for editing
+    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    if (!adminRoles.includes(currentUserRole)) {
+        showMessage('Permission Denied: Only administrators can edit cash entries.');
         return;
     }
-    const idInput = document.getElementById('cash-journal-id');
-    const cashAtHandInput = document.getElementById('cash-at-hand');
-    const cashBankedInput = document.getElementById('cash-banked');
-    const bankReceiptIdInput = document.getElementById('bank-receipt-id');
-    const cashDateInput = document.getElementById('cash-date');
+
+    // Target the new modal input IDs
+    const idInput = document.getElementById('edit-cash-id');
+    const cashAtHandInput = document.getElementById('edit-cash-at-hand');
+    const cashBankedInput = document.getElementById('edit-cash-banked');
+    const bankReceiptIdInput = document.getElementById('edit-bank-receipt-id');
+    const cashDateInput = document.getElementById('edit-cash-date');
 
     if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput || !cashDateInput) {
-        showMessage('Cash journal form elements are missing.');
+        showMessage('Edit form elements are missing.');
         return;
     }
 
@@ -1598,53 +1640,50 @@ async function submitCashJournalForm(event) {
     const cashAtHand = parseFloat(cashAtHandInput.value);
     const cashBanked = parseFloat(cashBankedInput.value);
     const bankReceiptId = bankReceiptIdInput.value;
-    const date = cashDateInput.value;
+    const date = cashDateInput.value; // The date input already provides 'YYYY-MM-DD'
 
     // Basic validation
-    if (isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !date) {
-        showMessage('Please fill in all cash entry fields correctly.');
+    if (!id || isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !date) {
+        showMessage('Please fill in all edit fields correctly and ensure a record ID exists.');
         return;
     }
 
     const cashData = { cashAtHand, cashBanked, bankReceiptId, date };
 
     try {
-        let response;
-        if (id) { // Edit operation (Nachwera Richard, Nelson, Florence only)
-            const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
-            if (!adminRoles.includes(currentUserRole)) {
-                showMessage('Permission Denied: Only administrators can edit cash entries.');
-                return;
-            }
-            response = await authenticatedFetch(`${API_BASE_URL}/cash-journal/${id}`, {
-                method: 'PUT',
-                body: JSON.stringify(cashData)
-            });
-        } else { // New entry creation (all allowed roles)
-            response = await authenticatedFetch(`${API_BASE_URL}/cash-journal`, {
-                method: 'POST',
-                body: JSON.stringify(cashData)
-            });
-        }
-        if (response) {
-            await response.json();
-            showMessage('Cash entry saved successfully!');
-            const cashJournalForm = document.getElementById('cash-journal-form');
-            if (cashJournalForm) cashJournalForm.reset();
-            if (idInput) idInput.value = '';
-            // Re-set default date for new entry form after submission
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            if (cashDateInput) cashDateInput.value = `${yyyy}-${mm}-${dd}`;
-            fetchCashJournal(); // Re-fetch to update table after successful operation
+        // Use PUT method for editing
+        const response = await authenticatedFetch(`${API_BASE_URL}/cash-journal/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(cashData)
+        });
+
+        if (response.ok) { // Check if the response status is 200-299
+            showMessage('Cash entry updated successfully!');
+            
+            // Close the modal after successful submission
+            if (modal) modal.classList.add('hidden');
+            
+            fetchCashJournal(); // Re-fetch to update table
+        } else {
+            // Handle server-side errors
+            const errorData = await response.json();
+            showMessage(`Failed to update cash entry: ${errorData.message || 'Server error'}`);
         }
     } catch (error) {
-        console.error('Error saving cash entry:', error);
-        showMessage('Failed to save cash entry: ' + error.message);
+        console.error('Error updating cash entry:', error);
+        showMessage('Failed to update cash entry: ' + error.message);
     }
 }
+
+// **You must add an event listener to your edit form when the page loads:**
+/*
+document.addEventListener('DOMContentLoaded', () => {
+    const editForm = document.getElementById('edit-cash-form');
+    if (editForm) {
+        editForm.addEventListener('submit', submitEditCashForm);
+    }
+});
+*/
 
 function populateCashJournalForm(record) {
     const idInput = document.getElementById('cash-journal-id');
