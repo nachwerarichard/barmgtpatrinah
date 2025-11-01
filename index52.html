@@ -109,15 +109,14 @@
 
     <div class="flex flex-1 h-[calc(100vh-64px)]">
       <!-- SIDEBAR -->
-<nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
-    <div class="p-4">
-        <div class="mb-4 text-center font-bold text-lg">BMS</div>
+
+      <nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
+    
+    <div class="p-4 mb-16"> <div class="mb-4 text-center font-bold text-lg">BMS</div>
 
         <div class="mb-1">
-            <!-- ADDED ID: nav-inventory and standardized button structure -->
             <button id="nav-inventory" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
                 <span class="tilt-content flex items-center">
-                    <!-- Icon placeholder goes here if desired -->
                     <span class="ml-3">Inventory</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i> 
@@ -129,7 +128,6 @@
         </div>
 
         <div class="mb-1">
-            <!-- ADDED ID: nav-sales and standardized button structure -->
             <button id="nav-sales" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Sales</span>
@@ -143,7 +141,6 @@
         </div>
 
         <div class="mb-1">
-            <!-- ADDED ID: nav-expenses and standardized button structure -->
             <button id="nav-expenses" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Expenses</span>
@@ -157,7 +154,6 @@
         </div>
 
         <div class="mb-1">
-            <!-- ADDED ID: nav-cash-management and standardized button structure -->
             <button id="nav-cash-management" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Cash Management</span>
@@ -171,7 +167,6 @@
         </div>
 
         <div class="mb-1">
-            <!-- ADDED ID: nav-reports and standardized button structure -->
             <button id="nav-reports" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Reports</span>
@@ -185,7 +180,6 @@
         </div>
 
         <div class="mb-1">
-            <!-- FIX: Added class="nav-main" and removed unnecessary third argument from onclick -->
             <button id="nav-audit-logs" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs')">
                 <span class="tilt-content flex items-center">
                     <i class="fas fa-history w-5"></i>
@@ -193,12 +187,15 @@
                 </span>
             </button>
         </div>
-        
-        <button id="logout-button" onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center space-x-1">
+    </div>
+    
+    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-800">
+        <button id="logout-button" onclick="logout()" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
             <span>Logout</span>
-            <i class="fas fa-sign-out-alt ml-1"></i>
+            <i class="fas fa-sign-out-alt"></i>
         </button>
     </div>
+    
 </nav>
 
       <!-- MAIN CONTENT -->
