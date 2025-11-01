@@ -408,9 +408,9 @@ document.addEventListener('DOMContentLoaded', () => {
    // });
 //
     // Mobile menu toggle (Close button inside sidebar)
-    document.getElementById('menu-toggle-close').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.add('-translate-x-full');
-    });
+   // document.getElementById('menu-toggle-close').addEventListener('click', () => {
+       // document.getElementById('sidebar').classList.add('-translate-x-full');
+    //});
     
     // Set up click listener for the message modal close button
     const messageCloseBtn = document.getElementById('message-close-button');
