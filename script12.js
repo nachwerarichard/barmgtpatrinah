@@ -1165,26 +1165,26 @@ function populateBuyingPrice() {
 /**
  * Populates the datalist with items from BUYING_PRICES.
  */
-function populateDatalist() {
-    const datalist = document.getElementById('item-suggestions');
-    if (datalist) {
-        for (const item in BUYING_PRICES) {
-            const option = document.createElement('option');
-            option.value = item;
-            datalist.appendChild(option);
-        }
-    }
-}
-
+//function populateDatalist() {
+   // const datalist = document.getElementById('item-suggestions');
+   // if (datalist) {
+        //for (const item in BUYING_PRICES) {
+          //  const option = document.createElement('option');
+           // option.value = item;
+           // datalist.appendChild(option);
+       // }
+    //}
+//}
+//
 // Add event listeners when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-    populateDatalist(); // Populate the datalist on page load
+//document.addEventListener('DOMContentLoaded', () => {
+   /// populateDatalist(); // Populate the datalist on page load
 
-    const itemInput = document.getElementById('sale-item');
-    if (itemInput) {
-        itemInput.addEventListener('input', populateBuyingPrice);
-    }
-});
+    //const itemInput = document.getElementById('sale-item');
+    //if (itemInput) {
+    //    itemInput.addEventListener('input', populateBuyingPrice);
+   // }
+//});
 
 const SELLING_PRICES ={
 "rest greek salad": 15000,
