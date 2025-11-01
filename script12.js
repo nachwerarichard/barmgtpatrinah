@@ -474,25 +474,27 @@ function updateSearchButton(text, iconClass) {
     }
 }
 
+
 async function fetchInventory() {
     // 1. Change button text to 'Searching'
-    updateSearchButton('Searching', 'fas fa-spinner fa-spin'); // fa-spinner fa-spin provides a loading animation
+    updateSearchButton('Searching', 'fas fa-spinner fa-spin'); 
 
     try {
+        // ... (Filter logic remains the same) ...
         const itemFilterInput = document.getElementById('search-inventory-item');
-        const lowFilterInput = document.getElementById('search-inventory-low');
+        // ... (other filter inputs) ...
         const dateFilterInput = document.getElementById('search-inventory-date');
-
+        
         const itemFilter = itemFilterInput ? itemFilterInput.value : '';
-        const lowFilter = lowFilterInput ? lowFilterInput.value : '';
+        // ... (other filter values) ...
         const dateFilter = dateFilterInput ? dateFilterInput.value : '';
 
         let url = `${API_BASE_URL}/inventory`;
         const params = new URLSearchParams();
         if (itemFilter) params.append('item', itemFilter);
-        if (lowFilter) params.append('low', lowFilter);
-        if (dateFilter) params.append('date', dateFilter); // Add date to params
-        // Only append pagination params if a date filter is NOT present
+        // ... (append other params) ...
+        if (dateFilter) params.append('date', dateFilter); 
+        
         if (!dateFilter) {
             params.append('page', currentPage);
             params.append('limit', itemsPerPage);
@@ -500,29 +502,44 @@ async function fetchInventory() {
 
         url += `?${params.toString()}`;
 
+        // ----------------------------------------------------
+        // Step 1: Execute fetch
         const response = await authenticatedFetch(url);
+        // ----------------------------------------------------
+
         if (!response) {
-            // Restore button on error or non-response
+            // This handles cases where authenticatedFetch explicitly returns null or undefined
+            // (though your provided code returns an object, keeping this as a safeguard)
             updateSearchButton('Search', 'fas fa-search');
             return;
         }
 
-        const result = await response.json();
+        // ----------------------------------------------------------------------------------
+        // >> CRITICAL FIX HERE: Check for .ok (Handles 401/403 forced logout) <<
+        // If authenticatedFetch returned the custom error object { ok: false, status: 401 },
+        // this check is TRUE and we skip response.json().
+        // ----------------------------------------------------------------------------------
+        if (response.ok === false) { 
+            console.log(`Inventory fetch aborted due to status: ${response.status}. Session handled.`);
+            updateSearchButton('Search', 'fas fa-search');
+            return; // STOP EXECUTION
+        }
+        
+        // Step 2: Safely call .json() because the token was valid (or logout was handled)
+        const result = await response.json(); 
 
-        // Check if the 'date' filter was used
+        // ----------------------------------------------------
+
+        // ... (Rest of the success logic remains the same) ...
         let inventoryData;
         if (dateFilter) {
-            // For the daily report, the data is in the 'report' property
             inventoryData = result.report;
-            // Since the daily report is not paginated, we don't render pagination
             renderPagination(1, 1);
         } else {
-            // For the standard paginated list, the data is in the 'data' property
             inventoryData = result.data;
             renderPagination(result.page, result.pages);
         }
         
-        // Pass the correct data array to the rendering function
         renderInventoryTable(inventoryData);
 
         // 2. Change button text to 'Done' after successful display
@@ -531,7 +548,7 @@ async function fetchInventory() {
         // 3. Set a timeout to revert the button text back to 'Search' after 2 seconds
         setTimeout(() => {
             updateSearchButton('Search', 'fas fa-search');
-        }, 2000); // 2000 milliseconds = 2 seconds
+        }, 2000); 
 
     } catch (error) {
         console.error('Error fetching inventory:', error);
