@@ -1413,13 +1413,155 @@ function renderExpensesTable(expenses) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit';
-            editButton.onclick = () => populateExpenseForm(expense);
-            actionsCell.appendChild(editButton);
+editButton.onclick = () => populateEditExpenseModal(expense);            actionsCell.appendChild(editButton);
         } else {
             actionsCell.textContent = 'View Only';
         }
     });
 }
+
+/**
+ * Populates the Edit Expense modal form with data from a specific expense object
+ * and then displays the modal.
+ * @param {Object} expense - The expense object to edit.
+ */
+function populateEditExpenseModal(expense) {
+    // 1. Target the Edit Modal elements
+    const modal = document.getElementById('edit-expense-modal');
+    
+    // 2. Target the form fields within the modal
+    const idInput = document.getElementById('edit-expense-id');
+    const descriptionInput = document.getElementById('edit-expense-description');
+    const amountInput = document.getElementById('edit-expense-amount');
+    const dateInput = document.getElementById('edit-expense-date'); // Targets the new date input in the modal
+    const receiptIdInput = document.getElementById('edit-expense-receiptId');
+    const sourceInput = document.getElementById('edit-expense-source');
+
+    // 3. Populate the fields
+    if (idInput) idInput.value = expense._id; // Assuming your expense object has a unique identifier called _id
+    if (descriptionInput) descriptionInput.value = expense.description;
+    if (amountInput) amountInput.value = expense.amount;
+    if (receiptIdInput) receiptIdInput.value = expense.receiptId;
+    if (sourceInput) sourceInput.value = expense.source || '';
+    
+    // Format the date for the HTML date input (YYYY-MM-DD)
+    if (dateInput && expense.date) {
+        dateInput.value = new Date(expense.date).toISOString().split('T')[0];
+    }
+    
+    // 4. Show the modal
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+/**
+ * Utility function to close the modal (as suggested by the HTML)
+ */
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+/**
+ * Populates the Edit Expense modal form with data from a specific expense object
+ * and then displays the modal.
+ * @param {Object} expense - The expense object to edit.
+ */
+function populateEditExpenseModal(expense) {
+    // 1. Target the Edit Modal elements
+    const modal = document.getElementById('edit-expense-modal');
+    
+    // 2. Target the form fields within the modal
+    const idInput = document.getElementById('edit-expense-id');
+    const descriptionInput = document.getElementById('edit-expense-description');
+    const amountInput = document.getElementById('edit-expense-amount');
+    const dateInput = document.getElementById('edit-expense-date'); // Targets the new date input in the modal
+    const receiptIdInput = document.getElementById('edit-expense-receiptId');
+    const sourceInput = document.getElementById('edit-expense-source');
+
+    // 3. Populate the fields
+    if (idInput) idInput.value = expense._id; // Assuming your expense object has a unique identifier called _id
+    if (descriptionInput) descriptionInput.value = expense.description;
+    if (amountInput) amountInput.value = expense.amount;
+    if (receiptIdInput) receiptIdInput.value = expense.receiptId;
+    if (sourceInput) sourceInput.value = expense.source || '';
+    
+    // Format the date for the HTML date input (YYYY-MM-DD)
+    if (dateInput && expense.date) {
+        dateInput.value = new Date(expense.date).toISOString().split('T')[0];
+    }
+    
+    // 4. Show the modal
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+/**
+ * Utility function to close the modal (as suggested by the HTML)
+ */
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing setup ...
+    const editForm = document.getElementById('edit-expense-form');
+    if (editForm) {
+        editForm.addEventListener('submit', submitEditExpenseForm);
+    }
+    // ... other setup ...
+});
+
+async function submitEditExpenseForm(event) {
+    event.preventDefault();
+
+    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    if (!adminRoles.includes(currentUserRole)) {
+        showMessage('Permission Denied: Only administrators can edit expenses.');
+        return;
+    }
+    
+    // 1. Get values from the EDIT modal form (using 'edit-' IDs)
+    const id = document.getElementById('edit-expense-id').value;
+    const description = document.getElementById('edit-expense-description').value;
+    const amount = parseFloat(document.getElementById('edit-expense-amount').value);
+    const date = document.getElementById('edit-expense-date').value;
+    const receiptId = document.getElementById('edit-expense-receiptId').value;
+    const source = document.getElementById('edit-expense-source').value;
+
+    if (!id || !description || isNaN(amount) || amount <= 0 || !receiptId || !date) {
+        showMessage('Please fill in all expense fields correctly.');
+        return;
+    }
+
+    const expenseData = { description, amount, receiptId, source, date, recordedBy: currentUsername }; // recordedBy is who last edited it
+
+    try {
+        const response = await authenticatedFetch(`${API_BASE_URL}/expenses/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(expenseData)
+        });
+
+        if (response) {
+            await response.json();
+            showMessage('Expense updated successfully!');
+            closeModal('edit-expense-modal'); // Hide the modal on success
+            fetchExpenses(); // Refresh the table
+        }
+    } catch (error) {
+        console.error('Error updating expense:', error);
+        showMessage('Failed to update expense: ' + error.message);
+    }
+}
+
+
 
 async function submitExpenseForm(event) {
     event.preventDefault();
