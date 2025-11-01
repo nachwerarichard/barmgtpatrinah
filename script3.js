@@ -279,3 +279,115 @@ function closeModal(modalId) {
 
 // NOTE: You will also need to implement the event listener and logic for 
 // the 'edit-sale-form' submission to save the changes to your backend/data structure.
+
+
+/**
+ * Handles the submission of the edit sale form within the modal.
+ * @param {Event} event The form submission event.
+ */
+async function submitEditSaleForm(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const idInput = document.getElementById('edit-sale-id');
+    const itemInput = document.getElementById('edit-sale-item');
+    const numberInput = document.getElementById('edit-sale-number');
+    const bpInput = document.getElementById('edit-sale-bp');
+    const spInput = document.getElementById('edit-sale-sp');
+    const saveButton = document.querySelector('#edit-sale-form button[type="submit"]');
+
+    const originalButtonText = saveButton.innerHTML;
+
+    if (!idInput || !itemInput || !numberInput || !bpInput || !spInput) {
+        showMessage('Edit form elements are missing.');
+        return;
+    }
+
+    const id = idInput.value;
+    const item = itemInput.value;
+    const number = parseInt(numberInput.value);
+    const bp = parseFloat(bpInput.value);
+    const sp = parseFloat(spInput.value);
+
+    // Basic validation
+    if (!id || !item || isNaN(number) || isNaN(bp) || isNaN(sp) || number <= 0 || bp <= 0 || sp <= 0) {
+        showMessage('Please ensure all edit fields are filled correctly with valid positive numbers.');
+        return;
+    }
+
+    // Check for admin role before attempting to edit
+    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    if (!adminRoles.includes(currentUserRole)) {
+        showMessage('Permission Denied: Only administrators can edit sales.');
+        return;
+    }
+
+    // Recalculate profit and percentage profit
+    const totalBuyingPrice = bp * number;
+    const totalSellingPrice = sp * number;
+    const profit = totalSellingPrice - totalBuyingPrice;
+    let percentageProfit = 0;
+    if (totalBuyingPrice !== 0) {
+        percentageProfit = (profit / totalBuyingPrice) * 100;
+    }
+
+    const saleData = {
+        item,
+        number,
+        bp,
+        sp,
+        profit: profit,
+        percentageprofit: percentageProfit,
+        // The date is typically not editable in a modal like this, but if it were, 
+        // you would retrieve it from a hidden input or the original sale object.
+        // Assuming the date remains the same for the edit:
+        // You might need to fetch the original date if your API requires it.
+        // For now, omitting date assumes the backend preserves it for a PUT request.
+    };
+
+    try {
+        saveButton.innerHTML = 'Saving...';
+        saveButton.disabled = true;
+
+        const response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(saleData)
+        });
+
+        if (response.ok) {
+            await response.json();
+            showMessage('Sale Updated! ✅');
+            saveButton.innerHTML = 'Updated! ✅';
+
+            // Wait for 1 second, then close modal and re-fetch data
+            setTimeout(() => {
+                closeModal('edit-sale-modal'); 
+                fetchSales(); // Re-fetch sales data to update the table
+            }, 1000); 
+
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Server error occurred during update.');
+        }
+    } catch (error) {
+        showMessage(`Error updating sale: ${error.message}`);
+        saveButton.innerHTML = originalButtonText;
+        saveButton.disabled = false;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const editForm = document.getElementById('edit-sale-form');
+    if (editForm) {
+        // Attach the new submission handler to the modal form
+        editForm.addEventListener('submit', submitEditSaleForm);
+    }
+    
+    // Assuming you have a function to handle the main sales form
+    const saleForm = document.getElementById('sale-form');
+    if (saleForm) {
+        saleForm.addEventListener('submit', submitSaleForm);
+    }
+    
+    // You would also need to define the closeModal function if it's not already defined
+    // function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+});
