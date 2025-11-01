@@ -86,28 +86,43 @@ function logout() {
 /**
  * Wrapper for fetch API to include authentication token and handle errors.
  */
+
+/**
+ * Wrapper for fetch API to include authentication token and handle errors.
+ */
 async function authenticatedFetch(url, options = {}) {
+    const token = localStorage.getItem('authToken');
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`,
-        ...options.headers 
+        ...options.headers // Merge any existing headers
     };
 
-    const fullOptions = { ...options, headers };
+    if (token) {
+        // Attach the token retrieved from the successful login to the Authorization header
+        // Your server.js expects 'Bearer <token>', where <token> is actually the base64-encoded 'username:password'
+        // that the login route returns.
+        headers['Authorization'] = `Bearer ${token}`; 
+    }
 
     try {
-        const response = await fetch(url, fullOptions);
+        const response = await fetch(url, {
+            ...options,
+            headers: headers
+        });
 
+        // Centralized handling for 401/403 errors, leading to the messages you see in the log
         if (response.status === 401 || response.status === 403) {
+            console.warn(`Authenticated fetch failed with status: ${response.status}.`);
+            // The logout logic is triggered here if the request is unauthorized
             showMessage('Session expired or unauthorized access. Logging out.', logout);
-            return { ok: false, status: response.status }; 
+            return null; 
         }
 
         return response;
+
     } catch (error) {
-        console.error('Authenticated fetch error:', error);
-        showMessage('Network error or unable to reach the server.');
-        return { ok: false, status: 0 }; 
+        console.error('Network error during authenticated fetch:', error);
+        throw error;
     }
 }
 
