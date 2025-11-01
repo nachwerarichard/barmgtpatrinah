@@ -613,37 +613,49 @@
 </div>
   
 <!-- Edit Expense Modal -->
-<div id="edit-sale-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+<div id="edit-expense-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
-    <h2 class="text-xl font-bold text-emerald-600 mb-4">Edit Sale Record</h2>
-    <form id="edit-sale-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <input type="hidden" id="edit-sale-id"> 
+    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Expenses — Edit</h2>
+    <form id="edit-expense-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <input type="hidden" id="edit-expense-id">
       
       <div>
-        <label class="block text-sm font-medium text-gray-700">Item:</label>
-        <input type="text" id="edit-sale-item" list="item-suggestions" required class="p-2 w-full border border-gray-300 rounded-md">
-        <datalist id="item-suggestions"></datalist>
+        <label for="edit-expense-description" class="block text-sm font-medium text-gray-700">Description:</label>
+        <input type="text" id="edit-expense-description" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
       </div>
-
+      
       <div>
-        <label class="block text-sm font-medium text-gray-700">Number Sold:</label>
-        <input type="number" id="edit-sale-number" min="1" required class="p-2 w-full border border-gray-300 rounded-md">
+        <label for="edit-expense-amount" class="block text-sm font-medium text-gray-700">Amount:</label>
+        <input type="number" id="edit-expense-amount" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
       </div>
+      
       <div>
-        <label class="block text-sm font-medium text-gray-700">Buying Price (BP):</label>
-        <input type="number" id="edit-sale-bp" step="0.01" required class="p-2 w-full border border-gray-300 rounded-md">
+        <label for="edit-expense-date" class="block text-sm font-medium text-gray-700">Date:</label>
+        <input type="date" id="edit-expense-date" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
       </div>
+      
       <div>
-        <label class="block text-sm font-medium text-gray-700">Selling Price (SP):</label>
-        <input type="number" id="edit-sale-sp" step="0.01" required class="p-2 w-full border border-gray-300 rounded-md">
+        <label for="edit-expense-receiptId" class="block text-sm font-medium text-gray-700">Receipt ID:</label>
+        <input type="number" id="edit-expense-receiptId" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
       </div>
-      <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
-        <button type="button" onclick="closeModal('edit-sale-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
-        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg">Save Changes</button>
+      
+      <div>
+        <label for="edit-expense-source" class="block text-sm font-medium text-gray-700">Source:</label>
+        <input type="text" id="edit-expense-source" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
+      </div>
+      
+      <div class="md:col-span-2 flex justify-end space-x-3 pt-4">
+        <button type="button" onclick="closeModal('edit-expense-modal')" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg">
+          Cancel
+        </button>
+        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
       </div>
     </form>
   </div>
 </div>
+  
 <!-- Edit Cash Modal -->
 <div id="edit-cash-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
