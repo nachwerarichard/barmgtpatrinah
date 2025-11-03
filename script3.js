@@ -391,3 +391,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // You would also need to define the closeModal function if it's not already defined
     // function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 });
+
+
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+
+
+
