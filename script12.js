@@ -1737,10 +1737,16 @@ function populateExpenseForm(expense) {
 }
 
 // --- Cash Management Functions ---
+
 async function fetchCashJournal() {
+    // 1. Change button text to 'Searching'
+    updateCashSearchButton('Searching', 'fas fa-spinner fa-spin'); // Spinning icon for loading
+
     try {
         const dateFilterInput = document.getElementById('cash-filter-date');
-        const responsibleFilterInput = document.getElementById('cash-filter-responsible');
+        // Note: 'cash-filter-responsible' doesn't exist in the HTML you provided, 
+        // but the JS will safely handle it if it's implemented elsewhere.
+        const responsibleFilterInput = document.getElementById('cash-filter-responsible'); 
 
         const dateFilter = dateFilterInput ? dateFilterInput.value : '';
         const responsibleFilter = responsibleFilterInput ? responsibleFilterInput.value : '';
@@ -1755,14 +1761,67 @@ async function fetchCashJournal() {
         }
 
         const response = await authenticatedFetch(url);
-        if (!response) return;
+        if (!response) {
+            // Restore button on non-response
+            updateCashSearchButton('Search', 'fas fa-search');
+            return;
+        }
+        
         const records = await response.json();
+        // Assuming renderCashJournalTable is defined elsewhere
         renderCashJournalTable(records);
+
+        // 2. Change button text to 'Done' after successful display
+        updateCashSearchButton('Done', 'fas fa-check');
+
+        // 3. Set a timeout to revert the button text back to 'Search' after 2 seconds
+        setTimeout(() => {
+            updateCashSearchButton('Search', 'fas fa-search');
+        }, 2000); // 2000 milliseconds = 2 seconds
+
     } catch (error) {
         console.error('Error fetching cash journal:', error);
         showMessage('Failed to fetch cash journal: ' + error.message);
+        
+        // Ensure the button is reverted to 'Search' on error
+        updateCashSearchButton('Search', 'fas fa-search');
     }
 }
+
+/**
+ * Updates the text and icon of the cash records search button.
+ * Requires the button to have id='cash-search-button'.
+ */
+function updateCashSearchButton(text, iconClass) {
+    const button = document.getElementById('cash-search-button');
+    if (!button) {
+        console.error("Cash search button not found.");
+        return;
+    }
+
+    const iconElement = button.querySelector('i');
+    const textElement = button.querySelector('#cash-search-button-text');
+
+    if (iconElement) {
+        // Clear old classes and apply new ones for the icon
+        iconElement.className = '';
+        iconElement.className = iconClass;
+    }
+
+    if (textElement) {
+        textElement.textContent = text;
+    }
+
+    // Disable the button while searching
+    if (text === 'Searching') {
+        button.disabled = true;
+        button.classList.add('opacity-75', 'cursor-not-allowed');
+    } else {
+        button.disabled = false;
+        button.classList.remove('opacity-75', 'cursor-not-allowed');
+    }
+}
+
 
 
 function renderCashJournalTable(records) {
