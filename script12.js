@@ -1372,6 +1372,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // --- Expenses Functions ---
 async function fetchExpenses() {
+    // 1. Change button text to 'Searching'
+    updateExpensesSearchButton('Searching', 'fas fa-spinner fa-spin'); // Spinning icon for loading
+
     try {
         const dateFilterInput = document.getElementById('expenses-date-filter');
         const dateFilter = dateFilterInput ? dateFilterInput.value : '';
@@ -1384,17 +1387,68 @@ async function fetchExpenses() {
         url += `?${params.toString()}`;
 
         const response = await authenticatedFetch(url);
-        if (!response) return;
+        if (!response) {
+            // Restore button on non-response
+            updateExpensesSearchButton('Search', 'fas fa-search');
+            return;
+        }
 
         const result = await response.json();
+        
+        // Assuming renderExpensesTable and renderExpensesPagination are defined elsewhere
         renderExpensesTable(result.data);
         renderExpensesPagination(result.page, result.pages);
+
+        // 2. Change button text to 'Done' after successful display
+        updateExpensesSearchButton('Done', 'fas fa-check');
+
+        // 3. Set a timeout to revert the button text back to 'Search' after 2 seconds
+        setTimeout(() => {
+            updateExpensesSearchButton('Search', 'fas fa-search');
+        }, 2000); // 2000 milliseconds = 2 seconds
+
     } catch (error) {
         console.error('Error fetching expenses:', error);
         showMessage('Failed to fetch expenses: ' + error.message);
+        
+        // Ensure the button is reverted to 'Search' on error
+        updateExpensesSearchButton('Search', 'fas fa-search');
     }
 }
 
+/**
+ * Updates the text and icon of the expenses search button.
+ * NOTE: This function requires the button to have id='expenses-search-button'
+ */
+function updateExpensesSearchButton(text, iconClass) {
+    const button = document.getElementById('expenses-search-button');
+    if (!button) {
+        console.error("Expenses search button not found.");
+        return;
+    }
+
+    const iconElement = button.querySelector('i');
+    const textElement = button.querySelector('#expenses-search-button-text');
+
+    if (iconElement) {
+        // Clear old classes and apply new ones for the icon
+        iconElement.className = '';
+        iconElement.className = iconClass;
+    }
+
+    if (textElement) {
+        textElement.textContent = text;
+    }
+
+    // Disable the button while searching to prevent multiple requests
+    if (text === 'Searching') {
+        button.disabled = true;
+        button.classList.add('opacity-75', 'cursor-not-allowed');
+    } else {
+        button.disabled = false;
+        button.classList.remove('opacity-75', 'cursor-not-allowed');
+    }
+}
 function renderExpensesPagination(current, totalPages) {
     const container = document.getElementById('expenses-pagination');
     if (!container) return;
