@@ -1717,6 +1717,20 @@ async function submitEditExpenseForm(event) {
 
 async function submitExpenseForm(event) {
     event.preventDefault();
+
+    // 1. Get the submit button, text span, and icon 
+    const submitButton = document.querySelector('#expense-form button[type="submit"]');
+    const submitTextSpan = document.getElementById('expense-submit-text');
+    const submitIcon = submitButton ? submitButton.querySelector('i.fas') : null;
+    
+    const originalIconClass = submitIcon ? submitIcon.className : 'fas fa-plus-circle';
+    const originalButtonText = submitTextSpan ? submitTextSpan.textContent : 'Record Expense';
+
+    if (!submitButton || !submitTextSpan) {
+        showMessage('Submit button or text element is missing.');
+        return;
+    }
+
     const allowedToRecordExpenses = ['Nachwera Richard', 'Martha','Mercy', 'Joshua', 'Nelson', 'Florence'];
     if (!allowedToRecordExpenses.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record expenses.');
@@ -1728,7 +1742,8 @@ async function submitExpenseForm(event) {
     const amountInput = document.getElementById('expense-amount');
     const receiptIdInput = document.getElementById('expense-receiptId');
     const sourceInput = document.getElementById('expense-source');
-    const expenseDateInput = document.getElementById('expenses-date-filter'); // Using this as the date input
+    // FIX: Correctly accessing the date input from the form
+    const expenseDateInput = document.getElementById('expense-date'); 
 
     if (!idInput || !descriptionInput || !amountInput || !receiptIdInput || !sourceInput || !expenseDateInput) {
         showMessage('Expense form elements are missing.');
@@ -1751,39 +1766,79 @@ async function submitExpenseForm(event) {
     const expenseData = { description, amount, receiptId, source, date, recordedBy };
 
     try {
+        // 2. Change button text to 'Processing...' and disable it ⏳
+        submitTextSpan.textContent = 'Processing...';
+        if (submitIcon) submitIcon.className = 'fas fa-spinner fa-spin'; 
+        submitButton.disabled = true;
+
         let response;
+        let successMessage;
+
         if (id) {
+            // Edit operation (PUT)
             const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
             if (!adminRoles.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit expenses.');
+                // Revert button on permission fail
+                submitTextSpan.textContent = originalButtonText;
+                if (submitIcon) submitIcon.className = originalIconClass;
+                submitButton.disabled = false;
                 return;
             }
             response = await authenticatedFetch(`${API_BASE_URL}/expenses/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify(expenseData)
             });
+            successMessage = 'Updated! ✅';
         } else {
+            // New item creation (POST)
             response = await authenticatedFetch(`${API_BASE_URL}/expenses`, {
                 method: 'POST',
                 body: JSON.stringify(expenseData)
             });
+            successMessage = 'Done! ✅';
         }
-        if (response) {
+        
+        if (response.ok) { // Check if the response was successful
             await response.json();
-            showMessage('Expense recorded successfully!');
-            const expenseForm = document.getElementById('expense-form');
-            if (expenseForm) expenseForm.reset();
-            if (idInput) idInput.value = '';
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            if (expenseDateInput) expenseDateInput.value = `${yyyy}-${mm}-${dd}`;
-            fetchExpenses();
+
+            // Display the success message on the button
+            submitTextSpan.textContent = successMessage;
+            if (submitIcon) submitIcon.className = 'fas fa-check'; // Change icon to a checkmark
+            
+            // Show the full message via your dedicated showMessage function
+            showMessage(id ? 'Expense updated successfully! ✅' : 'Expense recorded successfully! ✅');
+
+            // Wait for 2 seconds, then reset the form and button ⏱️
+            setTimeout(() => {
+                const expenseForm = document.getElementById('expense-form');
+                if (expenseForm) expenseForm.reset();
+                if (idInput) idInput.value = '';
+
+                // Reset the date input to today's date (assuming this is the desired behavior)
+                const today = new Date().toISOString().split('T')[0];
+                if (expenseDateInput) expenseDateInput.value = today;
+
+                // Revert button text and icon
+                submitTextSpan.textContent = originalButtonText;
+                if (submitIcon) submitIcon.className = originalIconClass;
+                submitButton.disabled = false;
+                fetchExpenses();
+            }, 2000); 
+
+        } else {
+             const errorData = await response.json();
+             throw new Error(errorData.message || 'Server error occurred.');
         }
+
     } catch (error) {
         console.error('Error saving expense:', error);
         showMessage('Failed to save expense: ' + error.message);
+        
+        // 4. Revert button text and enable it on error ❌
+        submitTextSpan.textContent = originalButtonText;
+        if (submitIcon) submitIcon.className = originalIconClass;
+        submitButton.disabled = false;
     }
 }
 
