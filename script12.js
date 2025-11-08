@@ -2460,9 +2460,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const expenseForm = document.getElementById('expense-form');
     if (expenseForm) expenseForm.addEventListener('submit', submitExpenseForm);
 
-    const cashJournalForm = document.getElementById('cash-journal-form');
-    if (cashJournalForm) cashJournalForm.addEventListener('submit', submitCashJournalForm);
-
+   
     // Set initial date filters for various sections
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -2626,3 +2624,16 @@ function showSection(sectionId) {
     }
 }
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    // This code only runs after the 'cash-journal-form' element is available.
+    const cashJournalForm = document.getElementById('cash-journal-form');
+    
+    // Check if the form was successfully found before trying to attach a listener
+    if (cashJournalForm) {
+        cashJournalForm.addEventListener('submit', submitCashJournalForm);
+    } else {
+        // Optional: A message if the form is missing
+        console.error("Error: Could not find element with ID 'cash-journal-form'.");
+    }
+});
