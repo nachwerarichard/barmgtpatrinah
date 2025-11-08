@@ -2111,6 +2111,14 @@ function populateCashJournalForm(record) {
 
 // --- Reports Functions ---
 async function generateReports() {
+    // 1. Get the button and set it to 'searching' state
+    const generateButton = document.querySelector('.filter-controls button');
+    let originalButtonHtml = generateButton ? generateButton.innerHTML : '';
+    if (generateButton) {
+        generateButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+        generateButton.disabled = true; // Disable button to prevent multiple clicks
+    }
+
     // Define the department prefixes and the logic to get the department.
     // Use lowercase keys for consistency.
     const departmentPrefixes = {
@@ -2140,6 +2148,12 @@ async function generateReports() {
 
     if (!startDateInput || !endDateInput) {
         showMessage('Report date inputs not found.');
+        
+        // 5. Revert button state on error/early exit
+        if (generateButton) {
+            generateButton.innerHTML = originalButtonHtml;
+            generateButton.disabled = false;
+        }
         return;
     }
 
@@ -2148,6 +2162,12 @@ async function generateReports() {
 
     if (!startDateString || !endDateString) {
         showMessage('Please select both start and end dates for the report.');
+        
+        // 5. Revert button state on error/early exit
+        if (generateButton) {
+            generateButton.innerHTML = originalButtonHtml;
+            generateButton.disabled = false;
+        }
         return;
     }
 
@@ -2169,12 +2189,19 @@ async function generateReports() {
     const tbody = document.getElementById('department-report-tbody');
     if (!tbody) {
         console.error('Department report tbody not found.');
+        
+        // 5. Revert button state on error/early exit
+        if (generateButton) {
+            generateButton.innerHTML = originalButtonHtml;
+            generateButton.disabled = false;
+        }
         return;
     }
     tbody.innerHTML = ''; // Clear any existing rows
 
     try {
-        // Fetch all sales data, handling pagination by incrementing a page number.
+        // Fetch and filter sales and expenses data (existing logic remains)
+        // ... (sales fetch and filter logic)
         let page = 1;
         let salesDataFetched;
         do {
@@ -2224,8 +2251,9 @@ async function generateReports() {
         });
         console.log('Total expenses after filtering:', allExpenses.length);
 
+        // ... (department aggregation logic)
         const departmentReports = {};
-        
+            
         // Initialize department reports with zero values to prevent 'undefined' issues
         for (const prefix in departmentPrefixes) {
             departmentReports[departmentPrefixes[prefix]] = { sales: 0, expenses: 0 };
@@ -2256,6 +2284,7 @@ async function generateReports() {
             departmentReports[department].expenses += expense.amount;
         });
 
+        // ... (overall summary display logic)
         const overallSalesElement = document.getElementById('overall-sales');
         const overallExpensesElement = document.getElementById('overall-expenses');
         const overallBalanceElement = document.getElementById('overall-balance');
@@ -2269,6 +2298,7 @@ async function generateReports() {
         }
 
 
+        // ... (table rendering logic)
         const sortedDepartments = Object.keys(departmentReports).sort();
         if (sortedDepartments.length === 0) {
             const row = tbody.insertRow();
@@ -2293,13 +2323,31 @@ async function generateReports() {
             });
         }
 
+
+        // 2. Set button to 'done' state on success
+        if (generateButton) {
+            generateButton.innerHTML = '<i class="fas fa-check"></i> Done';
+            setTimeout(() => {
+                // 3. Revert button after a short delay
+                generateButton.innerHTML = originalButtonHtml;
+                generateButton.disabled = false;
+            }, 2000); // Revert after 2 seconds
+        }
+
     } catch (error) {
         console.error('Error generating reports:', error);
         showMessage('Failed to generate reports: ' + error.message);
+        
+        // 4. Revert button state on error
+        if (generateButton) {
+            generateButton.innerHTML = '<i class="fas fa-times"></i> Failed';
+            setTimeout(() => {
+                generateButton.innerHTML = originalButtonHtml;
+                generateButton.disabled = false;
+            }, 3000); // Keep 'Failed' for 3 seconds before reverting
+        }
     }
-}
-
-
+} 
 // --- Audit Logs Functions ---
 function debounce(func, delay) {
     let timeout;
