@@ -737,13 +737,20 @@ async function submitInventoryForm(event) {
 
     // 1. Get the submit button and save original text 💾
     const submitButton = document.querySelector('#inventory-form button[type="submit"]');
-    const originalButtonText = submitButton ? submitButton.innerHTML : 'Submit';
-    // If submitButton is not found, exit early or handle the missing element
-    if (!submitButton) {
-        showMessage('Submit button element is missing.');
+    // Get the span element within the button
+    const submitTextSpan = document.getElementById('inventory-submit-text');
+    const submitIcon = submitButton.querySelector('i.fas');
+    
+    // Store original icon class and text
+    const originalIconClass = submitIcon ? submitIcon.className : 'fas fa-save';
+    const originalButtonText = submitTextSpan ? submitTextSpan.textContent : 'Save Inventory';
+    
+    // Check for essential elements
+    if (!submitButton || !submitTextSpan) {
+        // Fallback for missing elements
+        showMessage('Submit button or text element is missing.');
         return;
     }
-
 
     const idInput = document.getElementById('inventory-id');
     const itemInput = document.getElementById('item');
@@ -752,7 +759,8 @@ async function submitInventoryForm(event) {
     const inventorySalesInput = document.getElementById('inventory-sales');
     const spoilageInput = document.getElementById('spoilage');
 
-    // Basic check for form elements
+    // ... (Basic check for form elements remains the same) ...
+
     if (!idInput || !itemInput || !openingInput || !purchasesInput || !inventorySalesInput || !spoilageInput) {
         showMessage('Inventory form elements are missing.');
         return;
@@ -765,7 +773,8 @@ async function submitInventoryForm(event) {
     const sales = parseInt(inventorySalesInput.value);
     const spoilage = parseInt(spoilageInput.value);
 
-    // Basic validation to ensure fields are filled and are numbers
+    // ... (Basic validation remains the same) ...
+
     if (!item || isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage)) {
         showMessage('Please fill in all inventory fields correctly with valid numbers.');
         return;
@@ -775,20 +784,27 @@ async function submitInventoryForm(event) {
 
     try {
         // 2. Change button text to 'Processing...' and disable it ⏳
-        submitButton.innerHTML = 'Processing...';
+        // Use textContent for the span and change the icon
+        submitTextSpan.textContent = 'Processing...';
+        if (submitIcon) {
+            // Change icon to a spinner if available, otherwise just use text
+            submitIcon.className = 'fas fa-spinner fa-spin'; 
+        }
         submitButton.disabled = true;
 
         let response;
         let successMessage;
 
-        // The core fix: Check if 'id' is a non-empty string to determine if it's an update.
+        // ... (API logic remains the same) ...
+
         if (id && id !== '') {
-            // This is an edit operation (PUT)
+            // Edit operation (PUT)
             const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
             if (!allowedToEditInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit inventory.');
                 // 3a. Revert button and enable it immediately on permission failure
-                submitButton.innerHTML = originalButtonText;
+                submitTextSpan.textContent = originalButtonText;
+                if (submitIcon) submitIcon.className = originalIconClass;
                 submitButton.disabled = false;
                 return;
             }
@@ -796,14 +812,15 @@ async function submitInventoryForm(event) {
                 method: 'PUT',
                 body: JSON.stringify(inventoryData)
             });
-            successMessage = 'Inventory Updated! ✅';
+            successMessage = 'Updated! ✅'; // Shortened for button display
         } else {
-            // This is a new item creation (POST)
+            // New item creation (POST)
             const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha','Mercy', 'Joshua'];
             if (!allowedToAddInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: You do not have permission to add inventory.');
                 // 3b. Revert button and enable it immediately on permission failure
-                submitButton.innerHTML = originalButtonText;
+                submitTextSpan.textContent = originalButtonText;
+                if (submitIcon) submitIcon.className = originalIconClass;
                 submitButton.disabled = false;
                 return;
             }
@@ -811,14 +828,21 @@ async function submitInventoryForm(event) {
                 method: 'POST',
                 body: JSON.stringify(inventoryData)
             });
-            successMessage = 'Inventory Item Added! ✅';
+            successMessage = 'Done! ✅'; // Shortened for button display
         }
 
         // Handle the response regardless of method
         if (response.ok) {
             await response.json(); // Consume the response body
-            showMessage(successMessage);
-            submitButton.innerHTML = successMessage; // Change to success message
+            
+            // --- 👇 THE KEY CHANGE IS HERE 👇 ---
+            // Display the success message on the button
+            submitTextSpan.textContent = successMessage;
+            if (submitIcon) submitIcon.className = 'fas fa-check'; // Change icon to a checkmark
+            
+            // Show the full message via your dedicated showMessage function
+            showMessage(id ? 'Inventory Updated! ✅' : 'Inventory Item Added! ✅');
+
 
             // Wait for 2 seconds, then reset the form and button ⏱️
             setTimeout(() => {
@@ -826,12 +850,16 @@ async function submitInventoryForm(event) {
                 if (inventoryForm) inventoryForm.reset();
                 if (idInput) idInput.value = ''; // Ensure ID is cleared after submission
 
-                submitButton.innerHTML = originalButtonText; // Revert button text
-                submitButton.disabled = false;              // Re-enable button
+                // Revert button text and icon
+                submitTextSpan.textContent = originalButtonText; 
+                if (submitIcon) submitIcon.className = originalIconClass;
+                
+                submitButton.disabled = false;      // Re-enable button
                 fetchInventory(); // Re-fetch data
             }, 2000); // 2000 milliseconds = 2 seconds
 
         } else {
+            // ... (Error handling remains the same) ...
             const errorData = await response.json();
             throw new Error(errorData.message || 'Server error occurred.');
         }
@@ -841,7 +869,8 @@ async function submitInventoryForm(event) {
         showMessage('Failed to save inventory item: ' + error.message);
         
         // 4. Revert button text and enable it on error ❌
-        submitButton.innerHTML = originalButtonText;
+        submitTextSpan.textContent = originalButtonText;
+        if (submitIcon) submitIcon.className = originalIconClass;
         submitButton.disabled = false;
     }
 }
