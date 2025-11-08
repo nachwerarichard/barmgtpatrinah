@@ -731,8 +731,19 @@ async function deleteInventory(id) {
  * existing item updates (PUT).
  * @param {Event} event The form submission event.
  */
+
 async function submitInventoryForm(event) {
     event.preventDefault();
+
+    // 1. Get the submit button and save original text 💾
+    const submitButton = document.querySelector('#inventory-form button[type="submit"]');
+    const originalButtonText = submitButton ? submitButton.innerHTML : 'Submit';
+    // If submitButton is not found, exit early or handle the missing element
+    if (!submitButton) {
+        showMessage('Submit button element is missing.');
+        return;
+    }
+
 
     const idInput = document.getElementById('inventory-id');
     const itemInput = document.getElementById('item');
@@ -763,48 +774,77 @@ async function submitInventoryForm(event) {
     const inventoryData = { item, opening, purchases, sales, spoilage };
 
     try {
+        // 2. Change button text to 'Processing...' and disable it ⏳
+        submitButton.innerHTML = 'Processing...';
+        submitButton.disabled = true;
+
         let response;
+        let successMessage;
+
         // The core fix: Check if 'id' is a non-empty string to determine if it's an update.
         if (id && id !== '') {
             // This is an edit operation (PUT)
             const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
             if (!allowedToEditInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit inventory.');
+                // 3a. Revert button and enable it immediately on permission failure
+                submitButton.innerHTML = originalButtonText;
+                submitButton.disabled = false;
                 return;
             }
             response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify(inventoryData)
             });
+            successMessage = 'Inventory Updated! ✅';
         } else {
             // This is a new item creation (POST)
             const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha','Mercy', 'Joshua'];
             if (!allowedToAddInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: You do not have permission to add inventory.');
+                // 3b. Revert button and enable it immediately on permission failure
+                submitButton.innerHTML = originalButtonText;
+                submitButton.disabled = false;
                 return;
             }
             response = await authenticatedFetch(`${API_BASE_URL}/inventory`, {
                 method: 'POST',
                 body: JSON.stringify(inventoryData)
             });
+            successMessage = 'Inventory Item Added! ✅';
         }
 
         // Handle the response regardless of method
-        if (response) {
+        if (response.ok) {
             await response.json(); // Consume the response body
-            showMessage('Inventory item saved successfully!');
-            const inventoryForm = document.getElementById('inventory-form');
-            if (inventoryForm) inventoryForm.reset();
-            if (idInput) idInput.value = ''; // Ensure ID is cleared after submission
-            fetchInventory();
+            showMessage(successMessage);
+            submitButton.innerHTML = successMessage; // Change to success message
+
+            // Wait for 2 seconds, then reset the form and button ⏱️
+            setTimeout(() => {
+                const inventoryForm = document.getElementById('inventory-form');
+                if (inventoryForm) inventoryForm.reset();
+                if (idInput) idInput.value = ''; // Ensure ID is cleared after submission
+
+                submitButton.innerHTML = originalButtonText; // Revert button text
+                submitButton.disabled = false;              // Re-enable button
+                fetchInventory(); // Re-fetch data
+            }, 2000); // 2000 milliseconds = 2 seconds
+
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Server error occurred.');
         }
+
     } catch (error) {
         console.error('Error saving inventory item:', error);
         showMessage('Failed to save inventory item: ' + error.message);
+        
+        // 4. Revert button text and enable it on error ❌
+        submitButton.innerHTML = originalButtonText;
+        submitButton.disabled = false;
     }
 }
-
-
 
 // --- Sales Functions ---
 // Helper function to update the sales search button text and icon
