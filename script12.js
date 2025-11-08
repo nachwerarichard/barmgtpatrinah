@@ -808,12 +808,41 @@ async function submitInventoryForm(event) {
 
 // --- Sales Functions ---
 // Helper function to update the sales search button text and icon
+
+/**
+ * Updates the text and icon of the sales search button.
+ * @param {string} text - The new text for the button (e.g., 'Searching').
+ * @param {string} iconClass - The new icon class (e.g., 'fas fa-spinner fa-spin').
+ */
 function updateSalesSearchButton(text, iconClass) {
-    // Select the search button within the sales filter controls
-    const searchButton = document.querySelector('.sales-filter-controls button[onclick="fetchSales()"]');
-    if (searchButton) {
-        // Clear existing content and set new text and icon
-        searchButton.innerHTML = `${text} <i class="${iconClass}"></i>`;
+    const button = document.getElementById('sales-search-button');
+    if (!button) {
+        console.error("Sales search button not found. Did you add id='sales-search-button' to the HTML?");
+        return;
+    }
+
+    // Target the icon and text elements inside the button
+    const iconElement = button.querySelector('i');
+    const textElement = button.querySelector('#search-button-text');
+
+    if (iconElement) {
+        // Clear all existing icon classes
+        iconElement.className = ''; 
+        // Add the new icon classes
+        iconElement.className = iconClass;
+    }
+
+    if (textElement) {
+        textElement.textContent = text;
+    }
+
+    // Optionally, disable the button while loading
+    if (text === 'Searching') {
+        button.disabled = true;
+        button.classList.add('opacity-75', 'cursor-not-allowed');
+    } else {
+        button.disabled = false;
+        button.classList.remove('opacity-75', 'cursor-not-allowed');
     }
 }
 
