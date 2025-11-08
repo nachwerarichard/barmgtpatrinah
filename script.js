@@ -1633,7 +1633,7 @@ async function submitCashJournalForm(event) {
     const bankReceiptIdInput = document.getElementById('bank-receipt-id');
     const cashDateInput = document.getElementById('cash-date');
 
-    if (!idInput || !cashAtHandInput || !cashBankedInput || !bankReceiptIdInput || !cashDateInput) {
+    if (!cashAtHandInput || !cashBankedInput || !bankReceiptIdInput ) {
         showMessage('Cash journal form elements are missing.');
         return;
     }
