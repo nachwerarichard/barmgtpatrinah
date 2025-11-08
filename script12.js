@@ -2685,3 +2685,113 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Error: Could not find element with ID 'cash-journal-form'.");
     }
 });
+
+
+async function submitCashJournalForm() {
+
+    // 1. Get elements and store original state
+    const submitButton = document.querySelector('#cash-journal-form button[type="submit"]');
+    const submitTextSpan = document.getElementById('cash-submit-text');
+    const submitIcon = submitButton ? submitButton.querySelector('i.fas') : null;
+    
+    const originalIconClass = submitIcon ? submitIcon.className : 'fas fa-money-check-alt';
+    const originalButtonText = submitTextSpan ? submitTextSpan.textContent : 'Save Cash Entry';
+
+    if (!submitButton || !submitTextSpan) {
+        showMessage('Submit button or text element is missing.');
+        return;
+    }
+
+    // Permission check for adding new entries (adjust roles as needed)
+    const allowedToRecordCash = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha','Mercy', 'Joshua'];
+    if (!allowedToRecordCash.includes(currentUserRole)) {
+        showMessage('Permission Denied: You do not have permission to record cash movements.');
+        return;
+    }
+
+    const idInput = document.getElementById('cash-journal-id');
+    const cashAtHandInput = document.getElementById('cash-at-hand');
+    const cashBankedInput = document.getElementById('cash-banked');
+    const bankReceiptIdInput = document.getElementById('bank-receipt-id');
+    const cashDateInput = document.getElementById('cash-date');
+
+    if (!cashAtHandInput || !cashBankedInput || !bankReceiptIdInput ) {
+        showMessage('Cash journal form elements are missing.');
+        return;
+    }
+
+    const id = idInput.value;
+    const cashAtHand = parseFloat(cashAtHandInput.value);
+    const cashBanked = parseFloat(cashBankedInput.value);
+    const bankReceiptId = bankReceiptIdInput.value;
+    const date = cashDateInput.value;
+    const recordedBy = currentUsername;
+
+    // Basic validation
+    if (isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !date) {
+        showMessage('Please fill in all cash movement fields correctly.');
+        return;
+    }
+    
+    // Note: Assuming this form is primarily for POST/new entries.
+    // The ID check here (if it were present) would differentiate POST/PUT for the main form.
+    // Since you provided an 'edit' function, we'll assume this is for POST.
+    if (id) {
+        // If an ID exists, this should typically be handled by the edit function/modal.
+        // For safety, you might want to prevent submission if an ID is present here.
+        showMessage('Please use the edit function to modify existing entries.');
+        return;
+    }
+
+    const cashData = { cashAtHand, cashBanked, bankReceiptId, date, recordedBy };
+
+    try {
+        // 2. Change button to 'Processing...' ⏳
+        submitTextSpan.textContent = 'Processing...';
+        if (submitIcon) submitIcon.className = 'fas fa-spinner fa-spin'; 
+        submitButton.disabled = true;
+
+        // API call (POST for new entry)
+        const response = await authenticatedFetch(`${API_BASE_URL}/cash-journal`, {
+            method: 'POST',
+            body: JSON.stringify(cashData)
+        });
+
+        if (response.ok) {
+            await response.json();
+            const successMessage = 'Done! ✅';
+
+            // 3. Display success message on the button
+            submitTextSpan.textContent = successMessage;
+            if (submitIcon) submitIcon.className = 'fas fa-check';
+            showMessage('Cash movement successfully recorded! ✅');
+
+            // 4. Wait, reset form, and re-enable button ⏱️
+            setTimeout(() => {
+                const cashJournalForm = document.getElementById('cash-journal-form');
+                if (cashJournalForm) cashJournalForm.reset();
+                if (idInput) idInput.value = '';
+
+                // Revert button text and icon
+                submitTextSpan.textContent = originalButtonText;
+                if (submitIcon) submitIcon.className = originalIconClass;
+                submitButton.disabled = false;
+                fetchCashJournal(); // Re-fetch to update table
+            }, 2000); // 2 seconds delay
+
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Server error occurred.');
+        }
+
+    } catch (error) {
+        console.error('Error saving cash journal entry:', error);
+        showMessage('Failed to save cash entry: ' + error.message);
+        
+        // 5. Revert button on error ❌
+        submitTextSpan.textContent = originalButtonText;
+        if (submitIcon) submitIcon.className = originalIconClass;
+        submitButton.disabled = false;
+    }
+}
+
