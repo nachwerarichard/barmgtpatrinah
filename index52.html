@@ -452,8 +452,7 @@
             <input type="date" id="report-start-date" class="p-2 border border-gray-300 rounded-md">
             <label for="report-end-date" class="text-sm font-medium text-gray-700">End Date:</label>
             <input type="date" id="report-end-date" class="p-2 border border-gray-300 rounded-md">
-            <button onclick="generateReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg"><i class="fas fa-chart-pie"></i> Generate Reports</button>
-          </div>
+<button id="generate-report-btn" onclick="generateReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg"><i class="fas fa-chart-pie"></i> Generate Reports</button>          </div>
 
           <div class="table-responsive mb-8">
             <button class="export-button bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3" onclick="exportTableToExcel('department-table', 'Department_Report')">Export Department Report</button>
