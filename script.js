@@ -1604,8 +1604,7 @@ function renderCashJournalTable(records) {
 }
 
 
-async function submitCashJournalForm(event) {
-    event.preventDefault();
+async function submitCashJournalForm() {
 
     // 1. Get elements and store original state
     const submitButton = document.querySelector('#cash-journal-form button[type="submit"]');
