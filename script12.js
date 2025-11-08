@@ -2112,7 +2112,7 @@ function populateCashJournalForm(record) {
 // --- Reports Functions ---
 async function generateReports() {
     // 1. Get the button and set it to 'searching' state
-    const generateButton = document.querySelector('.filter-controls button');
+    const generateButton = document.getElementById('generate-report-btn');
     let originalButtonHtml = generateButton ? generateButton.innerHTML : '';
     if (generateButton) {
         generateButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
