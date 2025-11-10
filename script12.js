@@ -278,7 +278,6 @@ function showSubSection(sectionId, parentNavId = null) {
     const checkSectionId = mainSectionId.startsWith('cash') ? 'cash' : (mainSectionId === 'audit' ? 'audit' : mainSectionId);
 
     if (currentUserRole && !allowedSections[currentUserRole]?.includes(checkSectionId)) {
-        showMessage('Access Denied: You do not have permission to view this section.');
         
         // Redirect logic to ensure a safe landing page
         const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
