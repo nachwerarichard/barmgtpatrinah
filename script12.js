@@ -1673,36 +1673,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Function to control the button state (for better reusability)
-
-
-// Controls the button state (either spinner or static "Saving..." text)
 function setEditButtonLoading(isLoading) {
     const button = document.getElementById('edit-expense-submit-btn');
-    const defaultText = document.getElementById('edit-expense-btn-text');
-    
-    // Elements for the loading state:
     const spinner = document.getElementById('edit-expense-spinner');
-    const loadingText = document.getElementById('edit-expense-loading-text');
+    const text = document.getElementById('edit-expense-btn-text');
 
-    if (button && defaultText && spinner && loadingText) {
+    if (button && spinner && text) {
         button.disabled = isLoading; // Disable button to prevent double-click
-
         if (isLoading) {
-            defaultText.style.display = 'none'; // Hide "Save Changes" text
-            
-            // OPTION 1: Show the Spinner (Active now)
-            spinner.style.display = 'inline-block';
-            loadingText.style.display = 'none';
-
-            // OPTION 2: If you prefer just the "Saving..." text:
-            // spinner.style.display = 'none';
-            // loadingText.style.display = 'inline';
-            
+            spinner.style.display = 'inline-block'; // Show spinner
+            text.style.display = 'none'; // Hide text
+            // Optional: Change button color/opacity if needed, though 'disabled' often handles this.
         } else {
-            // Revert to default state
-            defaultText.style.display = 'inline';
-            spinner.style.display = 'none';
-            loadingText.style.display = 'none';
+            spinner.style.display = 'none'; // Hide spinner
+            text.style.display = 'inline'; // Show text
         }
     }
 }
@@ -1717,7 +1701,7 @@ async function submitEditExpenseForm(event) {
         return;
     }
     
-    // ... validation and data retrieval (omitted for brevity)
+    // 1. Get values from the EDIT modal form (omitted for brevity)
     const id = document.getElementById('edit-expense-id').value;
     const description = document.getElementById('edit-expense-description').value;
     const amount = parseFloat(document.getElementById('edit-expense-amount').value);
@@ -1732,7 +1716,7 @@ async function submitEditExpenseForm(event) {
 
     const expenseData = { description, amount, receiptId, source, date, recordedBy: currentUsername };
 
-    // --- 1. SHOW PRELOADER (Spinner) ---
+    // --- 1. SHOW PRELOADER & DISABLE BUTTON ---
     setEditButtonLoading(true);
 
     try {
@@ -1751,10 +1735,11 @@ async function submitEditExpenseForm(event) {
         console.error('Error updating expense:', error);
         showMessage('Failed to update expense: ' + error.message);
     } finally {
-        // --- 2. HIDE PRELOADER & ENABLE BUTTON ---
+        // --- 2. HIDE PRELOADER & ENABLE BUTTON (Guaranteed to run) ---
         setEditButtonLoading(false);
     }
 }
+
 
 async function submitExpenseForm(event) {
     event.preventDefault();
@@ -2713,7 +2698,3 @@ function showSection(sectionId) {
         console.error(`Section with ID '${sectionId}' not found.`);
     }
 }
-
-
-
-
