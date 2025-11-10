@@ -1673,24 +1673,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Function to control the button state (for better reusability)
+/**
+ * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
+ */
 function setEditButtonLoading(isLoading) {
     const button = document.getElementById('edit-expense-submit-btn');
-    const spinner = document.getElementById('edit-expense-spinner');
-    const text = document.getElementById('edit-expense-btn-text');
+    const defaultState = document.getElementById('edit-expense-btn-default');
+    const loadingState = document.getElementById('edit-expense-btn-loading');
 
-    if (button && spinner && text) {
+    if (button && defaultState && loadingState) {
         button.disabled = isLoading; // Disable button to prevent double-click
+
         if (isLoading) {
-            spinner.style.display = 'inline-block'; // Show spinner
-            text.style.display = 'none'; // Hide text
-            // Optional: Change button color/opacity if needed, though 'disabled' often handles this.
+            // Show 'Saving...' state
+            defaultState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
         } else {
-            spinner.style.display = 'none'; // Hide spinner
-            text.style.display = 'inline'; // Show text
+            // Show default 'Save Changes' state
+            loadingState.classList.add('hidden');
+            defaultState.classList.remove('hidden');
         }
     }
 }
-
 
 async function submitEditExpenseForm(event) {
     event.preventDefault();
