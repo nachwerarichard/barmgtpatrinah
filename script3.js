@@ -401,6 +401,18 @@ function closeModal(id) {
 }
 
 
+
+// Attach event listener to prevent default form submit
+document.addEventListener('DOMContentLoaded', () => {
+    const cashJournalForm = document.getElementById('cash-journal-form');
+    if (cashJournalForm) {
+        cashJournalForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // ❌ Prevents default browser form submission (GET → 304)
+            await submitCashJournalForm(); // ✅ Calls your async JS function instead
+        });
+    }
+});
+
 async function submitCashJournalForm() {
 
     // 1. Get elements and store original state
@@ -417,7 +429,7 @@ async function submitCashJournalForm() {
     }
 
     // Permission check for adding new entries (adjust roles as needed)
-    const allowedToRecordCash = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha','Mercy', 'Joshua'];
+    const allowedToRecordCash = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha', 'Mercy', 'Joshua'];
     if (!allowedToRecordCash.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record cash movements.');
         return;
@@ -429,7 +441,7 @@ async function submitCashJournalForm() {
     const bankReceiptIdInput = document.getElementById('bank-receipt-id');
     const cashDateInput = document.getElementById('cash-date');
 
-    if (!cashAtHandInput || !cashBankedInput || !bankReceiptIdInput ) {
+    if (!cashAtHandInput || !cashBankedInput || !bankReceiptIdInput) {
         showMessage('Cash journal form elements are missing.');
         return;
     }
@@ -446,13 +458,8 @@ async function submitCashJournalForm() {
         showMessage('Please fill in all cash movement fields correctly.');
         return;
     }
-    
-    // Note: Assuming this form is primarily for POST/new entries.
-    // The ID check here (if it were present) would differentiate POST/PUT for the main form.
-    // Since you provided an 'edit' function, we'll assume this is for POST.
+
     if (id) {
-        // If an ID exists, this should typically be handled by the edit function/modal.
-        // For safety, you might want to prevent submission if an ID is present here.
         showMessage('Please use the edit function to modify existing entries.');
         return;
     }
@@ -462,12 +469,13 @@ async function submitCashJournalForm() {
     try {
         // 2. Change button to 'Processing...' ⏳
         submitTextSpan.textContent = 'Processing...';
-        if (submitIcon) submitIcon.className = 'fas fa-spinner fa-spin'; 
+        if (submitIcon) submitIcon.className = 'fas fa-spinner fa-spin';
         submitButton.disabled = true;
 
         // API call (POST for new entry)
         const response = await authenticatedFetch(`${API_BASE_URL}/cash-journal`, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' }, // ✅ Important
             body: JSON.stringify(cashData)
         });
 
@@ -490,8 +498,8 @@ async function submitCashJournalForm() {
                 submitTextSpan.textContent = originalButtonText;
                 if (submitIcon) submitIcon.className = originalIconClass;
                 submitButton.disabled = false;
-                fetchCashJournal(); // Re-fetch to update table
-            }, 2000); // 2 seconds delay
+                fetchCashJournal(); // Refresh the table
+            }, 2000);
 
         } else {
             const errorData = await response.json();
@@ -501,13 +509,14 @@ async function submitCashJournalForm() {
     } catch (error) {
         console.error('Error saving cash journal entry:', error);
         showMessage('Failed to save cash entry: ' + error.message);
-        
+
         // 5. Revert button on error ❌
         submitTextSpan.textContent = originalButtonText;
         if (submitIcon) submitIcon.className = originalIconClass;
         submitButton.disabled = false;
     }
 }
+
 
 
 
