@@ -2084,14 +2084,14 @@ async function submitEditCashForm(event) {
 }
 
 // **You must add an event listener to your edit form when the page loads:**
-/*
+
 document.addEventListener('DOMContentLoaded', () => {
     const editForm = document.getElementById('edit-cash-form');
     if (editForm) {
         editForm.addEventListener('submit', submitEditCashForm);
     }
 });
-*/
+
 
 function populateCashJournalForm(record) {
     const idInput = document.getElementById('cash-journal-id');
