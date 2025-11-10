@@ -1670,6 +1670,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // ... other setup ...
 });
 
+
+
+// Function to control the button state (for better reusability)
+function setEditButtonLoading(isLoading) {
+    const button = document.getElementById('edit-expense-submit-btn');
+    const spinner = document.getElementById('edit-expense-spinner');
+    const text = document.getElementById('edit-expense-btn-text');
+
+    if (button && spinner && text) {
+        button.disabled = isLoading; // Disable button to prevent double-click
+        if (isLoading) {
+            spinner.style.display = 'inline-block'; // Show spinner
+            text.style.display = 'none'; // Hide text
+            // Optional: Change button color/opacity if needed, though 'disabled' often handles this.
+        } else {
+            spinner.style.display = 'none'; // Hide spinner
+            text.style.display = 'inline'; // Show text
+        }
+    }
+}
+
+
 async function submitEditExpenseForm(event) {
     event.preventDefault();
 
@@ -1679,7 +1701,7 @@ async function submitEditExpenseForm(event) {
         return;
     }
     
-    // 1. Get values from the EDIT modal form (using 'edit-' IDs)
+    // 1. Get values from the EDIT modal form (omitted for brevity)
     const id = document.getElementById('edit-expense-id').value;
     const description = document.getElementById('edit-expense-description').value;
     const amount = parseFloat(document.getElementById('edit-expense-amount').value);
@@ -1692,7 +1714,10 @@ async function submitEditExpenseForm(event) {
         return;
     }
 
-    const expenseData = { description, amount, receiptId, source, date, recordedBy: currentUsername }; // recordedBy is who last edited it
+    const expenseData = { description, amount, receiptId, source, date, recordedBy: currentUsername };
+
+    // --- 1. SHOW PRELOADER & DISABLE BUTTON ---
+    setEditButtonLoading(true);
 
     try {
         const response = await authenticatedFetch(`${API_BASE_URL}/expenses/${id}`, {
@@ -1702,16 +1727,18 @@ async function submitEditExpenseForm(event) {
 
         if (response) {
             await response.json();
-            showMessage('Expense updated successfully!');
-            closeModal('edit-expense-modal'); // Hide the modal on success
-            fetchExpenses(); // Refresh the table
+            showMessage('Expense updated successfully! 🎉');
+            closeModal('edit-expense-modal');
+            fetchExpenses();
         }
     } catch (error) {
         console.error('Error updating expense:', error);
         showMessage('Failed to update expense: ' + error.message);
+    } finally {
+        // --- 2. HIDE PRELOADER & ENABLE BUTTON (Guaranteed to run) ---
+        setEditButtonLoading(false);
     }
 }
-
 
 
 async function submitExpenseForm(event) {
