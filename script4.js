@@ -138,3 +138,114 @@
       console.log(`Exporting table ${tableId} to ${filename}.xlsx`);
       // Keep your SheetJS integration or implementation here.
     }
+
+
+
+
+
+ // UX: Simplified functions for opening/closing modals 
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // UX: Sidebar Toggle for Mobile/Small Screens
+        const sidebar = document.getElementById('sidebar');
+        const menuToggleOpen = document.getElementById('menu-toggle-open');
+
+        menuToggleOpen.addEventListener('click', () => {
+            sidebar.classList.remove('-translate-x-full');
+        });
+
+        // Add a click listener to the main content area to close the sidebar when open on small screens
+        const mainContent = document.getElementById('main-content');
+        mainContent.addEventListener('click', () => {
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+
+        // UX: Function to handle sidebar navigation and section display
+        function showSubSection(sectionId, navId) {
+            // 1. Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            // 2. Show the target section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // 3. Update main navigation active state (removes old 'active', sets new 'active')
+            document.querySelectorAll('.nav-main').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.remove('text-white'); // ensure text color resets
+            });
+            const mainNav = document.getElementById(navId);
+            if (mainNav) {
+                 mainNav.classList.add('active');
+                 mainNav.classList.add('text-white'); // Apply white text color to active main nav
+            }
+
+            // 4. Update sub-item active state
+            document.querySelectorAll('.sub-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Find the specific button that was clicked using the sectionId to apply 'sub-item active'
+            const clickedSubItem = document.querySelector(`.sub-item[data-show="${sectionId}"]`);
+            if (clickedSubItem) {
+                clickedSubItem.classList.add('active');
+            }
+            
+            // 5. UX: Hide sidebar on small screens after clicking a link
+            if (window.innerWidth < 1024) {
+                 sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        // UX: Function to handle submenu open/close and arrow rotation
+        function toggleSubmenu(submenuId, navId) {
+            const submenu = document.getElementById(submenuId);
+            const navButton = document.getElementById(navId);
+            const arrowIcon = navButton ? navButton.querySelector('.arrow-icon') : null;
+
+            if (submenu.classList.contains('open')) {
+                submenu.classList.remove('open');
+                if (arrowIcon) {
+                    arrowIcon.style.transform = 'rotate(0deg)';
+                }
+            } else {
+                // Close all other submenus first (improved UX)
+                document.querySelectorAll('.submenu').forEach(sub => {
+                    sub.classList.remove('open');
+                    const parentButton = document.getElementById(sub.id.replace('-submenu', ''));
+                    if (parentButton) {
+                        const parentArrow = parentButton.querySelector('.arrow-icon');
+                        if (parentArrow) parentArrow.style.transform = 'rotate(0deg)';
+                    }
+                });
+
+                // Open the target submenu
+                submenu.classList.add('open');
+                if (arrowIcon) {
+                    arrowIcon.style.transform = 'rotate(180deg)';
+                }
+            }
+        }
+        
+        // UX: Set initial state on load
+        document.addEventListener('DOMContentLoaded', () => {
+             // 1. Show the Dashboard by default
+            showSubSection('dashboard', 'nav-dashboard');
+
+             // 2. Add an initial icon for the Dashboard if needed (as done in the main menu)
+             const navDashboard = document.getElementById('nav-dashboard');
+             if(navDashboard && !navDashboard.querySelector('.fa-tachometer-alt')) {
+                 navDashboard.querySelector('.tilt-content').insertAdjacentHTML('afterbegin', '<i class="fas fa-tachometer-alt w-5"></i>');
+             }
+
+        });
