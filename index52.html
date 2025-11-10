@@ -71,6 +71,22 @@
     @media (max-width: 1024px) {
       #sidebar { position: absolute; z-index: 40; }
     }
+
+
+    @keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease-out;
+}
+
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -87,6 +103,31 @@
   <!-- APP -->
   <div id="main-container" class="hidden h-screen overflow-hidden">
 
+<!-- Message Modal -->
+<div id="message-modal"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300">
+  <div
+    class="bg-white dark:bg-gray-900 dark:text-gray-100 rounded-2xl shadow-2xl w-11/12 max-w-md p-6 mx-4 sm:mx-0 animate-fadeIn transform transition-all">
+    
+    <!-- Modal Header -->
+    <h2 class="text-xl font-semibold text-center text-gray-800 dark:text-gray-100 mb-4">
+      Message
+    </h2>
+
+    <!-- Modal Body -->
+    <p id="message-text" class="text-center text-gray-700 dark:text-gray-300 mb-6 leading-relaxed"></p>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-center">
+      <button id="message-close-button"
+              class="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 active:scale-95 transition-transform">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
+    
      <header class="bg-white shadow-lg p-4 flex justify-between items-center sticky top-0 z-50 border-b border-emerald-100">
     <div class="flex items-center space-x-3">
         <img src="patrina.png" alt="Patrinah Hotel Logo" class="w-10 h-10 object-contain">
