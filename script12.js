@@ -2025,14 +2025,14 @@ async function submitEditCashForm(event) {
     event.preventDefault();
     const modal = document.getElementById('edit-cash-modal');
     
-    // The existing adminRoles check from your original submitCashJournalForm for editing
+    // Admin permission check
     const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
     if (!adminRoles.includes(currentUserRole)) {
         showMessage('Permission Denied: Only administrators can edit cash entries.');
         return;
     }
 
-    // Target the new modal input IDs
+    // Get modal inputs
     const idInput = document.getElementById('edit-cash-id');
     const cashAtHandInput = document.getElementById('edit-cash-at-hand');
     const cashBankedInput = document.getElementById('edit-cash-banked');
@@ -2047,10 +2047,9 @@ async function submitEditCashForm(event) {
     const id = idInput.value;
     const cashAtHand = parseFloat(cashAtHandInput.value);
     const cashBanked = parseFloat(cashBankedInput.value);
-    const bankReceiptId = bankReceiptIdInput.value;
-    const date = cashDateInput.value; // The date input already provides 'YYYY-MM-DD'
+    const bankReceiptId = bankReceiptIdInput.value.trim();
+    const date = cashDateInput.value;
 
-    // Basic validation
     if (!id || isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !date) {
         showMessage('Please fill in all edit fields correctly and ensure a record ID exists.');
         return;
@@ -2059,29 +2058,27 @@ async function submitEditCashForm(event) {
     const cashData = { cashAtHand, cashBanked, bankReceiptId, date };
 
     try {
-        // Use PUT method for editing
         const response = await authenticatedFetch(`${API_BASE_URL}/cash-journal/${id}`, {
             method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }, // ✅ important
             body: JSON.stringify(cashData)
         });
 
-        if (response.ok) { // Check if the response status is 200-299
-            showMessage('Cash entry updated successfully!');
-            
-            // Close the modal after successful submission
+        if (response.ok) {
+            showMessage('Cash entry updated successfully! ✅');
             if (modal) modal.classList.add('hidden');
-            
-            fetchCashJournal(); // Re-fetch to update table
+            fetchCashJournal(); // Refresh table
         } else {
-            // Handle server-side errors
             const errorData = await response.json();
             showMessage(`Failed to update cash entry: ${errorData.message || 'Server error'}`);
         }
+
     } catch (error) {
         console.error('Error updating cash entry:', error);
         showMessage('Failed to update cash entry: ' + error.message);
     }
 }
+
 
 // **You must add an event listener to your edit form when the page loads:**
 
