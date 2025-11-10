@@ -249,3 +249,10 @@
              }
 
         });
+
+
+// Sidebar close button (mobile only)
+document.getElementById('close-sidebar').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.add('-translate-x-full'); // Hide sidebar by sliding it left
+});
