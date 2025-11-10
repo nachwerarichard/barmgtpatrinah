@@ -560,43 +560,7 @@
 <!-- ================= EDIT FORMS ================= -->
 
 <!-- Edit Inventory Modal -->
-<div id="edit-inventory-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" style="display: none;">
-  <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
-    <button class="close-button absolute top-3 right-3 text-gray-400 hover:text-gray-600 focus:outline-none" onclick="closeEditModal()">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-    </button>
-    <h2 class="text-xl font-bold text-emerald-600 mb-4">Edit Inventory Item</h2>
-    <form id="edit-inventory-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <input type="hidden" id="edit-inventory-id">
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Item:</label>
-        <input type="text" id="edit-item" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Opening Stock:</label>
-        <input type="number" id="edit-opening" min="0" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Purchases:</label>
-        <input type="number" id="edit-purchases" min="0" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Sales:</label>
-        <input type="number" id="edit-inventory-sales" min="0" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Spoilage:</label>
-        <input type="number" id="edit-spoilage" min="0" required class="p-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
-      </div>
-      <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
-        <button type="button" onclick="closeEditModal()" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
-        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg">Save Changes</button>
-      </div>
-    </form>
-  </div>
-</div>
+
 
 <div id="edit-sale-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
