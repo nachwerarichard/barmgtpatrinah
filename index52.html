@@ -672,15 +672,11 @@
       </div>
 
             <div class="md:col-span-2 flex justify-end space-x-3 pt-4">
-    <button type="button" onclick="closeModal('edit-expense-modal')" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg">
-        Cancel
-    </button>
-    
-    <button type="submit" id="edit-expense-submit-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center">
+    <button type="submit" id="edit-expense-submit-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center min-w-[150px]">
         
         <span 
             id="edit-expense-spinner" 
-            class="spinner-border spinner-border-sm text-primary" 
+            class="spinner-border spinner-border-sm text-white" 
             role="status" 
             aria-hidden="true" 
             style="display: none;">
@@ -689,11 +685,12 @@
         <span id="edit-expense-btn-text">
             <i class="fas fa-save"></i> Save Changes
         </span>
+        
+        <span id="edit-expense-loading-text" style="display: none;">
+            Saving...
+        </span>
     </button>
 </div>
-      
-    </form>
-  </div>
 </div>
   
 <!-- Edit Cash Modal -->
