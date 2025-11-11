@@ -2116,30 +2116,6 @@ async function submitEditCashForm(event) {
 }
     
 
-    const cashData = { cashAtHand, cashBanked, bankReceiptId, date };
-
-    try {
-        const response = await authenticatedFetch(`${API_BASE_URL}/cash-journal/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' }, // ✅ important
-            body: JSON.stringify(cashData)
-        });
-
-        if (response.ok) {
-            showMessage('Cash entry updated successfully! ✅');
-            if (modal) modal.classList.add('hidden');
-            fetchCashJournal(); // Refresh table
-        } else {
-            const errorData = await response.json();
-            showMessage(`Failed to update cash entry: ${errorData.message || 'Server error'}`);
-        }
-
-    } catch (error) {
-        console.error('Error updating cash entry:', error);
-        showMessage('Failed to update cash entry: ' + error.message);
-    }
-}
-
 
 // **You must add an event listener to your edit form when the page loads:**
 
