@@ -736,9 +736,20 @@
         <input type="date" id="edit-cash-date" required class="p-2 w-full border border-gray-300 rounded-md">
       </div>
       <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
-        <button type="button" onclick="closeModal('edit-cash-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
-        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg">Save Changes</button>
-      </div>
+  <button type="button" onclick="closeModal('edit-cash-modal')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
+  
+  <button type="submit" id="edit-cash-submit-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg flex items-center justify-center">
+    
+    <span id="edit-cash-btn-default" class="flex items-center">
+      <span>Save Changes</span>
+    </span>
+
+    <span id="edit-cash-btn-loading" class="hidden items-center">
+      <span class="mr-2">Saving...</span>
+      <div class="w-4 h-4 border-2 border-white border-t-transparent border-solid rounded-full animate-spin"></div>
+    </span>
+  </button>
+</div>
     </form>
   </div>
 </div>
