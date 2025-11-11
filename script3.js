@@ -413,10 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Assuming you have a function to handle the main sales form
-    const saleForm = document.getElementById('sale-form');
-    if (saleForm) {
-        saleForm.addEventListener('submit', submitSaleForm);
-    }
+    
     
     // You would also need to define the closeModal function if it's not already defined
     // function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
