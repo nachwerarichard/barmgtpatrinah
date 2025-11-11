@@ -755,51 +755,7 @@
 </div>
 
   <script src="script12.js" defer></script>
-<script>
-  const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; 
 
-  async function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const loginMessage = document.getElementById('login-message');
-    loginMessage.textContent = 'Logging in...';
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Store authentication information
-            authToken = data.token;
-            currentUsername = username;
-            currentUserRole = data.role || 'Bar Staff'; 
-
-            localStorage.setItem('authToken', authToken);
-            localStorage.setItem('username', currentUsername);
-            localStorage.setItem('userRole', currentUserRole);
-
-            // Update UI and show the main application
-            updateUIForUserRole();
-            initSidebarState(); 
-
-            loginMessage.textContent = '';
-        } else {
-            loginMessage.textContent = data.message || 'Login failed. Please check your credentials.';
-        }
-    } catch (error) {
-        console.error('Login request failed:', error);
-        loginMessage.textContent = 'Network error or service unavailable.';
-    }
-}
-
-
-</script>
-  
  <script src="script4.js"></script>
   <!-- keep your script includes (if used) -->
   <script src="script3.js"></script>
