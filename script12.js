@@ -2114,7 +2114,7 @@ async function submitEditCashForm(event) {
         setCashButtonLoading(false);
     }
 }
-    }
+    
 
     const cashData = { cashAtHand, cashBanked, bankReceiptId, date };
 
