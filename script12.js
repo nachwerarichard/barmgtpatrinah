@@ -2021,48 +2021,44 @@ function renderCashJournalTable(records) {
  * and displays the modal.
  * @param {object} record - The cash journal record to be edited.
  */
-function populateEditCashModal(record) {
-    // Target the new modal input IDs
-    const idInput = document.getElementById('edit-cash-id');
-    const cashAtHandInput = document.getElementById('edit-cash-at-hand');
-    const cashBankedInput = document.getElementById('edit-cash-banked');
-    const bankReceiptIdInput = document.getElementById('edit-bank-receipt-id');
-    const cashDateInput = document.getElementById('edit-cash-date');
-    const modal = document.getElementById('edit-cash-modal');
+/**
+ * Manages the loading state of the Edit Cash button.
+ * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
+ */
+function setCashButtonLoading(isLoading) {
+    const button = document.getElementById('edit-cash-submit-btn'); 
+    const defaultState = document.getElementById('edit-cash-btn-default');
+    const loadingState = document.getElementById('edit-cash-btn-loading');
 
-    // Populate the form fields
-    if (idInput) idInput.value = record._id;
-    // Note: It's often safer to use the raw number for the input value
-    if (cashAtHandInput) cashAtHandInput.value = record.cashAtHand;
-    if (cashBankedInput) cashBankedInput.value = record.cashBanked;
-    if (bankReceiptIdInput) bankReceiptIdInput.value = record.bankReceiptId;
-    
-    // Format the date to 'YYYY-MM-DD' for the <input type="date">
-    if (cashDateInput && record.date) {
-        // new Date(record.date).toISOString().split('T')[0] ensures correct formatting
-        cashDateInput.value = new Date(record.date).toISOString().split('T')[0];
-    }
-    
-    // Show the modal
-    if (modal) {
-        modal.classList.remove('hidden');
+    if (button && defaultState && loadingState) {
+        button.disabled = isLoading;
+
+        if (isLoading) {
+            // Show 'Saving...' state
+            defaultState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            loadingState.classList.add('flex'); // Ensure the loading state displays flex
+        } else {
+            // Show default 'Save Changes' state
+            loadingState.classList.add('hidden');
+            loadingState.classList.remove('flex');
+            defaultState.classList.remove('hidden');
+        }
     }
 }
 
-
-// Add this new function to handle the edit modal submission
 async function submitEditCashForm(event) {
     event.preventDefault();
     const modal = document.getElementById('edit-cash-modal');
     
-    // Admin permission check
+    // The existing adminRoles check from your original submitCashJournalForm for editing
     const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
     if (!adminRoles.includes(currentUserRole)) {
         showMessage('Permission Denied: Only administrators can edit cash entries.');
         return;
     }
 
-    // Get modal inputs
+    // Target the new modal input IDs
     const idInput = document.getElementById('edit-cash-id');
     const cashAtHandInput = document.getElementById('edit-cash-at-hand');
     const cashBankedInput = document.getElementById('edit-cash-banked');
@@ -2077,12 +2073,47 @@ async function submitEditCashForm(event) {
     const id = idInput.value;
     const cashAtHand = parseFloat(cashAtHandInput.value);
     const cashBanked = parseFloat(cashBankedInput.value);
-    const bankReceiptId = bankReceiptIdInput.value.trim();
-    const date = cashDateInput.value;
+    const bankReceiptId = bankReceiptIdInput.value;
+    const date = cashDateInput.value; 
 
+    // Basic validation
     if (!id || isNaN(cashAtHand) || isNaN(cashBanked) || !bankReceiptId || !date) {
         showMessage('Please fill in all edit fields correctly and ensure a record ID exists.');
         return;
+    }
+
+    const cashData = { cashAtHand, cashBanked, bankReceiptId, date };
+
+    // --- 1. START LOADING STATE ---
+    setCashButtonLoading(true);
+
+    try {
+        // Use PUT method for editing
+        const response = await authenticatedFetch(`${API_BASE_URL}/cash-journal/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(cashData)
+        });
+
+        if (response.ok) { // Check if the response status is 200-299
+            showMessage('Cash entry updated successfully! 🎉');
+            
+            // Close the modal after successful submission
+            if (modal) modal.classList.add('hidden');
+            
+            fetchCashJournal(); // Re-fetch to update table
+        } else {
+            // Handle server-side errors
+            const errorData = await response.json();
+            showMessage(`Failed to update cash entry: ${errorData.message || 'Server error'}`);
+        }
+    } catch (error) {
+        console.error('Error updating cash entry:', error);
+        showMessage('Failed to update cash entry: ' + error.message);
+    } finally {
+        // --- 2. STOP LOADING STATE (Guaranteed to run) ---
+        setCashButtonLoading(false);
+    }
+}
     }
 
     const cashData = { cashAtHand, cashBanked, bankReceiptId, date };
