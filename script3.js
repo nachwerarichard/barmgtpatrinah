@@ -36,6 +36,32 @@ function openEditModal(item) {
 }
         
 // New function to handle the form submission for the modal
+/**
+ * Manages the loading state of the Edit Inventory button.
+ * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
+ */
+function setInventoryButtonLoading(isLoading) {
+    const button = document.getElementById('edit-inventory-submit-btn'); 
+    const defaultState = document.getElementById('edit-inventory-btn-default');
+    const loadingState = document.getElementById('edit-inventory-btn-loading');
+
+    if (button && defaultState && loadingState) {
+        button.disabled = isLoading;
+
+        if (isLoading) {
+            // Show 'Saving...' state
+            defaultState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            loadingState.classList.add('flex'); // Ensure the loading state displays flex for alignment
+        } else {
+            // Show default 'Save Changes' state
+            loadingState.classList.add('hidden');
+            loadingState.classList.remove('flex');
+            defaultState.classList.remove('hidden');
+        }
+    }
+}
+
 async function submitEditForm(event) {
   event.preventDefault();
 
@@ -45,6 +71,8 @@ async function submitEditForm(event) {
   const purchasesInput = document.getElementById('edit-purchases');
   const salesInput = document.getElementById('edit-inventory-sales');
   const spoilageInput = document.getElementById('edit-spoilage');
+  
+  // Note: No need to select the button here since setInventoryButtonLoading handles it
 
   // Basic validation
   if (!idInput.value || isNaN(openingInput.value) || isNaN(purchasesInput.value) || isNaN(salesInput.value) || isNaN(spoilageInput.value)) {
@@ -60,6 +88,9 @@ async function submitEditForm(event) {
     spoilage: parseInt(spoilageInput.value)
   };
 
+  // --- 1. START LOADING STATE ---
+  setInventoryButtonLoading(true);
+
   try {
     const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${idInput.value}`, {
       method: 'PUT',
@@ -68,13 +99,16 @@ async function submitEditForm(event) {
 
     if (response) {
       await response.json();
-      showMessage('Inventory item updated successfully!');
-      document.getElementById('edit-inventory-modal').style.display = 'none';
+      showMessage('Inventory item updated successfully! 🎉');
+      document.getElementById('edit-inventory-modal').classList.add('hidden');
       fetchInventory(); // Refresh the table
     }
   } catch (error) {
     console.error('Error updating inventory item:', error);
     showMessage('Failed to update inventory item: ' + error.message);
+  } finally {
+    // --- 2. STOP LOADING STATE (Guaranteed to run) ---
+    setInventoryButtonLoading(false);
   }
 }
 
