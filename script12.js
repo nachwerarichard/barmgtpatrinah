@@ -267,7 +267,7 @@ function showSubSection(sectionId, parentNavId = null) {
 
     // --- Role-based Access Check ---
     const allowedSections = {
-        'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash', 'reports', 'audit'],
+        'Nachwera Richard': ['inventory-add', 'sales-new', 'expenses-add', 'cash-record', 'reports-department', 'audit-logs'],
         'Nelson': ['inventory', 'sales', 'expenses', 'cash', 'reports', 'audit'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash', 'reports', 'audit'],
         'Martha': ['inventory', 'sales', 'expenses', 'cash'],
