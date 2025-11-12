@@ -2127,7 +2127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-function populateCashJournalForm(record) {
+function populateEditCashModal(record) {
     const idInput = document.getElementById('cash-journal-id');
     const cashAtHandInput = document.getElementById('cash-at-hand');
     const cashBankedInput = document.getElementById('cash-banked');
