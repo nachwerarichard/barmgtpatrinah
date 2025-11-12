@@ -344,8 +344,32 @@ async function submitEditSaleForm(event) {
 
     // ... (Validation code and calculation omitted for brevity) ...
 
-    const saleData = { /* ... */ };
+if (!item || isNaN(number) || isNaN(bp) || isNaN(sp) || !date) {
+        showMessage('Please fill in all sales fields correctly with valid numbers and date.');
+        return;
+    }
+    if (number <= 0 || bp <= 0 || sp <= 0) {
+        showMessage('Number, Buying Price, and Selling Price must be positive values.');
+        return;
+    }
 
+    const totalBuyingPrice = bp * number;
+    const totalSellingPrice = sp * number;
+    const profit = totalSellingPrice - totalBuyingPrice;
+    let percentageProfit = 0;
+    if (totalBuyingPrice !== 0) {
+        percentageProfit = (profit / totalBuyingPrice) * 100;
+    }
+
+    const saleData = {
+        item,
+        number,
+        bp,
+        sp,
+        profit: profit,
+        percentageprofit: percentageProfit,
+        date
+    };
     // --- START LOADING STATE ---
     setSaleButtonLoading(true);
 
