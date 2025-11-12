@@ -203,11 +203,11 @@ function applyBarStaffUIRestrictions(mainSectionId) {
     if (salesExportBtn) salesExportBtn.style.display = '';
 
     if (isBarStaff) {
-        if (mainSectionId === 'sales' && salesExportBtn) {
+        if (mainSectionId === 'sales-records' && salesExportBtn) {
             salesExportBtn.style.display = 'none';
         }
     } else {
-        if (mainSectionId === 'sales' && salesExportBtn) {
+        if (mainSectionId === 'sales-records' && salesExportBtn) {
             salesExportBtn.style.display = 'block';
         }
     }
