@@ -239,7 +239,8 @@ async function submitEditForm(event) {
     });
 
     console.log('[debug] fetch completed. response.ok =', response.ok);
-    if (response.ok) {        document.getElementById('edit-inventory-modal'). style.display=none;
+    if (response.ok) {        
+          document.getElementById('edit-inventory-modal').style.display = 'none';
 
       showMessage('Inventory item updated successfully! 🎉');
       // Small delay to show success message, then close and stop loader
