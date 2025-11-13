@@ -319,86 +319,128 @@ function closeModal(modalId) {
  * Handles the submission of the edit sale form within the modal.
  * @param {Event} event The form submission event.
  */
+/**
+ * Asynchronously handles the submission of the edit sale form.
+ * It retrieves form data, performs validation, calculates profit metrics,
+ * and sends an authenticated PUT request to update the sale record.
+ *
+ * NOTE: Assumes existence of:
+ * - showMessage(string)
+ * - setSaleButtonLoading(boolean)
+ * - closeModal(id)
+ * - fetchSales()
+ * - authenticatedFetch(url, options)
+ * - API_BASE_URL (string)
+ *
+ * @param {Event} event The form submission event.
+ */
 async function submitEditSaleForm(event) {
+    // 1. Prevent default form submission behavior
     event.preventDefault();
 
+    // 2. Retrieve all necessary form elements
     const idInput = document.getElementById('edit-sale-id');
     const itemInput = document.getElementById('edit-sale-item');
     const numberInput = document.getElementById('edit-sale-number');
     const bpInput = document.getElementById('edit-sale-bp');
     const spInput = document.getElementById('edit-sale-sp');
-    
-    // The submit button is now identified by its ID for consistency with setSaleButtonLoading
-    const saveButton = document.getElementById('edit-sale-submit-btn'); 
+    const dateInput = document.getElementById('edit-sale-date'); // <<< CRITICAL FIX: Added date input
+    const saveButton = document.getElementById('edit-sale-submit-btn');
 
-    if (!idInput || !itemInput || !numberInput || !bpInput || !spInput || !saveButton) {
-        showMessage('Edit form elements are missing.');
+    // 3. Basic check for element availability
+    if (!idInput || !itemInput || !numberInput || !bpInput || !spInput || !dateInput || !saveButton) {
+        showMessage('Edit form elements are missing. Cannot proceed with update.');
         return;
     }
 
+    // 4. Extract and convert values
     const id = idInput.value;
-    const item = itemInput.value;
-    const number = parseInt(numberInput.value);
+    const item = itemInput.value.trim();
+    const date = dateInput.value.trim(); // Get date value
+    const number = parseInt(numberInput.value, 10);
     const bp = parseFloat(bpInput.value);
     const sp = parseFloat(spInput.value);
 
-    // ... (Validation code and calculation omitted for brevity) ...
-
-if (!item || isNaN(number) || isNaN(bp) || isNaN(sp) || !date) {
-        showMessage('Please fill in all sales fields correctly with valid numbers and date.');
+    // 5. Validation and data integrity checks
+    if (!item || !date) {
+        showMessage('Please ensure both Item name and Date are filled out.');
         return;
     }
+    
+    // Check if numerical conversions were successful and values are positive
+    if (isNaN(number) || isNaN(bp) || isNaN(sp)) {
+        showMessage('Number of units, Buying Price, and Selling Price must be valid numbers.');
+        return;
+    }
+    
     if (number <= 0 || bp <= 0 || sp <= 0) {
-        showMessage('Number, Buying Price, and Selling Price must be positive values.');
+        showMessage('Number, Buying Price, and Selling Price must be positive values (> 0).');
         return;
     }
 
+    // 6. Calculate derived financial metrics
+    // Note: For high-precision financial apps, consider working in cents (integers)
     const totalBuyingPrice = bp * number;
     const totalSellingPrice = sp * number;
     const profit = totalSellingPrice - totalBuyingPrice;
+    
     let percentageProfit = 0;
-    if (totalBuyingPrice !== 0) {
+    if (totalBuyingPrice > 0) {
         percentageProfit = (profit / totalBuyingPrice) * 100;
     }
 
+    // 7. Assemble the data payload for the API
     const saleData = {
-        item,
-        number,
-        bp,
-        sp,
-        profit: profit,
-        percentageprofit: percentageProfit,
-        date
+        item: item,
+        date: date, // <<< CRITICAL FIX: Date is now included
+        number: number,
+        bp: bp,
+        sp: sp,
+        profit: parseFloat(profit.toFixed(2)), // Format to 2 decimal places for storage
+        percentageProfit: parseFloat(percentageProfit.toFixed(2)),
     };
-    // --- START LOADING STATE ---
+    
+    // 8. Start loading state
     setSaleButtonLoading(true);
 
     try {
+        // 9. Send the authenticated PUT request
         const response = await authenticatedFetch(`${API_BASE_URL}/sales/${id}`, {
             method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(saleData)
         });
 
         if (response.ok) {
-            await response.json();
-            showMessage('Sale Updated! ✅');
+            // Optional: If the API returns a success message object, you can read it here:
+            // const result = await response.json(); 
             
-            // Wait for 1 second, then reset button, close modal and re-fetch data
+            showMessage('Sale Updated Successfully! ✅');
+            
+            // 10. Success actions: Delay, reset, close modal, and refresh table data
             setTimeout(() => {
-                setSaleButtonLoading(false); // Reset button before closing modal
+                setSaleButtonLoading(false); 
                 closeModal('edit-sale-modal'); 
-                fetchSales();
+                fetchSales(); // Refresh the list of sales
             }, 1000); 
 
         } else {
+            // 11. Handle non-2xx status codes
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Server error occurred during update.');
+            throw new Error(errorData.message || `Server responded with status ${response.status}.`);
         }
     } catch (error) {
+        // 12. Handle network errors or thrown operational errors
         console.error('Sale update error:', error);
         showMessage(`Error updating sale: ${error.message}`);
-        // --- STOP LOADING STATE ON ERROR ---
-        setSaleButtonLoading(false);
+    } finally {
+        // 13. Stop loading state if an error occurred before success or timeout
+        // Note: The success path stops loading inside the setTimeout callback.
+        if (!saveButton.disabled) {
+             setSaleButtonLoading(false);
+        }
     }
 }
 
