@@ -78,8 +78,8 @@ async function submitEditForm(event) {
     const purchasesInput = document.getElementById('edit-purchases');
     const salesInput = document.getElementById('edit-inventory-sales');
     const spoilageInput = document.getElementById('edit-spoilage');
-    // const saveButton = document.getElementById('edit-inventory-submit-btn'); // Removed, no longer needed
-
+    const saveButton = document.getElementById('edit-inventory-submit-btn'); // Removed, no longer needed
+setEditInventoryLoading(true); // <--- MOVED HERE
     // Basic validation & element check
     if (!idInput || !itemInput || !openingInput || !purchasesInput || !salesInput || !spoilageInput) {
         showMessage('Edit form elements are missing. Cannot proceed with update.', true);
@@ -111,7 +111,6 @@ async function submitEditForm(event) {
     };
 
     // 1. START LOADING STATE
-    setEditInventoryLoading(true);
 
     try {
         const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
