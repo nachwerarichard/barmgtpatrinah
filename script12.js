@@ -2128,6 +2128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function populateEditCashModal(record) {
+    const modal = document.getElementById('edit-cash-form');
     const idInput = document.getElementById('cash-journal-id');
     const cashAtHandInput = document.getElementById('cash-at-hand');
     const cashBankedInput = document.getElementById('cash-banked');
@@ -2141,6 +2142,8 @@ function populateEditCashModal(record) {
     if (cashDateInput && record.date) {
         cashDateInput.value = new Date(record.date).toISOString().split('T')[0];
     }
+        modal.style.display = 'flex'; // Use 'flex' here if that's what your CSS expects for centering
+
 }
 
 // --- Reports Functions ---
