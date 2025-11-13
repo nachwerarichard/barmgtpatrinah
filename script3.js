@@ -40,27 +40,6 @@ function openEditModal(item) {
  * Manages the loading state of the Edit Inventory button.
  * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
  */
-function setInventoryButtonLoading(isLoading) {
-    const button = document.getElementById('edit-inventory-submit-btn'); 
-    const defaultState = document.getElementById('edit-inventory-btn-default');
-    const loadingState = document.getElementById('edit-inventory-btn-loading');
-
-    if (button && defaultState && loadingState) {
-        button.disabled = isLoading;
-
-        if (isLoading) {
-            // Show 'Saving...' state
-            defaultState.classList.add('hidden');
-            loadingState.classList.remove('hidden');
-            loadingState.classList.add('flex'); // Ensure the loading state displays flex for alignment
-        } else {
-            // Show default 'Save Changes' state
-            loadingState.classList.add('hidden');
-            loadingState.classList.remove('flex');
-            defaultState.classList.remove('hidden');
-        }
-    }
-}
 
 
 
@@ -69,6 +48,10 @@ function setInventoryButtonLoading(isLoading) {
  * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
  */
 
+/**
+ * Manages the loading state of the Edit Inventory button.
+ * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
+ */
 async function submitEditForm(event) {
     event.preventDefault();
 
@@ -97,7 +80,7 @@ async function submitEditForm(event) {
 
     if (isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage) || opening < 0 || purchases < 0 || sales < 0 || spoilage < 0) {
         showMessage('All numerical fields must be valid non-negative numbers.', true);
-        setEditInventoryLoading(false); // <--- RESET on validation failure
+        setEditInventoryLoading(false); // <-- RESET on validation failure
         return;
     }
     
@@ -114,6 +97,7 @@ async function submitEditForm(event) {
     };
 
     try {
+        // Assume authenticatedFetch and API_BASE_URL are defined elsewhere
         const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
             method: 'PUT',
             headers: {
@@ -128,8 +112,9 @@ async function submitEditForm(event) {
             
             // Wait 1 second to let the user see the success message, then stop loader and close modal
             setTimeout(() => {
-                setEditInventoryLoading(false); // <--- 2. STOP LOADING STATE on success
+                setEditInventoryLoading(false); // <-- 2. STOP LOADING STATE on success
                 document.getElementById('edit-inventory-modal').classList.add('hidden');
+                // Assume fetchInventory is defined elsewhere
                 fetchInventory();
             }, 1000);
 
@@ -139,28 +124,17 @@ async function submitEditForm(event) {
         }
     } catch (error) {
         console.error('Error updating inventory item:', error);
+        // Assume showMessage is defined elsewhere
         showMessage(`Failed to update inventory item: ${error.message}`, true); 
         
-        setEditInventoryLoading(false); // <--- 3. STOP LOADING STATE immediately on error
+        setEditInventoryLoading(false); // <-- 3. STOP LOADING STATE immediately on error
     }
 }
 
-function closeEditModal() {
-  document.getElementById('edit-inventory-modal').style.display = 'none';
-}
-
-// Attach the close function to the close button
-
-// Attach the close function to a click on the modal background
-window.addEventListener('click', function(event) {
-  const modal = document.getElementById('edit-inventory-modal');
-  if (event.target === modal) {
-    closeEditModal();
-  }
-});
 
 /**
  * Toggles the loading state for the Edit Inventory form button.
+ * IMPORTANT: This version adds/removes the 'flex' class to properly display the spinner.
  * @param {boolean} isLoading - true to show loader, false to hide.
  */
 function setEditInventoryLoading(isLoading) {
@@ -172,17 +146,35 @@ function setEditInventoryLoading(isLoading) {
         submitBtn.disabled = isLoading; // Disable button while loading
     }
 
-    // Toggle visibility of the spans
+    // Toggle visibility and display style of the spans
     if (isLoading) {
         if (defaultSpan) defaultSpan.classList.add('hidden');
-        if (loadingSpan) loadingSpan.classList.remove('hidden');
+        if (loadingSpan) {
+            loadingSpan.classList.remove('hidden');
+            loadingSpan.classList.add('flex'); // ⭐ Ensure display is FLEX for alignment
+        }
         if (submitBtn) submitBtn.style.cursor = 'not-allowed';
     } else {
         if (defaultSpan) defaultSpan.classList.remove('hidden');
-        if (loadingSpan) loadingSpan.classList.add('hidden');
+        if (loadingSpan) {
+            loadingSpan.classList.add('hidden');
+            loadingSpan.classList.remove('flex'); // ⭐ Remove FLEX when hiding
+        }
         if (submitBtn) submitBtn.style.cursor = 'pointer';
     }
 }
+
+
+function closeEditModal() {
+  document.getElementById('edit-inventory-modal').style.display = 'none';
+}
+
+window.addEventListener('click', function(event) {
+  const modal = document.getElementById('edit-inventory-modal');
+  if (event.target === modal) {
+    closeEditModal();
+  }
+});
 
 // Add an event listener to the new edit form
 document.getElementById('edit-inventory-form').addEventListener('submit', submitEditForm);
