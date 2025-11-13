@@ -78,11 +78,11 @@ async function submitEditForm(event) {
     const purchasesInput = document.getElementById('edit-purchases');
     const salesInput = document.getElementById('edit-inventory-sales');
     const spoilageInput = document.getElementById('edit-spoilage');
-    const saveButton = document.getElementById('edit-inventory-submit-btn');
+    // const saveButton = document.getElementById('edit-inventory-submit-btn'); // Removed, no longer needed
 
     // Basic validation & element check
     if (!idInput || !itemInput || !openingInput || !purchasesInput || !salesInput || !spoilageInput) {
-        showMessage('Edit form elements are missing. Cannot proceed with update.');
+        showMessage('Edit form elements are missing. Cannot proceed with update.', true);
         return;
     }
 
@@ -94,7 +94,7 @@ async function submitEditForm(event) {
     const spoilage = parseInt(spoilageInput.value, 10);
 
     if (isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage) || opening < 0 || purchases < 0 || sales < 0 || spoilage < 0) {
-        showMessage('All numerical fields must be valid non-negative numbers.');
+        showMessage('All numerical fields must be valid non-negative numbers.', true);
         return;
     }
     
@@ -111,7 +111,6 @@ async function submitEditForm(event) {
     };
 
     // 1. START LOADING STATE
-    // ⭐ RENAMED FUNCTION CALL HERE ⭐
     setEditInventoryLoading(true);
 
     try {
@@ -129,7 +128,7 @@ async function submitEditForm(event) {
             
             // Success actions: Delay, stop loading, close modal, and refresh table data
             setTimeout(() => {
-                // ⭐ RENAMED FUNCTION CALL HERE ⭐
+                // 2. STOP LOADING STATE on success after delay
                 setEditInventoryLoading(false);
                 document.getElementById('edit-inventory-modal').classList.add('hidden');
                 fetchInventory(); // Refresh the table
@@ -142,15 +141,13 @@ async function submitEditForm(event) {
         }
     } catch (error) {
         console.error('Error updating inventory item:', error);
-        showMessage(`Failed to update inventory item: ${error.message}`);
-    } finally {
-        // 3. STOP LOADING STATE if an error occurred before success or timeout
-        // ⭐ RENAMED FUNCTION CALL HERE (Check if needed) ⭐
-        // Only run if the success path's setTimeout hasn't been triggered yet (i.e., on error)
-        if (saveButton && saveButton.disabled && !response.ok) {
-            setEditInventoryLoading(false);
-        }
+        // Show error message and ensure it uses the 'isError' flag (true)
+        showMessage(`Failed to update inventory item: ${error.message}`, true); 
+        
+        // 3. STOP LOADING STATE immediately on error
+        setEditInventoryLoading(false); 
     }
+    // The problematic 'finally' block has been removed for cleaner state management.
 }
 // Add an event listener to the new edit form
 document.getElementById('edit-inventory-form').addEventListener('submit', submitEditForm);
