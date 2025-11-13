@@ -79,17 +79,14 @@ async function submitEditForm(event) {
     const salesInput = document.getElementById('edit-inventory-sales');
     const spoilageInput = document.getElementById('edit-spoilage');
 
-    // --- TEMPORARILY START LOADING STATE (for responsiveness, but must be reset on fail) ---
-    // Note: I'm keeping your placement but adding the reset on validation failure.
-    // The cleanest approach is to move this AFTER validation, but if you want it here:
-    setEditInventoryLoading(true); 
-
     // Basic validation & element check
     if (!idInput || !itemInput || !openingInput || !purchasesInput || !salesInput || !spoilageInput) {
         showMessage('Edit form elements are missing. Cannot proceed with update.', true);
-        setEditInventoryLoading(false); // <--- MUST RESET HERE
         return;
     }
+
+    // --- 1. START LOADING STATE ---
+    setEditInventoryLoading(true);
 
     const id = idInput.value;
     const item = itemInput.value.trim();
@@ -100,7 +97,7 @@ async function submitEditForm(event) {
 
     if (isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage) || opening < 0 || purchases < 0 || sales < 0 || spoilage < 0) {
         showMessage('All numerical fields must be valid non-negative numbers.', true);
-        setEditInventoryLoading(false); // <--- MUST RESET HERE
+        setEditInventoryLoading(false); // <--- RESET on validation failure
         return;
     }
     
@@ -116,8 +113,6 @@ async function submitEditForm(event) {
         currentStock: currentStock
     };
 
-    // Loading state is now already active from above (or you'd start it here in the cleanest pattern)
-
     try {
         const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
             method: 'PUT',
@@ -131,8 +126,9 @@ async function submitEditForm(event) {
             // Success
             showMessage('Inventory item updated successfully! 🎉');
             
+            // Wait 1 second to let the user see the success message, then stop loader and close modal
             setTimeout(() => {
-                setEditInventoryLoading(false);
+                setEditInventoryLoading(false); // <--- 2. STOP LOADING STATE on success
                 document.getElementById('edit-inventory-modal').classList.add('hidden');
                 fetchInventory();
             }, 1000);
@@ -145,12 +141,10 @@ async function submitEditForm(event) {
         console.error('Error updating inventory item:', error);
         showMessage(`Failed to update inventory item: ${error.message}`, true); 
         
-        setEditInventoryLoading(false); // 3. STOP LOADING STATE immediately on error
+        setEditInventoryLoading(false); // <--- 3. STOP LOADING STATE immediately on error
     }
 }
-// Add an event listener to the new edit form
-        
-    
+
 function closeEditModal() {
   document.getElementById('edit-inventory-modal').style.display = 'none';
 }
@@ -165,54 +159,31 @@ window.addEventListener('click', function(event) {
   }
 });
 
-
-
 /**
- * Manages the loading state of the Edit Inventory button.
- * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
- */
-
-/**
- * Toggles the loading state for the Inventory Edit form's submit button.
- * @param {boolean} isLoading - True to show loading state, false for default state.
- */
-/**
- * Toggles the loading state for the Inventory Edit form's submit button.
- * @param {boolean} isLoading - True to show loading state, false for default state.
- */
-
-/**
- * Toggles the loading state for the Inventory Edit form's submit button.
- * @param {boolean} isLoading - True to show loading state, false for default state.
- */
-
-
-/**
- * Toggles the loading state for the Inventory Edit form's submit button.
- * @param {boolean} isLoading - True to show loading state, false for default state.
+ * Toggles the loading state for the Edit Inventory form button.
+ * @param {boolean} isLoading - true to show loader, false to hide.
  */
 function setEditInventoryLoading(isLoading) {
-    const button = document.getElementById('edit-inventory-submit-btn');
-    // NOTE: We need a default state element ID
-    const defaultState = document.getElementById('edit-inventory-btn-default'); 
-    const loadingState = document.getElementById('edit-inventory-btn-loading');
+    const submitBtn = document.getElementById('edit-inventory-submit-btn');
+    const defaultSpan = document.getElementById('edit-inventory-btn-default');
+    const loadingSpan = document.getElementById('edit-inventory-btn-loading');
+    
+    if (submitBtn) {
+        submitBtn.disabled = isLoading; // Disable button while loading
+    }
 
-    if (button && defaultState && loadingState) {
-        button.disabled = isLoading;
-
-        if (isLoading) {
-            // Show 'Saving...' state
-            defaultState.classList.add('hidden');
-            loadingState.classList.remove('hidden');
-            loadingState.classList.add('flex'); // Ensure the loading state displays flex
-        } else {
-            // Show default 'Save Changes' state
-            loadingState.classList.add('hidden');
-            loadingState.classList.remove('flex');
-            defaultState.classList.remove('hidden');
-        }
+    // Toggle visibility of the spans
+    if (isLoading) {
+        if (defaultSpan) defaultSpan.classList.add('hidden');
+        if (loadingSpan) loadingSpan.classList.remove('hidden');
+        if (submitBtn) submitBtn.style.cursor = 'not-allowed';
+    } else {
+        if (defaultSpan) defaultSpan.classList.remove('hidden');
+        if (loadingSpan) loadingSpan.classList.add('hidden');
+        if (submitBtn) submitBtn.style.cursor = 'pointer';
     }
 }
+
 // Add an event listener to the new edit form
 document.getElementById('edit-inventory-form').addEventListener('submit', submitEditForm);
         // New function to handle the modal display and population
