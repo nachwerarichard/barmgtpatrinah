@@ -186,6 +186,8 @@ window.addEventListener('click', function(event) {
  * Toggles the loading state for the Inventory Edit form's submit button.
  * @param {boolean} isLoading - True to show loading state, false for default state.
  */
+
+
 function setEditInventoryLoading(isLoading) {
     const button = document.getElementById('edit-inventory-submit-btn');
     const defaultState = document.getElementById('edit-inventory-btn-default');
@@ -197,15 +199,18 @@ function setEditInventoryLoading(isLoading) {
         if (isLoading) {
             // Show 'Saving...' state
             defaultState.classList.add('hidden');
-            loadingState.classList.remove('hidden'); // This is sufficient now!
+            loadingState.classList.remove('hidden'); 
+            
+            // Re-adding flex here as a fallback to ensure it is displayed correctly
+            loadingState.classList.add('flex'); // <--- ADD THIS BACK
         } else {
             // Show default 'Save Changes' state
             loadingState.classList.add('hidden');
+            loadingState.classList.remove('flex'); // <--- AND REMOVE IT HERE
             defaultState.classList.remove('hidden');
         }
     }
 }
-
         // New function to handle the modal display and population
 // New function to handle the modal display and population
 function openEditModal(item) {
