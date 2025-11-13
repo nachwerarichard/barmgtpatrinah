@@ -149,7 +149,6 @@ async function submitEditForm(event) {
     }
 }
 // Add an event listener to the new edit form
-document.getElementById('edit-inventory-form').addEventListener('submit', submitEditForm);
         
     
 function closeEditModal() {
@@ -188,9 +187,14 @@ window.addEventListener('click', function(event) {
  */
 
 
+/**
+ * Toggles the loading state for the Inventory Edit form's submit button.
+ * @param {boolean} isLoading - True to show loading state, false for default state.
+ */
 function setEditInventoryLoading(isLoading) {
     const button = document.getElementById('edit-inventory-submit-btn');
-    const defaultState = document.getElementById('edit-inventory-btn-default');
+    // NOTE: We need a default state element ID
+    const defaultState = document.getElementById('edit-inventory-btn-default'); 
     const loadingState = document.getElementById('edit-inventory-btn-loading');
 
     if (button && defaultState && loadingState) {
@@ -199,18 +203,18 @@ function setEditInventoryLoading(isLoading) {
         if (isLoading) {
             // Show 'Saving...' state
             defaultState.classList.add('hidden');
-            loadingState.classList.remove('hidden'); 
-            
-            // Re-adding flex here as a fallback to ensure it is displayed correctly
-            loadingState.classList.add('flex'); // <--- ADD THIS BACK
+            loadingState.classList.remove('hidden');
+            loadingState.classList.add('flex'); // Ensure the loading state displays flex
         } else {
             // Show default 'Save Changes' state
             loadingState.classList.add('hidden');
-            loadingState.classList.remove('flex'); // <--- AND REMOVE IT HERE
+            loadingState.classList.remove('flex');
             defaultState.classList.remove('hidden');
         }
     }
 }
+// Add an event listener to the new edit form
+document.getElementById('edit-inventory-form').addEventListener('submit', submitEditForm);
         // New function to handle the modal display and population
 // New function to handle the modal display and population
 function openEditModal(item) {
