@@ -62,6 +62,35 @@ function setInventoryButtonLoading(isLoading) {
     }
 }
 
+
+
+/**
+ * Manages the loading state of the Edit Inventory button.
+ * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
+ */
+function setInventoryButtonLoading(isLoading) {
+    const button = document.getElementById('edit-inventory-submit-btn'); 
+    const defaultState = document.getElementById('edit-inventory-btn-default');
+    const loadingState = document.getElementById('edit-inventory-btn-loading');
+
+    if (button && defaultState && loadingState) {
+        button.disabled = isLoading;
+
+        if (isLoading) {
+            // Show 'Saving...' state
+            defaultState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            loadingState.classList.add('flex'); // Ensure the loading state displays flex
+        } else {
+            // Show default 'Save Changes' state
+            loadingState.classList.add('hidden');
+            loadingState.classList.remove('flex');
+            defaultState.classList.remove('hidden');
+        }
+    }
+}
+
+
 async function submitEditForm(event) {
   event.preventDefault();
 
