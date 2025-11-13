@@ -169,8 +169,11 @@ function openEditModal(item) {
 }
         
 // New function to handle the form submission for the modal
+
+// ----- Debuggable submit handler -----
 async function submitEditForm(event) {
   event.preventDefault();
+  console.log('[debug] submitEditForm called');
 
   const idInput = document.getElementById('edit-inventory-id');
   const itemInput = document.getElementById('edit-item');
@@ -179,37 +182,153 @@ async function submitEditForm(event) {
   const salesInput = document.getElementById('edit-inventory-sales');
   const spoilageInput = document.getElementById('edit-spoilage');
 
-  // Basic validation
-  if (!idInput.value || isNaN(openingInput.value) || isNaN(purchasesInput.value) || isNaN(salesInput.value) || isNaN(spoilageInput.value)) {
-    showMessage('Please fill in all fields correctly with valid numbers.');
+  // Log whether elements were found
+  console.log('[debug] elements:', {
+    idInput: !!idInput,
+    itemInput: !!itemInput,
+    openingInput: !!openingInput,
+    purchasesInput: !!purchasesInput,
+    salesInput: !!salesInput,
+    spoilageInput: !!spoilageInput
+  });
+
+  if (!idInput || !itemInput || !openingInput || !purchasesInput || !salesInput || !spoilageInput) {
+    console.error('[debug] Edit form elements are missing. Aborting update.');
+    showMessage('Edit form elements are missing. Cannot proceed with update.', true);
     return;
   }
-  
-  const inventoryData = {
-    item: itemInput.value,
-    opening: parseInt(openingInput.value),
-    purchases: parseInt(purchasesInput.value),
-    sales: parseInt(salesInput.value),
-    spoilage: parseInt(spoilageInput.value)
-  };
+
+  // --- show loader immediately ---
+  console.log('[debug] about to call setEditInventoryLoading(true)');
+  setEditInventoryLoading(true);
+
+  // Force a repaint so the UI update is visible before the heavy work/fetch.
+  try {
+    await new Promise(requestAnimationFrame);
+    console.log('[debug] requestAnimationFrame yielded — browser should have repainted');
+  } catch (err) {
+    console.warn('[debug] requestAnimationFrame failed or was blocked', err);
+  }
+
+  const id = idInput.value;
+  const item = itemInput.value.trim();
+  const opening = parseInt(openingInput.value, 10);
+  const purchases = parseInt(purchasesInput.value, 10);
+  const sales = parseInt(salesInput.value, 10);
+  const spoilage = parseInt(spoilageInput.value, 10);
+
+  console.log('[debug] parsed values', { id, item, opening, purchases, sales, spoilage });
+
+  if (isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage) ||
+      opening < 0 || purchases < 0 || sales < 0 || spoilage < 0) {
+    console.error('[debug] validation failed: numeric fields invalid');
+    showMessage('All numerical fields must be valid non-negative numbers.', true);
+    setEditInventoryLoading(false);
+    return;
+  }
+
+  const currentStock = opening + purchases - sales - spoilage;
+  const inventoryData = { item, opening, purchases, sales, spoilage, currentStock };
 
   try {
-    const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${idInput.value}`, {
+    console.log('[debug] starting fetch to', `${API_BASE_URL}/inventory/${id}`, 'with', inventoryData);
+    const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
       method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(inventoryData)
     });
 
-    if (response) {
-      await response.json();
-      showMessage('Inventory item updated successfully!');
-      document.getElementById('edit-inventory-modal').style.display = 'none';
-      fetchInventory(); // Refresh the table
+    console.log('[debug] fetch completed. response.ok =', response.ok);
+    if (response.ok) {
+      showMessage('Inventory item updated successfully! 🎉');
+      // Small delay to show success message, then close and stop loader
+      setTimeout(() => {
+        console.log('[debug] success timeout: stopping loader and closing modal');
+        setEditInventoryLoading(false);
+        const modal = document.getElementById('edit-inventory-modal');
+        if (modal) modal.classList.add('hidden');
+        if (typeof fetchInventory === 'function') {
+          fetchInventory();
+          console.log('[debug] fetchInventory called');
+        } else console.warn('[debug] fetchInventory is not a function');
+      }, 1000);
+    } else {
+      // Try to read error message body safely
+      let errorText = `Server responded with status ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorText = errorData.message || JSON.stringify(errorData);
+      } catch (jsonErr) {
+        console.warn('[debug] could not parse error JSON', jsonErr);
+      }
+      throw new Error(errorText);
     }
   } catch (error) {
-    console.error('Error updating inventory item:', error);
-    showMessage('Failed to update inventory item: ' + error.message);
+    console.error('[debug] Error updating inventory item:', error);
+    showMessage(`Failed to update inventory item: ${error.message}`, true);
+    setEditInventoryLoading(false);
   }
 }
+
+
+// ----- Debuggable loader toggle -----
+function setEditInventoryLoading(isLoading) {
+  const submitBtn = document.getElementById('edit-inventory-submit-btn');
+  const defaultSpan = document.getElementById('edit-inventory-btn-default');
+  const loadingSpan = document.getElementById('edit-inventory-btn-loading');
+
+  console.log('[debug] setEditInventoryLoading called with', isLoading, { submitBtn: !!submitBtn, defaultSpan: !!defaultSpan, loadingSpan: !!loadingSpan });
+
+  if (submitBtn) {
+    submitBtn.disabled = !!isLoading;
+  }
+
+  if (isLoading) {
+    if (defaultSpan) {
+      defaultSpan.classList.add('hidden');
+      console.log('[debug] defaultSpan hidden');
+    } else {
+      console.warn('[debug] defaultSpan not found');
+    }
+
+    if (loadingSpan) {
+      loadingSpan.classList.remove('hidden');
+      // ensure it has a display that can show the spinner; try both flex and inline-flex
+      loadingSpan.classList.add('flex');
+      loadingSpan.classList.remove('hidden');
+      console.log('[debug] loadingSpan shown, classes now:', loadingSpan.className);
+    } else {
+      console.warn('[debug] loadingSpan not found; fallback: change submitBtn text');
+      // Fallback: change button text so user still sees "Saving..."
+      if (submitBtn) {
+        submitBtn.dataset.prevText = submitBtn.innerText;
+        submitBtn.innerText = 'Saving...';
+      }
+    }
+
+    if (submitBtn) submitBtn.style.cursor = 'not-allowed';
+  } else {
+    if (defaultSpan) {
+      defaultSpan.classList.remove('hidden');
+      console.log('[debug] defaultSpan shown');
+    }
+    if (loadingSpan) {
+      loadingSpan.classList.add('hidden');
+      loadingSpan.classList.remove('flex');
+      console.log('[debug] loadingSpan hidden, classes now:', loadingSpan.className);
+    } else {
+      // restore fallback text if used
+      if (submitBtn && submitBtn.dataset.prevText) {
+        submitBtn.innerText = submitBtn.dataset.prevText;
+        delete submitBtn.dataset.prevText;
+      }
+    }
+    if (submitBtn) submitBtn.style.cursor = 'pointer';
+  }
+}
+
+
+
 
 // Add an event listener to the new edit form
 document.getElementById('edit-inventory-form').addEventListener('submit', submitEditForm);
