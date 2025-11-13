@@ -192,15 +192,12 @@ function setEditInventoryLoading(isLoading) {
     const loadingState = document.getElementById('edit-inventory-btn-loading');
 
     if (button && defaultState && loadingState) {
-        button.disabled = isLoading; // Disable button to prevent double-click
+        button.disabled = isLoading;
 
         if (isLoading) {
             // Show 'Saving...' state
             defaultState.classList.add('hidden');
-            loadingState.classList.remove('hidden'); // This reveals the element
-            
-            // The button itself has 'flex items-center justify-center' in the HTML,
-            // which should correctly display the loadingState content.
+            loadingState.classList.remove('hidden'); // This is sufficient now!
         } else {
             // Show default 'Save Changes' state
             loadingState.classList.add('hidden');
