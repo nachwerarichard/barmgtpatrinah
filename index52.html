@@ -585,47 +585,54 @@
   </div>
 
   <!-- Edit inventory modal (unchanged) -->
-  <div id="edit-inventory-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center">
-    <div class="modal-content bg-white p-6 rounded-lg shadow-2xl w-full max-w-lg m-4">
-      <div class="flex justify-between items-center border-b pb-3 mb-4">
-        <h3 class="text-xl font-semibold">Edit Inventory Item</h3>
-        <span class="close-button text-gray-500 text-2xl cursor-pointer hover:text-gray-800" onclick="document.getElementById('edit-inventory-modal').classList.add('hidden')">&times;</span>
+  <div id="edit-inventory-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl p-6 relative">
+    <h2 class="text-xl font-bold text-emerald-600 mb-6">Edit Inventory Item</h2>
+    
+    <form id="edit-inventory-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="hidden" id="edit-inventory-id">
+      
+      <div class="md:col-span-2">
+        <label for="edit-item" class="block text-sm font-medium text-gray-700">Item:</label>
+        <input type="text" id="edit-item" required class="p-2 w-full border border-gray-300 rounded-md">
       </div>
-      <form id="edit-inventory-form" class="space-y-4">
-        <input type="hidden" id="edit-inventory-id">
-        <div>
-          <label for="edit-item" class="block text-sm font-medium text-gray-700">Item:</label>
-          <input type="text" id="edit-item" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
-        </div>
-        <div>
-          <label for="edit-opening" class="block text-sm font-medium text-gray-700">Opening Stock:</label>
-          <input type="number" id="edit-opening" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
-        </div>
-        <div>
-          <label for="edit-purchases" class="block text-sm font-medium text-gray-700">Purchases:</label>
-          <input type="number" id="edit-purchases" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
-        </div>
-        <div>
-          <label for="edit-inventory-sales" class="block text-sm font-medium text-gray-700">Sales (deducted from inventory):</label>
-          <input type="number" id="edit-inventory-sales" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
-        </div>
-        <div>
-          <label for="edit-spoilage" class="block text-sm font-medium text-gray-700">Spoilage:</label>
-          <input type="number" id="edit-spoilage" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md">
-        </div>
-<button type="submit" id="edit-inventory-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center">
-  
-  <span id="edit-inventory-btn-default" class="flex items-center">
-    <span>Save Changes</span>
-  </span>
-
-  <span id="edit-inventory-btn-loading" class="hidden items-center">
-    <span class="mr-2">Saving...</span>
-    <div class="w-4 h-4 border-2 border-white border-t-transparent border-solid rounded-full animate-spin"></div>
-  </span>
-</button>      </form>
-    </div>
+      
+      <div>
+        <label for="edit-opening" class="block text-sm font-medium text-gray-700">Opening Stock:</label>
+        <input type="number" id="edit-opening" min="0" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      
+      <div>
+        <label for="edit-purchases" class="block text-sm font-medium text-gray-700">Purchases:</label>
+        <input type="number" id="edit-purchases" min="0" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      
+      <div>
+        <label for="edit-inventory-sales" class="block text-sm font-medium text-gray-700">Sales (deducted from inventory):</label>
+        <input type="number" id="edit-inventory-sales" min="0" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      
+      <div>
+        <label for="edit-spoilage" class="block text-sm font-medium text-gray-700">Spoilage:</label>
+        <input type="number" id="edit-spoilage" min="0" required class="p-2 w-full border border-gray-300 rounded-md">
+      </div>
+      
+      <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+        <button type="button" onclick="document.getElementById('edit-inventory-modal').classList.add('hidden')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
+        
+        <button type="submit" id="edit-inventory-submit-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg flex items-center justify-center">
+          <span id="edit-inventory-btn-default" class="flex items-center">
+            <span>Save Changes</span>
+          </span>
+          <span id="edit-inventory-btn-loading" class="hidden items-center">
+            <span class="mr-2">Saving...</span>
+            <div class="w-4 h-4 border-2 border-white border-t-transparent border-solid rounded-full animate-spin"></div>
+          </span>
+        </button>
+      </div>
+    </form>
   </div>
+</div>
 
 
 <!-- ================= EDIT FORMS ================= -->
