@@ -344,11 +344,10 @@ async function submitEditSaleForm(event) {
     const numberInput = document.getElementById('edit-sale-number');
     const bpInput = document.getElementById('edit-sale-bp');
     const spInput = document.getElementById('edit-sale-sp');
-    const dateInput = document.getElementById('edit-sale-date'); // <<< CRITICAL FIX: Added date input
     const saveButton = document.getElementById('edit-sale-submit-btn');
 
     // 3. Basic check for element availability
-    if (!idInput || !itemInput || !numberInput || !bpInput || !spInput || !dateInput || !saveButton) {
+    if (!idInput || !itemInput || !numberInput || !bpInput || !spInput ) {
         showMessage('Edit form elements are missing. Cannot proceed with update.');
         return;
     }
@@ -356,17 +355,11 @@ async function submitEditSaleForm(event) {
     // 4. Extract and convert values
     const id = idInput.value;
     const item = itemInput.value.trim();
-    const date = dateInput.value.trim(); // Get date value
     const number = parseInt(numberInput.value, 10);
     const bp = parseFloat(bpInput.value);
     const sp = parseFloat(spInput.value);
 
-    // 5. Validation and data integrity checks
-    if (!item || !date) {
-        showMessage('Please ensure both Item name and Date are filled out.');
-        return;
-    }
-    
+
     // Check if numerical conversions were successful and values are positive
     if (isNaN(number) || isNaN(bp) || isNaN(sp)) {
         showMessage('Number of units, Buying Price, and Selling Price must be valid numbers.');
@@ -392,7 +385,6 @@ async function submitEditSaleForm(event) {
     // 7. Assemble the data payload for the API
     const saleData = {
         item: item,
-        date: date, // <<< CRITICAL FIX: Date is now included
         number: number,
         bp: bp,
         sp: sp,
