@@ -2128,22 +2128,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function populateEditCashModal(record) {
-    const modal = document.getElementById('edit-cash-form');
-    const idInput = document.getElementById('cash-journal-id');
-    const cashAtHandInput = document.getElementById('cash-at-hand');
-    const cashBankedInput = document.getElementById('cash-banked');
-    const bankReceiptIdInput = document.getElementById('bank-receipt-id');
-    const cashDateInput = document.getElementById('cash-date');
+    // 1. Target the main modal container, which has the ID 'edit-cash-modal'
+    const modal = document.getElementById('edit-cash-modal'); 
 
+    // 2. Update the IDs to match the input fields in your HTML for the edit modal
+    const idInput = document.getElementById('edit-cash-id'); 
+    const cashAtHandInput = document.getElementById('edit-cash-at-hand');
+    const cashBankedInput = document.getElementById('edit-cash-banked');
+    const bankReceiptIdInput = document.getElementById('edit-bank-receipt-id');
+    const cashDateInput = document.getElementById('edit-cash-date');
+
+    // Populate the form fields
     if (idInput) idInput.value = record._id;
     if (cashAtHandInput) cashAtHandInput.value = record.cashAtHand;
     if (cashBankedInput) cashBankedInput.value = record.cashBanked;
     if (bankReceiptIdInput) bankReceiptIdInput.value = record.bankReceiptId;
+    
+    // Format the date if it exists
     if (cashDateInput && record.date) {
         cashDateInput.value = new Date(record.date).toISOString().split('T')[0];
     }
-        modal.style.display = 'flex'; // Use 'flex' here if that's what your CSS expects for centering
-
+    
+    // 3. Display the modal by removing the 'hidden' class 
+    // (since your HTML uses `class="hidden fixed inset-0..."`)
+    if (modal) {
+        modal.classList.remove('hidden');
+        // You might also want to ensure 'flex' is present if you removed it manually
+        // e.g., modal.classList.add('flex');
+    }
 }
 
 // --- Reports Functions ---
