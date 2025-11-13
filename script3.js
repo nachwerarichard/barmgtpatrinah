@@ -69,56 +69,88 @@ function setInventoryButtonLoading(isLoading) {
  * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
  */
 
-
-
 async function submitEditForm(event) {
-  event.preventDefault();
+    event.preventDefault();
 
-  const idInput = document.getElementById('edit-inventory-id');
-  const itemInput = document.getElementById('edit-item');
-  const openingInput = document.getElementById('edit-opening');
-  const purchasesInput = document.getElementById('edit-purchases');
-  const salesInput = document.getElementById('edit-inventory-sales');
-  const spoilageInput = document.getElementById('edit-spoilage');
-  
-  // Note: No need to select the button here since setInventoryButtonLoading handles it
+    const idInput = document.getElementById('edit-inventory-id');
+    const itemInput = document.getElementById('edit-item');
+    const openingInput = document.getElementById('edit-opening');
+    const purchasesInput = document.getElementById('edit-purchases');
+    const salesInput = document.getElementById('edit-inventory-sales');
+    const spoilageInput = document.getElementById('edit-spoilage');
+    const saveButton = document.getElementById('edit-inventory-submit-btn');
 
-  // Basic validation
-  if (!idInput.value || isNaN(openingInput.value) || isNaN(purchasesInput.value) || isNaN(salesInput.value) || isNaN(spoilageInput.value)) {
-    showMessage('Please fill in all fields correctly with valid numbers.');
-    return;
-  }
-  
-  const inventoryData = {
-    item: itemInput.value,
-    opening: parseInt(openingInput.value),
-    purchases: parseInt(purchasesInput.value),
-    sales: parseInt(salesInput.value),
-    spoilage: parseInt(spoilageInput.value)
-  };
-
-  // --- 1. START LOADING STATE ---
-  setInventoryButtonLoading(true);
-
-  try {
-    const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${idInput.value}`, {
-      method: 'PUT',
-      body: JSON.stringify(inventoryData)
-    });
-
-    if (response) {
-      await response.json();
-      showMessage('Inventory item updated successfully! 🎉');
-      document.getElementById('edit-inventory-modal').classList.add('hidden');
-      fetchInventory(); // Refresh the table
+    // Basic validation & element check
+    if (!idInput || !itemInput || !openingInput || !purchasesInput || !salesInput || !spoilageInput) {
+        showMessage('Edit form elements are missing. Cannot proceed with update.');
+        return;
     }
-  } catch (error) {
-    console.error('Error updating inventory item:', error);
-    showMessage('Failed to update inventory item: ' + error.message);
-  } finally {
-    // --- 2. STOP LOADING STATE (Guaranteed to run) ---
-    setInventoryButtonLoading(false);
-  }
+
+    const id = idInput.value;
+    const item = itemInput.value.trim();
+    const opening = parseInt(openingInput.value, 10);
+    const purchases = parseInt(purchasesInput.value, 10);
+    const sales = parseInt(salesInput.value, 10);
+    const spoilage = parseInt(spoilageInput.value, 10);
+
+    if (isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage) || opening < 0 || purchases < 0 || sales < 0 || spoilage < 0) {
+        showMessage('All numerical fields must be valid non-negative numbers.');
+        return;
+    }
+    
+    // Calculate current stock
+    const currentStock = opening + purchases - sales - spoilage;
+    
+    const inventoryData = {
+        item: item,
+        opening: opening,
+        purchases: purchases,
+        sales: sales,
+        spoilage: spoilage,
+        currentStock: currentStock
+    };
+
+    // 1. START LOADING STATE
+    // ⭐ RENAMED FUNCTION CALL HERE ⭐
+    setEditInventoryLoading(true);
+
+    try {
+        const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(inventoryData)
+        });
+
+        if (response.ok) {
+            // Success
+            showMessage('Inventory item updated successfully! 🎉');
+            
+            // Success actions: Delay, stop loading, close modal, and refresh table data
+            setTimeout(() => {
+                // ⭐ RENAMED FUNCTION CALL HERE ⭐
+                setEditInventoryLoading(false);
+                document.getElementById('edit-inventory-modal').classList.add('hidden');
+                fetchInventory(); // Refresh the table
+            }, 1000);
+
+        } else {
+            // Handle non-2xx status codes
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Server responded with status ${response.status}.`);
+        }
+    } catch (error) {
+        console.error('Error updating inventory item:', error);
+        showMessage(`Failed to update inventory item: ${error.message}`);
+    } finally {
+        // 3. STOP LOADING STATE if an error occurred before success or timeout
+        // ⭐ RENAMED FUNCTION CALL HERE (Check if needed) ⭐
+        // Only run if the success path's setTimeout hasn't been triggered yet (i.e., on error)
+        if (saveButton && saveButton.disabled && !response.ok) {
+            setEditInventoryLoading(false);
+        }
+    }
 }
 
 // Add an event listener to the new edit form
@@ -138,6 +170,35 @@ window.addEventListener('click', function(event) {
     closeEditModal();
   }
 });
+
+
+
+/**
+ * Manages the loading state of the Edit Inventory button.
+ * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
+ */
+function setEditInventoryLoading(isLoading) {
+    const button = document.getElementById('edit-inventory-submit-btn');
+    const defaultState = document.getElementById('edit-inventory-btn-default');
+    const loadingState = document.getElementById('edit-inventory-btn-loading');
+
+    if (button && defaultState && loadingState) {
+        button.disabled = isLoading;
+
+        if (isLoading) {
+            // Show 'Saving...' state
+            defaultState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            loadingState.classList.add('flex'); // Ensure the loading state displays flex for alignment
+        } else {
+            // Show default 'Save Changes' state
+            loadingState.classList.add('hidden');
+            loadingState.classList.remove('flex');
+            defaultState.classList.remove('hidden');
+        }
+    }
+}
+
 
 
     
