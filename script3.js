@@ -130,7 +130,6 @@ function closeEditModal() {
 }
 
 // Attach the close function to the close button
-document.querySelector('#edit-inventory-modal .close-button').addEventListener('click', closeEditModal);
 
 // Attach the close function to a click on the modal background
 window.addEventListener('click', function(event) {
