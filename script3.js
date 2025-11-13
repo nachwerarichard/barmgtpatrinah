@@ -177,30 +177,33 @@ window.addEventListener('click', function(event) {
  * Toggles the loading state for the Inventory Edit form's submit button.
  * @param {boolean} isLoading - True to show loading state, false for default state.
  */
+/**
+ * Toggles the loading state for the Inventory Edit form's submit button.
+ * @param {boolean} isLoading - True to show loading state, false for default state.
+ */
 function setEditInventoryLoading(isLoading) {
-    // TARGET CORRECT INVENTORY IDs
     const button = document.getElementById('edit-inventory-submit-btn');
     const defaultState = document.getElementById('edit-inventory-btn-default');
     const loadingState = document.getElementById('edit-inventory-btn-loading');
 
     if (button && defaultState && loadingState) {
-        button.disabled = isLoading; // Disable button to prevent double-click
+        button.disabled = isLoading; // Disable button
 
         if (isLoading) {
-            // Show 'Saving...' state
+            // Show 'Saving...' state by removing the 'hidden' class
             defaultState.classList.add('hidden');
-            // Use flex to make the loading indicator visible
-            loadingState.classList.remove('hidden'); 
-            loadingState.classList.add('flex');
+            loadingState.classList.remove('hidden'); // Fix: This should now work as the button itself has 'flex'
+            
+            // Note: The redundant .classList.add('flex'); is removed.
+            // The loadingState element already has 'items-center' in the HTML,
+            // and the button container has 'flex' to manage content alignment.
         } else {
             // Show default 'Save Changes' state
             loadingState.classList.add('hidden');
-            loadingState.classList.remove('flex');
             defaultState.classList.remove('hidden');
         }
     }
 }
-    
         // New function to handle the modal display and population
 // New function to handle the modal display and population
 function openEditModal(item) {
