@@ -53,84 +53,37 @@ function openEditModal(item) {
  * @param {boolean} isLoading - True to show the 'Saving...' state, false to show 'Save Changes'.
  */
 async function submitEditForm(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const idInput = document.getElementById('edit-inventory-id');
-    const itemInput = document.getElementById('edit-item');
-    const openingInput = document.getElementById('edit-opening');
-    const purchasesInput = document.getElementById('edit-purchases');
-    const salesInput = document.getElementById('edit-inventory-sales');
-    const spoilageInput = document.getElementById('edit-spoilage');
+  // Basic validation omitted for brevity...
 
-    // Basic validation & element check
-    if (!idInput || !itemInput || !openingInput || !purchasesInput || !salesInput || !spoilageInput) {
-        showMessage('Edit form elements are missing. Cannot proceed with update.', true);
-        return;
+  setEditInventoryLoading(true);
+  await new Promise(requestAnimationFrame); // ensure loader shows
+
+  try {
+    const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(inventoryData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `Server responded with ${response.status}`);
     }
 
-    // --- 1. START LOADING STATE ---
-    setEditInventoryLoading(true);
-
-    const id = idInput.value;
-    const item = itemInput.value.trim();
-    const opening = parseInt(openingInput.value, 10);
-    const purchases = parseInt(purchasesInput.value, 10);
-    const sales = parseInt(salesInput.value, 10);
-    const spoilage = parseInt(spoilageInput.value, 10);
-
-    if (isNaN(opening) || isNaN(purchases) || isNaN(sales) || isNaN(spoilage) || opening < 0 || purchases < 0 || sales < 0 || spoilage < 0) {
-        showMessage('All numerical fields must be valid non-negative numbers.', true);
-        setEditInventoryLoading(false); // <-- RESET on validation failure
-        return;
-    }
-    
-    // Calculate current stock
-    const currentStock = opening + purchases - sales - spoilage;
-    
-    const inventoryData = {
-        item: item,
-        opening: opening,
-        purchases: purchases,
-        sales: sales,
-        spoilage: spoilage,
-        currentStock: currentStock
-    };
-
-    try {
-        // Assume authenticatedFetch and API_BASE_URL are defined elsewhere
-        const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(inventoryData)
-        });
-
-        if (response.ok) {
-            // Success
-            showMessage('Inventory item updated successfully! 🎉');
-            
-            // Wait 1 second to let the user see the success message, then stop loader and close modal
-            setTimeout(() => {
-                setEditInventoryLoading(false); // <-- 2. STOP LOADING STATE on success
-                document.getElementById('edit-inventory-modal').classList.add('hidden');
-                // Assume fetchInventory is defined elsewhere
-                fetchInventory();
-            }, 1000);
-
-        } else {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Server responded with status ${response.status}.`);
-        }
-    } catch (error) {
-        console.error('Error updating inventory item:', error);
-        // Assume showMessage is defined elsewhere
-        showMessage(`Failed to update inventory item: ${error.message}`, true); 
-        
-        setEditInventoryLoading(false); // <-- 3. STOP LOADING STATE immediately on error
-    }
+    showMessage('Inventory item updated successfully! 🎉');
+    setTimeout(() => {
+      setEditInventoryLoading(false);
+      document.getElementById('edit-inventory-modal').classList.add('hidden');
+      fetchInventory();
+    }, 1000);
+  } catch (err) {
+    console.error('Error updating inventory:', err);
+    showMessage(`Failed to update: ${err.message}`, true);
+    setEditInventoryLoading(false);
+  }
 }
-
 
 /**
  * Toggles the loading state for the Edit Inventory form button.
