@@ -619,19 +619,17 @@
       
       <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
         <button type="button" onclick="document.getElementById('edit-inventory-modal').classList.add('hidden')" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg">Cancel</button>
-         <button type="submit" id="edit-inventory-submit-btn"
-  class="relative bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg flex items-center justify-center">
+<button type="submit" id="edit-inventory-submit-btn"
+    class="relative bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg flex items-center justify-center min-w-[120px]">
+    
+    <span id="edit-inventory-btn-default" class="inline-flex items-center gap-2">
+        <span>Save Changes</span>
+    </span>
 
-  <!-- Default Text -->
-  <span id="edit-inventory-btn-default" class="inline-flex items-center gap-2">
-    <span>Save Changes</span>
-  </span>
-
-  <!-- Loading Text -->
-  <span id="edit-inventory-btn-loading" class="hidden inline-flex items-center gap-2 absolute">
-    <span>Saving...</span>
-    <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-  </span>
+    <span id="edit-inventory-btn-loading" class="hidden items-center gap-2"> 
+        <span>Saving...</span>
+        <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+    </span>
 </button>
 
       </div>
