@@ -239,7 +239,8 @@ async function submitEditForm(event) {
     });
 
     console.log('[debug] fetch completed. response.ok =', response.ok);
-    if (response.ok) {
+    if (response.ok) {        document.getElementById('edit-inventory-modal'). style.display=none;
+
       showMessage('Inventory item updated successfully! 🎉');
       // Small delay to show success message, then close and stop loader
       setTimeout(() => {
@@ -251,7 +252,7 @@ async function submitEditForm(event) {
           fetchInventory();
           console.log('[debug] fetchInventory called');
         } else console.warn('[debug] fetchInventory is not a function');
-      }, 1000);
+      }, 10);
     } else {
       // Try to read error message body safely
       let errorText = `Server responded with status ${response.status}`;
