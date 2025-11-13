@@ -488,15 +488,15 @@ function closeModal(id) {
 
 
 // Attach event listener to prevent default form submit
-document.addEventListener('DOMContentLoaded', () => {
-    const cashJournalForm = document.getElementById('cash-journal-form');
-    if (cashJournalForm) {
-        cashJournalForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // ❌ Prevents default browser form submission (GET → 304)
-            await submitCashJournalForm(); // ✅ Calls your async JS function instead
-        });
-    }
-});
+//document.addEventListener('DOMContentLoaded', () => {
+    //const cashJournalForm = document.getElementById('cash-journal-form');
+    //if (cashJournalForm) {
+       // cashJournalForm.addEventListener('submit', async (event) => {
+          //  event.preventDefault(); // ❌ Prevents default browser form submission (GET → 304)
+          //  await submitCashJournalForm(); // ✅ Calls your async JS function instead
+       // });
+    //}
+//});//
 
 async function submitCashJournalForm() {
 
