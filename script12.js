@@ -28,7 +28,58 @@ function exportTableToExcel(tableId, filename) { console.log(`Exporting table ${
 
 
 // --- Core Utility Functions ---
+// Global functions to manage the preloader visibility
+function showPreloader() {
+    document.getElementById('preloader').classList.remove('hidden');
+}
 
+function hidePreloader() {
+    document.getElementById('preloader').classList.add('hidden');
+}
+
+
+async function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const loginMessage = document.getElementById('login-message');
+    
+    // 1. Show preloader and clear previous message
+    showPreloader();
+    loginMessage.textContent = ''; 
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Store authentication information
+            authToken = data.token;
+            currentUsername = username;
+            currentUserRole = data.role || 'Bar Staff'; 
+
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('username', currentUsername);
+            localStorage.setItem('userRole', currentUserRole);
+
+            // Update UI and show the main application
+            updateUIForUserRole();
+            initSidebarState(); 
+        } else {
+            loginMessage.textContent = data.message || 'Login failed. Please check your credentials.';
+        }
+    } catch (error) {
+        console.error('Login request failed:', error);
+        loginMessage.textContent = 'Network error or service unavailable.';
+    } finally {
+        // 2. Hide preloader after the request finishes (success or failure)
+        hidePreloader();
+    }
+}
 /**
  * Displays a custom alert message to the user.
  * (Requires #message-modal, #message-text, #message-close-button in HTML)
@@ -146,72 +197,7 @@ async function authenticatedFetch(url, options = {}) {
 
 // Example of what your successful login code should look like in script.js:
 
-// Helper function to show the loading state
-function showLoading() {
-    document.getElementById('login-button-text').classList.add('opacity-0');
-    document.getElementById('login-spinner').classList.remove('hidden');
-    document.getElementById('login-button').disabled = true; // Disable button to prevent multiple clicks
-    document.getElementById('username').disabled = true;
-    document.getElementById('password').disabled = true;
-}
 
-// Helper function to hide the loading state
-function hideLoading() {
-    document.getElementById('login-button-text').classList.remove('opacity-0');
-    document.getElementById('login-spinner').classList.add('hidden');
-    document.getElementById('login-button').disabled = false; // Re-enable button
-    document.getElementById('username').disabled = false;
-    document.getElementById('password').disabled = false;
-}
-
-async function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const loginMessage = document.getElementById('login-message');
-
-    // 1. Show preloader/loading state
-    showLoading();
-    loginMessage.textContent = 'Logging in...';
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Store authentication information
-            authToken = data.token;
-            currentUsername = username;
-            currentUserRole = data.role || 'Bar Staff';
-
-            localStorage.setItem('authToken', authToken);
-            localStorage.setItem('username', currentUsername);
-            localStorage.setItem('userRole', currentUserRole);
-
-            // Update UI and show the main application
-            updateUIForUserRole();
-            initSidebarState();
-
-            loginMessage.textContent = '';
-        } else {
-            loginMessage.textContent = data.message || 'Login failed. Please check your credentials.';
-        }
-    } catch (error) {
-        console.error('Login request failed:', error);
-        loginMessage.textContent = 'Network error or service unavailable.';
-    } finally {
-        // 2. Hide preloader/loading state in the 'finally' block 
-        // to ensure it runs regardless of success or failure.
-        hideLoading();
-    }
-}
-// --- Sidebar and Navigation Functions ---
-
-/**
  * Applies specific UI restrictions for Bar Staff roles.
  * @param {string} mainSectionId The ID of the main section (e.g., 'sales', 'inventory').
  */
