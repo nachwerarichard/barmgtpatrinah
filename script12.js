@@ -198,9 +198,7 @@ async function authenticatedFetch(url, options = {}) {
 // Example of what your successful login code should look like in script.js:
 
 
- * Applies specific UI restrictions for Bar Staff roles.
- * @param {string} mainSectionId The ID of the main section (e.g., 'sales', 'inventory').
- */
+
 function applyBarStaffUIRestrictions(mainSectionId) {
     const isMartha = currentUserRole === 'Martha';
     const isMercy = currentUserRole === 'Mercy';
