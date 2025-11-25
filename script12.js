@@ -614,13 +614,50 @@ function renderPagination(current, totalPages) {
     }
 }
 
-/**
- * Renders the inventory data into a table on the page.
- * It now includes a fix to recalculate the closing stock on the frontend
- * to ensure accuracy, especially when viewing a daily report.
- * @param {Array<Object>} inventory - An array of inventory item objects.
- */
 
+// 1. Global variable to store the ID of the item awaiting confirmation
+let itemToDeleteId = null;
+
+// Get the modal elements
+const deleteModal = document.querySelector('#delete-confirmation-modal');
+const confirmDeleteBtn = document.querySelector('#confirm-delete-btn');
+const cancelDeleteBtn = document.querySelector('#cancel-delete-btn');
+
+/**
+ * Shows the delete confirmation modal.
+ * @param {string} id The MongoDB _id of the item to be deleted.
+ */
+function showDeleteModal(id) {
+    if (!id) return;
+    itemToDeleteId = id;
+    deleteModal.classList.remove('hidden');
+}
+
+/**
+ * Hides the delete confirmation modal and resets the ID.
+ */
+function hideDeleteModal() {
+    itemToDeleteId = null;
+    deleteModal.classList.add('hidden');
+}
+
+
+// 2. Event Listener for the Cancel button
+cancelDeleteBtn.addEventListener('click', hideDeleteModal);
+
+// 3. Event Listener for the Confirm Delete button
+confirmDeleteBtn.addEventListener('click', () => {
+    // Only proceed if an ID is stored
+    if (itemToDeleteId) {
+        // Call the core deletion logic with the stored ID
+        deleteInventory(itemToDeleteId);
+    }
+    // Always hide the modal after action
+    hideDeleteModal();
+});
+
+
+// 4. UPDATE renderInventoryTable to call showDeleteModal
 function renderInventoryTable(inventory) {
     console.log('Current User Role:', currentUserRole);
     console.log('Inventory Data:', inventory);
@@ -645,6 +682,7 @@ function renderInventoryTable(inventory) {
     }
 
     filteredInventory.forEach(item => {
+        // ... (existing code to create row and cells) ...
         const row = tbody.insertRow();
         row.insertCell().textContent = item.item;
 
@@ -673,6 +711,7 @@ function renderInventoryTable(inventory) {
 
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
+        // ... (end of existing code) ...
 
         const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
 
@@ -684,10 +723,11 @@ function renderInventoryTable(inventory) {
             actionsCell.appendChild(editButton);
 
             const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.className = 'delete';
-                    deleteButton.onclick = () => deleteInventory(item._id);
-                    actionsCell.appendChild(deleteButton);
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'delete';
+            // **CHANGE:** Call the new showDeleteModal function instead of deleting directly
+            deleteButton.onclick = () => showDeleteModal(item._id);
+            actionsCell.appendChild(deleteButton);
 
         } else {
             actionsCell.textContent = 'View Only';
@@ -695,24 +735,15 @@ function renderInventoryTable(inventory) {
     });
 }
 
-
-/**
- * Deletes an inventory item after confirming with the user.
- * @param {string} id The unique ID of the inventory item to delete.
- */
+// 5. deleteInventory function remains the same (it's the final action)
 async function deleteInventory(id) {
-    // Replace confirm() with a custom modal or just proceed with a check
-    // Here we will just add a check to ensure the ID is valid.
+    // This is the core logic that runs after the user confirms in the modal.
     if (!id || typeof id !== 'string' || id.trim() === '') {
         showMessage('Error: Cannot delete item. A valid ID was not provided.');
         console.error('Delete operation aborted: Invalid or missing ID.');
         return;
     }
 
-    // Since we cannot use confirm(), we will proceed with the delete action.
-    // In a real application, you would show a custom modal for confirmation.
-    // The user's intent to delete is captured by them clicking the delete button.
-    
     try {
         const response = await authenticatedFetch(`${API_BASE_URL}/inventory/${id}`, {
             method: 'DELETE'
@@ -731,12 +762,6 @@ async function deleteInventory(id) {
     }
 }
 
-
-/**
- * Submits the inventory form, handling both new item creation (POST) and
- * existing item updates (PUT).
- * @param {Event} event The form submission event.
- */
 
 async function submitInventoryForm(event) {
     event.preventDefault();
