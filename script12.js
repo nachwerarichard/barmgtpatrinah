@@ -615,6 +615,23 @@ function renderPagination(current, totalPages) {
 }
 
 
+function initializeModalVisibility() {
+    // 1. Get the modal element using its ID.
+const deleteModal = document.querySelector('#delete-confirmation-modal');
+
+    // 2. Check if the element exists before trying to manipulate it.
+    if (deleteModal) {
+        // 3. Add the 'hidden' class to make the modal invisible, fulfilling the requirement.
+        deleteModal.classList.add('hidden'); // Hide the modal
+        console.log("Modal initialized and hidden on page load.");
+    }
+
+    // NOTE: You would typically attach this function to the DOMContentLoaded event:
+    // document.addEventListener('DOMContentLoaded', initializeModalVisibility);
+}
+
+// Attach the function to the event that fires when the HTML structure is ready.
+document.addEventListener('DOMContentLoaded', initializeModalVisibility);
 // 1. Global variable to store the ID of the item awaiting confirmation
 let itemToDeleteId = null;
 
