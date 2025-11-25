@@ -9,7 +9,7 @@ let currentUserRole = localStorage.getItem('userRole') || '';
 
 // Pagination variables (placeholders)
 let currentPage = 1; 
-const itemsPerPage = 30;
+const itemsPerPage = 10;
 let currentSalesPage = 1; 
 const salesPerPage = 15;
 let currentExpensesPage = 1; 
