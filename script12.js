@@ -2765,11 +2765,22 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {string} sectionId - The ID of the section element to show (e.g., 'inventory', 'sales').
  */
 function showSection(sectionId) {
+    // 1. Get all the sections that can be opened/closed.
+    //    ***IMPORTANT: You must adjust the selector below (e.g., '.section-content')
+    //    to match the actual class or element type of your collapsible sections.***
+    const allSections = document.querySelectorAll('.section-content');
 
-    // 3. Show the requested section
+    // 2. Loop through all sections and hide them.
+    allSections.forEach(section => {
+        section.style.display = 'none';
+    });
+
+    // 3. Find the requested section and show it.
     const targetSection = document.getElementById(sectionId);
+
     if (targetSection) {
-        targetSection.style.display = 'block'; // Or 'flex', 'grid', depending on your layout
+        // Show the target section
+        targetSection.style.display = 'block'; // Use 'block', 'flex', or 'grid' based on your CSS
     } else {
         console.error(`Section with ID '${sectionId}' not found.`);
     }
