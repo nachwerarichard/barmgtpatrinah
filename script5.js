@@ -87,7 +87,6 @@ function initializeUI() {
     // Removed authScreen logic
     dashboardContent.classList.remove('hidden');
     dashboardContent.classList.add('block');
-    document.getElementById('user-info').textContent = `Status: Unauthenticated Access (Login Disabled)`; // Clear/change user info display
     setDefaultDateRange(); 
     loadDashboardData();
 }
