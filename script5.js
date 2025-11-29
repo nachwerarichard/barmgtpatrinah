@@ -1,7 +1,5 @@
         
-        const authScreen = document.getElementById('auth-screen');
         const dashboardContent = document.getElementById('dashboard-content');
-        const authError = document.getElementById('auth-error');
         
         const lowStockList = document.getElementById('low-stock-list');
         const chartLoadingStatus = document.getElementById('chart-loading-status');
@@ -85,7 +83,6 @@
 
         function updateUI(isAuthenticated) {
             if (isAuthenticated) {
-                authScreen.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 dashboardContent.classList.add('block');
                 const username = atob(authToken).split(':')[0];
@@ -93,7 +90,6 @@
                 setDefaultDateRange(); // Set default range on login
                 loadDashboardData();
             } else {
-                authScreen.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
             }
         }
@@ -103,7 +99,6 @@
             const password = document.getElementById('password').value;
             loginButton.disabled = true;
             loginButton.textContent = 'Logging in...';
-            authError.classList.add('hidden');
 
             try {
                 const response = await fetch(`${API_BASE_URL}/login`, {
