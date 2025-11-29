@@ -1,4 +1,3 @@
-const API_BASE_URL = 'https://patrinahhotelmgtsys.onrender.com'; // IMPORTANT: Change this if your backend runs on a different port/host
 
 // --- DOM Elements ---
 // Removed: authScreen, authError, loginButton, logoutButton
