@@ -315,9 +315,6 @@
             }
         }
 
-        // --- Event Listeners and Initialization ---
-        loginButton.addEventListener('click', handleLogin);
-        logoutButton.addEventListener('click', handleLogout);
         applyFilterButton.addEventListener('click', loadDashboardData);
 
         document.addEventListener('DOMContentLoaded', () => {
