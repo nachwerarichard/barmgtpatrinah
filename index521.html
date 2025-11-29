@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Tracker Dashboard</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Load Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom Font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e7e9fb; /* Very Light Blue */
+        }
+        /* Custom Scrollbar for Chat */
+        #ai-chat-history::-webkit-scrollbar {
+            width: 6px;
+        }
+        #ai-chat-history::-webkit-scrollbar-thumb {
+            background-color: #5a5f7a; /* Medium Blue-Gray */
+            border-radius: 3px;
+        }
+        /* Spinner for loading states */
+        .spinner {
+            border-top-color: transparent !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Main Application Container -->
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <nav class="w-20 md:w-64 bg-[#1d243c] text-white flex flex-col shadow-2xl rounded-r-xl">
+            <div class="p-4 flex items-center justify-center md:justify-start border-b border-[#2a314e]">
+                <div class="text-2xl font-bold text-[#e7e9fb]">
+                    <i class="fas fa-chart-line mr-0 md:mr-2"></i>
+                    <span class="hidden md:inline">Finance AI</span>
+                </div>
+            </div>
+            <div class="flex-grow pt-8 space-y-2">
+                <a href="#dashboard" class="nav-item flex items-center p-3 md:p-4 hover:bg-[#2a314e] transition duration-200 rounded-lg mx-2 active-nav" data-target="dashboard">
+                    <i class="fas fa-th-large text-[#898da5] w-6"></i>
+                    <span class="hidden md:inline ml-4">Dashboard</span>
+                </a>
+                <a href="#sales" class="nav-item flex items-center p-3 md:p-4 hover:bg-[#2a314e] transition duration-200 rounded-lg mx-2" data-target="sales">
+                    <i class="fas fa-receipt text-[#898da5] w-6"></i>
+                    <span class="hidden md:inline ml-4">Sales</span>
+                </a>
+                <a href="#expenses" class="nav-item flex items-center p-3 md:p-4 hover:bg-[#2a314e] transition duration-200 rounded-lg mx-2" data-target="expenses">
+                    <i class="fas fa-shopping-basket text-[#898da5] w-6"></i>
+                    <span class="hidden md:inline ml-4">Expenses</span>
+                </a>
+                <a href="#reports" class="nav-item flex items-center p-3 md:p-4 hover:bg-[#2a314e] transition duration-200 rounded-lg mx-2" data-target="reports">
+                    <i class="fas fa-chart-area text-[#898da5] w-6"></i>
+                    <span class="hidden md:inline ml-4">Reports</span>
+                </a>
+                <a href="#cash-journal" class="nav-item flex items-center p-3 md:p-4 hover:bg-[#2a314e] transition duration-200 rounded-lg mx-2" data-target="cash-journal">
+                    <i class="fas fa-hand-holding-usd text-[#898da5] w-6"></i>
+                    <span class="hidden md:inline ml-4">Cash Journal</span>
+                </a>
+                <a href="#ai-assistant" class="nav-item flex items-center p-3 md:p-4 hover:bg-[#2a314e] transition duration-200 rounded-lg mx-2" data-target="ai-assistant">
+                    <i class="fas fa-robot text-[#898da5] w-6"></i>
+                    <span class="hidden md:inline ml-4">AI Assistant</span>
+                </a>
+            </div>
+            <div class="p-4 mt-auto border-t border-[#2a314e]">
+                <p class="hidden md:block text-xs text-[#5a5f7a] text-center">User ID:</p>
+                <p id="user-id-display" class="text-xs text-[#e7e9fb] break-all text-center"></p>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-grow p-4 md:p-8 overflow-y-auto">
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section">
+                <h1 class="text-3xl font-extrabold mb-6 text-[#1d243c]">Dashboard</h1>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <!-- Total Revenue Card -->
+                    <div class="bg-[#2a314e] p-5 rounded-xl shadow-lg border-b-4 border-[#5a5f7a] text-white">
+                        <p class="text-sm text-[#898da5]">Total Sales (MTD)</p>
+                        <p class="text-3xl font-bold mt-1" id="dashboard-sales">$0.00</p>
+                        <p class="text-xs mt-2 text-[#898da5]">+2.5% vs Last Month</p>
+                    </div>
+
+                    <!-- Gross Profit Card -->
+                    <div class="bg-[#2a314e] p-5 rounded-xl shadow-lg border-b-4 border-[#898da5] text-white">
+                        <p class="text-sm text-[#898da5]">Gross Profit (YTD)</p>
+                        <p class="text-3xl font-bold mt-1" id="dashboard-profit">$0.00</p>
+                        <p class="text-xs mt-2 text-[#898da5]">Target: $10,000</p>
+                    </div>
+
+                    <!-- Total Expenses Card -->
+                    <div class="bg-[#2a314e] p-5 rounded-xl shadow-lg border-b-4 border-red-500 text-white">
+                        <p class="text-sm text-[#898da5]">Total Expenses (YTD)</p>
+                        <p class="text-3xl font-bold mt-1" id="dashboard-expenses">$0.00</p>
+                        <p class="text-xs mt-2 text-[#898da5]">Major cost: Supplies</p>
+                    </div>
+
+                    <!-- Cash at Hand Card -->
+                    <div class="bg-[#2a314e] p-5 rounded-xl shadow-lg border-b-4 border-[#5a5f7a] text-white">
+                        <p class="text-sm text-[#898da5]">Cash at Hand</p>
+                        <p class="text-3xl font-bold mt-1" id="dashboard-cash-hand">$0.00</p>
+                        <p class="text-xs mt-2 text-[#898da5]">Last recorded: Today</p>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold mb-4 text-[#1d243c]">Sales and Expenses Trends</h3>
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold mb-4 text-[#1d243c]">Expense Breakdown</h3>
+                        <canvas id="expensesChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sales Section -->
+            <section id="sales" class="content-section hidden">
+                <h1 class="text-3xl font-extrabold mb-6 text-[#1d243c]">Sales Management</h1>
+
+                <!-- Add Sales Form -->
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-[#2a314e]">Record New Sale</h2>
+                    <form id="add-sale-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label for="sale-amount" class="block text-sm font-medium text-[#1d243c]">Amount:</label>
+                            <input type="number" id="sale-amount" step="0.01" min="0.01" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div>
+                            <label for="sale-date" class="block text-sm font-medium text-[#1d243c]">Date:</label>
+                            <input type="date" id="sale-date" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div>
+                            <label for="sale-type" class="block text-sm font-medium text-[#1d243c]">Type:</label>
+                            <select id="sale-type" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                                <option value="cash">Cash</option>
+                                <option value="card">Card</option>
+                                <option value="credit">Credit</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-1 flex items-end">
+                            <button type="submit" id="sale-submit-btn" class="w-full bg-[#2a314e] hover:bg-[#1d243c] text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                                <span id="sale-btn-default" class="flex items-center">
+                                    <i class="fas fa-plus-circle mr-2"></i> <span>Record Sale</span>
+                                </span>
+                                <span id="sale-btn-loading" class="hidden items-center">
+                                    <span class="mr-2">Recording...</span>
+                                    <div class="w-4 h-4 border-2 border-white border-t-transparent border-solid rounded-full animate-spin spinner"></div>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sales List -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-[#2a314e]">Recent Sales</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-[#898da5]">
+                            <thead class="bg-[#e7e9fb]">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body" class="bg-white divide-y divide-[#e7e9fb]">
+                                <!-- Sales data will be injected here -->
+                                <tr><td colspan="4" class="text-center py-4 text-[#5a5f7a]">No sales recorded yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expenses Section -->
+            <section id="expenses" class="content-section hidden">
+                <h1 class="text-3xl font-extrabold mb-6 text-[#1d243c]">Expenses Management</h1>
+
+                <!-- Add Expenses Form -->
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-[#2a314e]">Record New Expense</h2>
+                    <form id="add-expense-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="md:col-span-2">
+                            <label for="expense-description" class="block text-sm font-medium text-[#1d243c]">Description:</label>
+                            <input type="text" id="expense-description" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div>
+                            <label for="expense-amount" class="block text-sm font-medium text-[#1d243c]">Amount:</label>
+                            <input type="number" id="expense-amount" step="0.01" min="0.01" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div>
+                            <label for="expense-date" class="block text-sm font-medium text-[#1d243c]">Date:</label>
+                            <input type="date" id="expense-date" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div class="md:col-span-1 flex items-end">
+                            <button type="submit" id="expense-submit-btn" class="w-full bg-[#2a314e] hover:bg-[#1d243c] text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                                <span id="expense-btn-default" class="flex items-center">
+                                    <i class="fas fa-plus-circle mr-2"></i> <span>Record Expense</span>
+                                </span>
+                                <span id="expense-btn-loading" class="hidden items-center">
+                                    <span class="mr-2">Recording...</span>
+                                    <div class="w-4 h-4 border-2 border-white border-t-transparent border-solid rounded-full animate-spin spinner"></div>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Expenses List -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-[#2a314e]">Recent Expenses</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-[#898da5]">
+                            <thead class="bg-[#e7e9fb]">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Description</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenses-table-body" class="bg-white divide-y divide-[#e7e9fb]">
+                                <!-- Expenses data will be injected here -->
+                                <tr><td colspan="4" class="text-center py-4 text-[#5a5f7a]">No expenses recorded yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cash Journal Section -->
+            <section id="cash-journal" class="content-section hidden">
+                <h1 class="text-3xl font-extrabold mb-6 text-[#1d243c]">Cash Journal</h1>
+
+                <!-- Add Cash Entry Form -->
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-[#2a314e]">Record Cash Entry</h2>
+                    <form id="add-cash-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div>
+                            <label for="cash-at-hand" class="block text-sm font-medium text-[#1d243c]">Cash At Hand:</label>
+                            <input type="number" id="cash-at-hand" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div>
+                            <label for="cash-banked" class="block text-sm font-medium text-[#1d243c]">Cash Banked:</label>
+                            <input type="number" id="cash-banked" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div>
+                            <label for="bank-receipt-id" class="block text-sm font-medium text-[#1d243c]">Bank Receipt ID:</label>
+                            <input type="text" id="bank-receipt-id" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div>
+                            <label for="cash-date" class="block text-sm font-medium text-[#1d243c]">Date:</label>
+                            <input type="date" id="cash-date" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+                        </div>
+                        <div class="md:col-span-1 flex items-end">
+                            <button type="submit" id="cash-submit-btn" class="w-full bg-[#2a314e] hover:bg-[#1d243c] text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                                <span id="cash-btn-default" class="flex items-center">
+                                    <i class="fas fa-money-check-alt mr-2"></i> <span>Save Entry</span>
+                                </span>
+                                <span id="cash-btn-loading" class="hidden items-center">
+                                    <span class="mr-2">Saving...</span>
+                                    <div class="w-4 h-4 border-2 border-white border-t-transparent border-solid rounded-full animate-spin spinner"></div>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Cash Journal List -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-[#2a314e]">Journal Entries</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-[#898da5]">
+                            <thead class="bg-[#e7e9fb]">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Cash At Hand</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Cash Banked</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Receipt ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-[#5a5f7a] uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cash-journal-table-body" class="bg-white divide-y divide-[#e7e9fb]">
+                                <!-- Cash data will be injected here -->
+                                <tr><td colspan="5" class="text-center py-4 text-[#5a5f7a]">No entries recorded yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section hidden">
+                <h1 class="text-3xl font-extrabold mb-6 text-[#1d243c]">Financial Reports</h1>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-6 flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-[#2a314e]">Profit & Loss Summary (2024)</h2>
+                    <button onclick="exportData('all')" class="bg-[#5a5f7a] hover:bg-[#2a314e] text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                        <i class="fas fa-file-excel mr-2"></i> Export to Excel
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Placeholder Report Cards -->
+                    <div class="bg-[#e7e9fb] p-5 rounded-xl border border-[#898da5]">
+                        <p class="text-sm font-medium text-[#5a5f7a]">Gross Revenue</p>
+                        <p class="text-2xl font-bold text-[#1d243c] mt-1">$120,000</p>
+                    </div>
+                    <div class="bg-[#e7e9fb] p-5 rounded-xl border border-[#898da5]">
+                        <p class="text-sm font-medium text-[#5a5f7a]">Total Cost of Goods Sold</p>
+                        <p class="text-2xl font-bold text-red-600 mt-1">$45,000</p>
+                    </div>
+                    <div class="bg-[#e7e9fb] p-5 rounded-xl border border-[#898da5]">
+                        <p class="text-sm font-medium text-[#5a5f7a]">Net Profit</p>
+                        <p class="text-2xl font-bold text-green-600 mt-1">$35,000</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Assistant Section -->
+            <section id="ai-assistant" class="content-section hidden h-[70vh] flex flex-col">
+                <h1 class="text-3xl font-extrabold mb-6 text-[#1d243c]">AI Financial Analyst</h1>
+
+                <div class="flex-grow bg-white rounded-xl shadow-lg flex flex-col">
+                    <!-- Chat History -->
+                    <div id="ai-chat-history" class="p-4 flex-grow overflow-y-auto space-y-4">
+                        <div class="flex justify-start">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#2a314e] text-white flex items-center justify-center mr-3">
+                                <i class="fas fa-robot text-sm"></i>
+                            </div>
+                            <div class="max-w-3xl bg-[#e7e9fb] p-3 rounded-xl rounded-tl-none shadow-sm text-[#1d243c]">
+                                <p>Hello! I am your Financial Analyst AI. I can summarize your sales, predict future expenses, or answer specific questions about your ledger. How can I help?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="p-4 border-t border-[#898da5] bg-[#fdfdff] rounded-b-xl">
+                        <div class="flex space-x-2 mb-3">
+                            <button class="px-3 py-1 text-xs text-[#1d243c] bg-white border border-[#898da5] rounded-full hover:bg-[#e7e9fb]" onclick="sendAiQuery('Summarize last month\'s performance.')">Summarize Last Month</button>
+                            <button class="px-3 py-1 text-xs text-[#1d243c] bg-white border border-[#898da5] rounded-full hover:bg-[#e7e9fb]" onclick="sendAiQuery('What was my biggest expense?')">Biggest Expense?</button>
+                            <button class="px-3 py-1 text-xs text-[#1d243c] bg-white border border-[#898da5] rounded-full hover:bg-[#e7e9fb]" onclick="sendAiQuery('What is the current cash at hand balance?')">Cash Balance?</button>
+                        </div>
+                        <form id="ai-chat-form" class="flex space-x-2">
+                            <input type="text" id="ai-chat-input" placeholder="Ask your financial question..." class="flex-grow p-3 border border-[#898da5] rounded-lg focus:ring-[#2a314e] focus:border-[#2a314e]" required>
+                            <button type="submit" id="ai-chat-submit-btn" class="bg-[#2a314e] hover:bg-[#1d243c] text-white p-3 rounded-lg transition duration-200 flex items-center justify-center">
+                                <span id="ai-btn-default"><i class="fas fa-paper-plane"></i></span>
+                                <span id="ai-btn-loading" class="hidden">
+                                    <div class="w-5 h-5 border-2 border-white border-t-transparent border-solid rounded-full animate-spin spinner"></div>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modals (Initially Hidden) -->
+
+    <!-- Generic Success Modal -->
+    <div id="success-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-sm rounded-xl shadow-2xl p-6 text-center">
+            <div class="text-green-500 text-5xl mb-4">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="text-xl font-bold text-[#1d243c] mb-2">Success!</h2>
+            <p id="success-modal-message" class="text-[#5a5f7a] mb-6">Record saved successfully.</p>
+            <button onclick="closeModal('success-modal')" class="bg-[#2a314e] hover:bg-[#1d243c] text-white font-semibold py-2 px-4 rounded-lg w-full">
+                Close
+            </button>
+        </div>
+    </div>
+    
+    <!-- Edit Expense Modal (Updated Colors) -->
+    <div id="edit-expense-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
+        <h2 class="text-xl font-bold text-[#1d243c] mb-4">Edit Expense Record</h2>
+        <form id="edit-expense-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="hidden" id="edit-expense-id">
+          
+          <div class="md:col-span-2">
+            <label for="edit-expense-description" class="block text-sm font-medium text-[#1d243c]">Description:</label>
+            <input type="text" id="edit-expense-description" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+
+          <div>
+            <label for="edit-expense-amount" class="block text-sm font-medium text-[#1d243c]">Amount:</label>
+            <input type="number" id="edit-expense-amount" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+          
+          <div>
+            <label for="edit-expense-date" class="block text-sm font-medium text-[#1d243c]">Date:</label>
+            <input type="date" id="edit-expense-date" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+          
+          <div>
+            <label for="edit-expense-receiptId" class="block text-sm font-medium text-[#1d243c]">Receipt ID:</label>
+            <input type="number" id="edit-expense-receiptId" min="0" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+          
+          <div>
+            <label for="edit-expense-source" class="block text-sm font-medium text-[#1d243c]">Source:</label>
+            <input type="text" id="edit-expense-source" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+
+          <div class="md:col-span-2 flex justify-end space-x-3 pt-4">
+            <button type="button" onclick="closeModal('edit-expense-modal')" class="bg-[#5a5f7a] hover:bg-[#898da5] text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+              Cancel
+            </button>
+            <button type="submit" id="edit-expense-submit-btn" class="bg-[#2a314e] hover:bg-[#1d243c] text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center transition duration-200">
+              <span id="edit-expense-btn-default" class="flex items-center">
+                <i class="fas fa-save mr-2"></i> <span>Save Changes</span>
+              </span>
+
+              <span id="edit-expense-btn-loading" class="hidden flex items-center">
+                <span class="mr-2">Saving...</span>
+                <div class="w-4 h-4 border-2 border-white border-t-transparent border-solid rounded-full animate-spin spinner"></div>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Edit Cash Modal (Updated Colors) -->
+    <div id="edit-cash-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
+        <h2 class="text-xl font-bold text-[#1d243c] mb-4">Edit Cash Record</h2>
+        <form id="edit-cash-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="hidden" id="edit-cash-id">
+          
+          <div>
+            <label class="block text-sm font-medium text-[#1d243c]">Cash At Hand:</label>
+            <input type="number" id="edit-cash-at-hand" step="0.01" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-[#1d243c]">Cash Banked:</label>
+            <input type="number" id="edit-cash-banked" step="0.01" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-[#1d243c]">Bank Receipt ID:</label>
+            <input type="text" id="edit-bank-receipt-id" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-[#1d243c]">Date:</label>
+            <input type="date" id="edit-cash-date" required class="mt-1 p-2 block w-full border border-[#898da5] rounded-md focus:ring-[#2a314e] focus:border-[#2a314e]">
+          </div>
+          
+          <div class="md:col-span-2 flex justify-end space-x-3 mt-4">
+            <button type="button" onclick="closeModal('edit-cash-modal')" class="bg-[#5a5f7a] hover:bg-[#898da5] text-white py-2 px-4 rounded-lg transition duration-200">Cancel</button>
+            
+            <button type="submit" id="edit-cash-submit-btn" class="bg-[#2a314e] hover:bg-[#1d243c] text-white py-2 px-4 rounded-lg flex items-center justify-center transition duration-200">
+              <span id="edit-cash-btn-default" class="flex items-center">
+                <span>Save Changes</span>
+              </span>
+
+              <span id="edit-cash-btn-loading" class="hidden items-center">
+                <span class="mr-2">Saving...</span>
+                <div class="w-4 h-4 border-2 border-white border-t-transparent border-solid rounded-full animate-spin spinner"></div>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- JavaScript Section (Firestore, Auth, App Logic) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, orderBy, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Use the provided global variables for Firebase configuration
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- Core Firebase Initialization ---
+        let app, db, auth, userId = null;
+        let isAuthReady = false;
+
+        const initFirebase = async () => {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase config is missing. Cannot initialize Firestore.");
+                    return;
+                }
+                setLogLevel('Debug');
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Authentication Flow
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                    } else {
+                        // Sign in anonymously if no custom token is available
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                            userId = auth.currentUser.uid;
+                        } else {
+                             await signInAnonymously(auth);
+                             userId = auth.currentUser.uid;
+                        }
+                    }
+
+                    document.getElementById('user-id-display').textContent = userId;
+                    isAuthReady = true;
+
+                    // Start listening for data once auth is ready
+                    if (db && userId) {
+                        listenForExpenses();
+                        listenForSales();
+                        listenForCashEntries();
+                        // Initialize charts with dummy data/after data load
+                        initCharts(); 
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+            }
+        };
+
+        // --- Utility Functions ---
+
+        /**
+         * Converts Firestore timestamp to a readable date string.
+         * @param {Object} timestamp - Firestore Timestamp object
+         * @returns {string} Formatted date string (YYYY-MM-DD)
+         */
+        const formatDate = (timestamp) => {
+            if (!timestamp || !timestamp.toDate) return 'N/A';
+            const date = timestamp.toDate();
+            return date.toISOString().split('T')[0];
+        };
+
+        /**
+         * Shows a loading spinner and hides the default content on a button.
+         * @param {string} btnId - ID of the submit button container.
+         * @param {string} defaultId - ID of the default content span.
+         * @param {string} loadingId - ID of the loading spinner span.
+         */
+        const showLoading = (btnId, defaultId, loadingId) => {
+            document.getElementById(btnId).setAttribute('disabled', 'true');
+            document.getElementById(defaultId).classList.add('hidden');
+            document.getElementById(loadingId).classList.remove('hidden');
+            document.getElementById(loadingId).classList.add('flex'); // Ensure flex is applied for alignment
+        };
+
+        /**
+         * Hides the loading spinner and shows the default content.
+         */
+        const hideLoading = (btnId, defaultId, loadingId) => {
+            document.getElementById(btnId).removeAttribute('disabled');
+            document.getElementById(defaultId).classList.remove('hidden');
+            document.getElementById(loadingId).classList.add('hidden');
+            document.getElementById(loadingId).classList.remove('flex');
+        };
+
+        /**
+         * Opens a modal by setting its display property.
+         * @param {string} modalId - ID of the modal to open.
+         */
+        window.openModal = (modalId) => {
+            document.getElementById(modalId).classList.remove('hidden');
+        };
+
+        /**
+         * Closes a modal by setting its display property.
+         * @param {string} modalId - ID of the modal to close.
+         */
+        window.closeModal = (modalId) => {
+            document.getElementById(modalId).classList.add('hidden');
+        };
+
+        /**
+         * Shows the success modal with a custom message.
+         * @param {string} message - The message to display.
+         */
+        const showSuccess = (message) => {
+            document.getElementById('success-modal-message').textContent = message;
+            openModal('success-modal');
+        };
+
+        // --- Navigation Logic ---
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = item.getAttribute('data-target');
+
+                // Hide all content sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+                // Show the target section
+                document.getElementById(targetId).classList.remove('hidden');
+
+                // Update active state in nav
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active-nav', 'bg-[#2a314e]', 'text-white');
+                    nav.querySelector('i').classList.remove('text-white');
+                    nav.querySelector('i').classList.add('text-[#898da5]');
+                });
+
+                item.classList.add('active-nav', 'bg-[#2a314e]', 'text-white');
+                item.querySelector('i').classList.add('text-white');
+                item.querySelector('i').classList.remove('text-[#898da5]');
+            });
+        });
+
+        // --- Data Collection Paths ---
+
+        const getExpenseCollectionRef = () => {
+             // Private user data: /artifacts/{appId}/users/{userId}/expenses
+            return collection(db, 'artifacts', appId, 'users', userId, 'expenses');
+        };
+
+        const getSaleCollectionRef = () => {
+             // Private user data: /artifacts/{appId}/users/{userId}/sales
+            return collection(db, 'artifacts', appId, 'users', userId, 'sales');
+        };
+
+        const getCashCollectionRef = () => {
+             // Private user data: /artifacts/{appId}/users/{userId}/cash_journal
+            return collection(db, 'artifacts', appId, 'users', userId, 'cash_journal');
+        };
+
+
+        // --- Expense CRUD Operations (Simplified for demonstration) ---
+
+        const listenForExpenses = () => {
+            try {
+                const q = query(getExpenseCollectionRef());
+                onSnapshot(q, (snapshot) => {
+                    const expenses = [];
+                    snapshot.forEach(doc => {
+                        expenses.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderExpenses(expenses);
+                });
+            } catch (error) {
+                console.error("Error listening for expenses:", error);
+            }
+        };
+
+        const renderExpenses = (expenses) => {
+            const tbody = document.getElementById('expenses-table-body');
+            tbody.innerHTML = '';
+            if (expenses.length === 0) {
+                 tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-[#5a5f7a]">No expenses recorded yet.</td></tr>';
+                 return;
+            }
+            
+            expenses.forEach(expense => {
+                const row = `
+                    <tr class="hover:bg-[#e7e9fb] transition duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#1d243c]">${formatDate(expense.date)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#1d243c]">${expense.description}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">$${expense.amount.toFixed(2)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="openEditExpenseModal('${expense.id}', '${expense.description}', ${expense.amount}, '${formatDate(expense.date)}', ${expense.receiptId}, '${expense.source}')" class="text-[#2a314e] hover:text-[#1d243c] mr-3">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteRecord('expenses', '${expense.id}')" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        };
+
+        window.deleteRecord = async (type, id) => {
+            if (!db || !userId) return console.error("Database or User ID not initialized.");
+            try {
+                let colRef;
+                if (type === 'expenses') colRef = getExpenseCollectionRef();
+                else if (type === 'sales') colRef = getSaleCollectionRef();
+                else if (type === 'cash') colRef = getCashCollectionRef();
+                else return;
+
+                await deleteDoc(doc(colRef, id));
+                showSuccess(`Record (${id}) deleted successfully.`);
+            } catch (e) {
+                console.error("Error deleting document:", e);
+                alert("Failed to delete record."); // Using alert as a last resort, ideally use custom modal
+            }
+        };
+
+        window.openEditExpenseModal = (id, description, amount, date, receiptId, source) => {
+            document.getElementById('edit-expense-id').value = id;
+            document.getElementById('edit-expense-description').value = description;
+            document.getElementById('edit-expense-amount').value = amount;
+            document.getElementById('edit-expense-date').value = date;
+            document.getElementById('edit-expense-receiptId').value = receiptId;
+            document.getElementById('edit-expense-source').value = source;
+            openModal('edit-expense-modal');
+        };
+        
+        // --- Sales CRUD Operations ---
+        
+        const listenForSales = () => {
+             try {
+                const q = query(getSaleCollectionRef());
+                onSnapshot(q, (snapshot) => {
+                    const sales = [];
+                    snapshot.forEach(doc => {
+                        sales.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderSales(sales);
+                });
+            } catch (error) {
+                console.error("Error listening for sales:", error);
+            }
+        }
+        
+        const renderSales = (sales) => {
+            const tbody = document.getElementById('sales-table-body');
+            tbody.innerHTML = '';
+            if (sales.length === 0) {
+                 tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-[#5a5f7a]">No sales recorded yet.</td></tr>';
+                 return;
+            }
+            
+            sales.forEach(sale => {
+                const row = `
+                    <tr class="hover:bg-[#e7e9fb] transition duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#1d243c]">${formatDate(sale.date)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">$${sale.amount.toFixed(2)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#1d243c]">${sale.type}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="deleteRecord('sales', '${sale.id}')" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        };
+
+        // --- Cash Journal CRUD Operations ---
+
+        const listenForCashEntries = () => {
+            try {
+                const q = query(getCashCollectionRef());
+                onSnapshot(q, (snapshot) => {
+                    const entries = [];
+                    snapshot.forEach(doc => {
+                        entries.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderCashEntries(entries);
+                });
+            } catch (error) {
+                console.error("Error listening for cash entries:", error);
+            }
+        };
+        
+        const renderCashEntries = (entries) => {
+            const tbody = document.getElementById('cash-journal-table-body');
+            tbody.innerHTML = '';
+            if (entries.length === 0) {
+                 tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-[#5a5f7a]">No entries recorded yet.</td></tr>';
+                 return;
+            }
+            
+            entries.forEach(entry => {
+                const row = `
+                    <tr class="hover:bg-[#e7e9fb] transition duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#1d243c]">${formatDate(entry.date)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">$${entry.cashAtHand.toFixed(2)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">$${entry.cashBanked.toFixed(2)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#1d243c]">${entry.bankReceiptId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="openEditCashModal('${entry.id}', ${entry.cashAtHand}, ${entry.cashBanked}, '${entry.bankReceiptId}', '${formatDate(entry.date)}')" class="text-[#2a314e] hover:text-[#1d243c] mr-3">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteRecord('cash', '${entry.id}')" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        };
+
+        window.openEditCashModal = (id, cashAtHand, cashBanked, bankReceiptId, date) => {
+            document.getElementById('edit-cash-id').value = id;
+            document.getElementById('edit-cash-at-hand').value = cashAtHand;
+            document.getElementById('edit-cash-banked').value = cashBanked;
+            document.getElementById('edit-bank-receipt-id').value = bankReceiptId;
+            document.getElementById('edit-cash-date').value = date;
+            openModal('edit-cash-modal');
+        };
+
+        // --- Form Submission Handlers ---
+
+        document.getElementById('add-expense-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!db || !userId) return console.error("Database or User ID not initialized.");
+
+            const description = document.getElementById('expense-description').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const date = new Date(document.getElementById('expense-date').value);
+
+            showLoading('expense-submit-btn', 'expense-btn-default', 'expense-btn-loading');
+            
+            try {
+                await addDoc(getExpenseCollectionRef(), {
+                    description,
+                    amount,
+                    date: date, // Store as Date object or Firestore Timestamp
+                    createdAt: serverTimestamp()
+                });
+
+                document.getElementById('add-expense-form').reset();
+                showSuccess('New expense recorded successfully.');
+            } catch (e) {
+                console.error("Error adding document:", e);
+                // Custom error modal/message here
+            } finally {
+                hideLoading('expense-submit-btn', 'expense-btn-default', 'expense-btn-loading');
+            }
+        });
+
+        document.getElementById('edit-expense-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!db || !userId) return console.error("Database or User ID not initialized.");
+
+            const id = document.getElementById('edit-expense-id').value;
+            const description = document.getElementById('edit-expense-description').value;
+            const amount = parseFloat(document.getElementById('edit-expense-amount').value);
+            const date = new Date(document.getElementById('edit-expense-date').value);
+            const receiptId = document.getElementById('edit-expense-receiptId').value;
+            const source = document.getElementById('edit-expense-source').value;
+
+            showLoading('edit-expense-submit-btn', 'edit-expense-btn-default', 'edit-expense-btn-loading');
+
+            try {
+                const docRef = doc(getExpenseCollectionRef(), id);
+                await updateDoc(docRef, {
+                    description,
+                    amount,
+                    date: date,
+                    receiptId: parseInt(receiptId),
+                    source
+                });
+
+                closeModal('edit-expense-modal');
+                showSuccess('Expense record updated successfully.');
+            } catch (e) {
+                console.error("Error updating expense:", e);
+            } finally {
+                hideLoading('edit-expense-submit-btn', 'edit-expense-btn-default', 'edit-expense-btn-loading');
+            }
+        });
+        
+        document.getElementById('add-sale-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!db || !userId) return console.error("Database or User ID not initialized.");
+
+            const amount = parseFloat(document.getElementById('sale-amount').value);
+            const date = new Date(document.getElementById('sale-date').value);
+            const type = document.getElementById('sale-type').value;
+
+            showLoading('sale-submit-btn', 'sale-btn-default', 'sale-btn-loading');
+            
+            try {
+                await addDoc(getSaleCollectionRef(), {
+                    amount,
+                    date: date,
+                    type,
+                    createdAt: serverTimestamp()
+                });
+
+                document.getElementById('add-sale-form').reset();
+                showSuccess('New sale recorded successfully.');
+            } catch (e) {
+                console.error("Error adding sale document:", e);
+            } finally {
+                hideLoading('sale-submit-btn', 'sale-btn-default', 'sale-btn-loading');
+            }
+        });
+        
+        document.getElementById('add-cash-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!db || !userId) return console.error("Database or User ID not initialized.");
+
+            const cashAtHand = parseFloat(document.getElementById('cash-at-hand').value);
+            const cashBanked = parseFloat(document.getElementById('cash-banked').value);
+            const bankReceiptId = document.getElementById('bank-receipt-id').value;
+            const date = new Date(document.getElementById('cash-date').value);
+
+            showLoading('cash-submit-btn', 'cash-btn-default', 'cash-btn-loading');
+
+            try {
+                await addDoc(getCashCollectionRef(), {
+                    cashAtHand,
+                    cashBanked,
+                    bankReceiptId,
+                    date: date,
+                    createdAt: serverTimestamp()
+                });
+
+                document.getElementById('add-cash-form').reset();
+                showSuccess('New cash entry saved successfully.');
+            } catch (e) {
+                console.error("Error adding cash entry:", e);
+            } finally {
+                hideLoading('cash-submit-btn', 'cash-btn-default', 'cash-btn-loading');
+            }
+        });
+
+        document.getElementById('edit-cash-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!db || !userId) return console.error("Database or User ID not initialized.");
+
+            const id = document.getElementById('edit-cash-id').value;
+            const cashAtHand = parseFloat(document.getElementById('edit-cash-at-hand').value);
+            const cashBanked = parseFloat(document.getElementById('edit-cash-banked').value);
+            const bankReceiptId = document.getElementById('edit-bank-receipt-id').value;
+            const date = new Date(document.getElementById('edit-cash-date').value);
+
+            showLoading('edit-cash-submit-btn', 'edit-cash-btn-default', 'edit-cash-btn-loading');
+
+            try {
+                const docRef = doc(getCashCollectionRef(), id);
+                await updateDoc(docRef, {
+                    cashAtHand,
+                    cashBanked,
+                    bankReceiptId,
+                    date: date
+                });
+
+                closeModal('edit-cash-modal');
+                showSuccess('Cash record updated successfully.');
+            } catch (e) {
+                console.error("Error updating cash entry:", e);
+            } finally {
+                hideLoading('edit-cash-submit-btn', 'edit-cash-btn-default', 'edit-cash-btn-loading');
+            }
+        });
+
+
+        // --- Chart Initialization (Dummy Data) ---
+
+        const initCharts = () => {
+             // Sales and Expenses Trends Chart
+            new Chart(document.getElementById('trendsChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Sales ($)',
+                        data: [1200, 1900, 3000, 5000, 2300, 3100],
+                        borderColor: '#2a314e',
+                        backgroundColor: 'rgba(42, 49, 78, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Expenses ($)',
+                        data: [800, 1100, 2200, 3500, 1500, 2400],
+                        borderColor: '#5a5f7a',
+                        backgroundColor: 'rgba(90, 95, 122, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Expense Breakdown Chart (Doughnut)
+            new Chart(document.getElementById('expensesChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Supplies', 'Rent', 'Wages', 'Marketing'],
+                    datasets: [{
+                        data: [3500, 4500, 2000, 1500],
+                        backgroundColor: ['#1d243c', '#2a314e', '#5a5f7a', '#898da5'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        };
+
+        // --- AI Chat Logic (Placeholder) ---
+
+        const aiChatHistory = document.getElementById('ai-chat-history');
+        const aiChatInput = document.getElementById('ai-chat-input');
+        const aiChatForm = document.getElementById('ai-chat-form');
+
+        const addMessageToChat = (text, role) => {
+            const isUser = role === 'user';
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+            messageDiv.innerHTML = `
+                <div class="flex-shrink-0 ${isUser ? 'order-2' : 'order-1'} w-8 h-8 rounded-full ${isUser ? 'bg-[#5a5f7a]' : 'bg-[#2a314e]'} text-white flex items-center justify-center ${isUser ? 'ml-3' : 'mr-3'}">
+                    <i class="fas ${isUser ? 'fa-user' : 'fa-robot'} text-sm"></i>
+                </div>
+                <div class="max-w-3xl ${isUser ? 'bg-[#898da5] text-white rounded-tr-none' : 'bg-[#e7e9fb] text-[#1d243c] rounded-tl-none'} p-3 rounded-xl shadow-sm">
+                    <p>${text.replace(/\n/g, '<br>')}</p>
+                </div>
+            `;
+            aiChatHistory.appendChild(messageDiv);
+            aiChatHistory.scrollTop = aiChatHistory.scrollHeight; // Scroll to bottom
+        };
+
+        window.sendAiQuery = (query) => {
+            aiChatInput.value = query;
+            aiChatForm.dispatchEvent(new Event('submit'));
+        };
+
+        aiChatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userQuery = aiChatInput.value.trim();
+            if (!userQuery) return;
+
+            addMessageToChat(userQuery, 'user');
+            aiChatInput.value = '';
+
+            const btnId = 'ai-chat-submit-btn';
+            const defaultId = 'ai-btn-default';
+            const loadingId = 'ai-btn-loading';
+            showLoading(btnId, defaultId, loadingId);
+
+            // --- Gemini API Call ---
+            try {
+                const systemPrompt = "You are a concise financial analyst assistant. Base your answer on the user's query and provide a short, professional response.";
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    tools: [{ "google_search": {} }], 
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                let response, result, attempt = 0;
+                const maxRetries = 3;
+
+                while (attempt < maxRetries) {
+                    try {
+                        response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.status === 429) {
+                            const delay = Math.pow(2, attempt) * 1000;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            attempt++;
+                            continue;
+                        }
+
+                        result = await response.json();
+                        break; 
+
+                    } catch (error) {
+                        console.error('Fetch attempt failed:', error);
+                        const delay = Math.pow(2, attempt) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        attempt++;
+                    }
+                }
+
+                if (result && result.candidates && result.candidates[0] && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+                    const aiText = result.candidates[0].content.parts[0].text;
+                    addMessageToChat(aiText, 'ai');
+                } else {
+                    addMessageToChat("Sorry, I could not process that request.", 'ai');
+                }
+
+            } catch (error) {
+                console.error("AI API Call Error:", error);
+                addMessageToChat("An unexpected error occurred while contacting the AI.", 'ai');
+            } finally {
+                hideLoading(btnId, defaultId, loadingId);
+            }
+        });
+
+        // --- Data Export Logic (using XLSX) ---
+
+        window.exportData = (type) => {
+             const now = new Date().toISOString().split('T')[0];
+             const ws = XLSX.utils.table_to_sheet(document.getElementById('expenses-table-body').closest('table')); // Example: Export Expenses Table
+             const wb = XLSX.utils.book_new();
+             XLSX.utils.book_append_sheet(wb, ws, "Financial Data");
+             XLSX.writeFile(wb, `Financial_Report_${now}.xlsx`);
+        };
+
+
+        // --- Start Application ---
+        window.onload = initFirebase;
+
+    </script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+</body>
+</html>
