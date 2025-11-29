@@ -2,8 +2,7 @@
         const authScreen = document.getElementById('auth-screen');
         const dashboardContent = document.getElementById('dashboard-content');
         const authError = document.getElementById('auth-error');
-        const loginButton = document.getElementById('login-button');
-        const logoutButton = document.getElementById('logout-button');
+        
         const lowStockList = document.getElementById('low-stock-list');
         const chartLoadingStatus = document.getElementById('chart-loading-status');
         const startDateInput = document.getElementById('start-date');
@@ -11,7 +10,6 @@
         const applyFilterButton = document.getElementById('apply-filter-button');
         const periodDisplay = document.getElementById('period-display');
         
-        let authToken = localStorage.getItem('authToken');
         let chartInstance = null;
         
         // --- Utility Functions ---
