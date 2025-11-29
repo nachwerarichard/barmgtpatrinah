@@ -10,6 +10,20 @@
       <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
+
+      /* Custom Keyframes for Spin Animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Set the max-height for the chat body (optional, but good for fixed widgets) */
+        #chatWidget {
+            max-height: 85vh; /* 85% of viewport height */
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
     /* Keep your section visibility rules */
     .section { display: none; }
     .section.active { display: block; }
