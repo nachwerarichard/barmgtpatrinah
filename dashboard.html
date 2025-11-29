@@ -29,7 +29,7 @@
     </div>
 
     <div id="dashboard-content" class="hidden">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b border-gray-700">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-700">
             <h1 class="text-3xl md:text-4xl font-extrabold text-white">Operations Overview</h1>
             <div class="flex items-center space-x-4 mt-3 md:mt-0">
                 <span id="user-info" class="text-sm font-medium text-indigo-300"></span>
@@ -37,18 +37,28 @@
             </div>
         </header>
 
+        <!-- Date Range Filter -->
+        <section class="bg-gray-800 p-4 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <h2 class="text-lg font-semibold text-white">Financial Report Period: <span id="period-display" class="text-indigo-400">Last 7 Days</span></h2>
+            <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                <input type="date" id="start-date" class="p-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="date" id="end-date" class="p-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                <button id="apply-filter-button" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition duration-200">Apply Filter</button>
+            </div>
+        </section>
+
         <!-- Financial Summary KPIs -->
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="kpi-card bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-indigo-500">
-                <p class="text-sm text-indigo-400 font-semibold">Total Revenue (Last 7 Days)</p>
+                <p class="text-sm text-indigo-400 font-semibold">Total Revenue</p>
                 <h3 id="kpi-revenue" class="text-3xl font-bold mt-2 text-white">$0.00</h3>
             </div>
             <div class="kpi-card bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-green-500">
-                <p class="text-sm text-green-400 font-semibold">Gross Profit (Last 7 Days)</p>
+                <p class="text-sm text-green-400 font-semibold">Gross Profit</p>
                 <h3 id="kpi-profit" class="text-3xl font-bold mt-2 text-white">$0.00</h3>
             </div>
             <div class="kpi-card bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-red-500">
-                <p class="text-sm text-red-400 font-semibold">Total Expenses (Last 7 Days)</p>
+                <p class="text-sm text-red-400 font-semibold">Total Expenses</p>
                 <h3 id="kpi-expenses" class="text-3xl font-bold mt-2 text-white">$0.00</h3>
             </div>
             <div class="kpi-card bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-yellow-500">
@@ -62,7 +72,7 @@
             
             <!-- Revenue & Profit Chart (2/3 width) -->
             <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-xl">
-                <h2 class="text-xl font-semibold mb-4 text-indigo-400">7-Day Financial Trend (Revenue & Profit)</h2>
+                <h2 class="text-xl font-semibold mb-4 text-indigo-400">Financial Trend</h2>
                 <div class="chart-container">
                     <canvas id="financialChart"></canvas>
                 </div>
@@ -99,7 +109,7 @@
             <div class="bg-gray-800 p-6 rounded-xl shadow-2xl max-w-sm w-full">
                 <h3 id="modal-title" class="text-lg font-bold text-red-400 mb-3">Error</h3>
                 <p id="modal-content" class="text-gray-300 text-sm mb-4"></p>
-                <button onclick="document.getElementById('message-modal').classList.add('hidden');" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg">Close</button>
+                <button onclick="document.getElementById('message-modal').classList.add('hidden');document.getElementById('message-modal').classList.remove('flex');" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg">Close</button>
             </div>
         </div>
     </div>
@@ -114,6 +124,10 @@
         const logoutButton = document.getElementById('logout-button');
         const lowStockList = document.getElementById('low-stock-list');
         const chartLoadingStatus = document.getElementById('chart-loading-status');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const applyFilterButton = document.getElementById('apply-filter-button');
+        const periodDisplay = document.getElementById('period-display');
         
         let authToken = localStorage.getItem('authToken');
         let chartInstance = null;
@@ -133,6 +147,24 @@
         function formatCurrency(amount) {
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
         }
+
+        function getDateString(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function setDefaultDateRange() {
+            const today = new Date();
+            const sevenDaysAgo = new Date();
+            // Go back 6 days to include today, making it 7 days total.
+            sevenDaysAgo.setDate(today.getDate() - 6); 
+
+            endDateInput.value = getDateString(today);
+            startDateInput.value = getDateString(sevenDaysAgo);
+        }
+
 
         async function apiFetch(endpoint) {
             if (!authToken) {
@@ -164,7 +196,7 @@
 
             } catch (error) {
                 console.error('API Fetch Error:', error);
-                showMessage('Network Error', `Could not fetch data: ${error.message}. Check the backend server status.`, true);
+                showMessage('Network Error', `Could not fetch data: ${error.message}. Check the backend server status or the date range.`, true);
                 return null;
             }
         }
@@ -178,6 +210,7 @@
                 dashboardContent.classList.add('block');
                 const username = atob(authToken).split(':')[0];
                 document.getElementById('user-info').textContent = `Logged in as: ${username}`;
+                setDefaultDateRange(); // Set default range on login
                 loadDashboardData();
             } else {
                 authScreen.classList.remove('hidden');
@@ -302,11 +335,20 @@
             document.getElementById('kpi-low-stock').textContent = lowStockSummary.count;
             document.getElementById('low-stock-count').textContent = lowStockSummary.count;
             
+            periodDisplay.textContent = financialSummary.periodDescription;
+            
             // Highlight KPI based on Net Profit
             const netProfit = financialSummary.netProfit;
             const profitKpiCard = document.getElementById('kpi-profit').closest('.kpi-card');
-            profitKpiCard.classList.remove('border-green-500', 'border-red-500');
-            profitKpiCard.classList.add(netProfit >= 0 ? 'border-green-500' : 'border-red-500');
+            // Remove previous borders and apply new ones based on net profit
+            profitKpiCard.classList.remove('border-green-500', 'border-red-500', 'border-yellow-500');
+            if (netProfit > 0) {
+                 profitKpiCard.classList.add('border-green-500');
+            } else if (netProfit < 0) {
+                 profitKpiCard.classList.add('border-red-500');
+            } else {
+                 profitKpiCard.classList.add('border-yellow-500');
+            }
         }
 
         function renderLowStockTable(items) {
@@ -327,27 +369,46 @@
                 lowStockList.appendChild(row);
             });
         }
-
+        
+        // Main function to load data
         async function loadDashboardData() {
-            // 1. Fetch Financial Summary (last 7 days by default)
-            const financialData = await apiFetch('/reports/financial-summary?days=7');
+            // Check for custom range input
+            const start = startDateInput.value;
+            const end = endDateInput.value;
             
-            // 2. Fetch Low Stock Items
-            const lowStockData = await apiFetch('/reports/low-stock-items');
+            let financialEndpoint = '/reports/financial-summary';
+            if (start && end) {
+                financialEndpoint += `?start=${start}&end=${end}`;
+            }
+
+            // Show loading status
+            chartLoadingStatus.classList.remove('hidden');
+            chartLoadingStatus.textContent = 'Loading financial data...';
+            
+            // 1. Fetch Financial Summary
+            const financialDataPromise = apiFetch(financialEndpoint);
+            
+            // 2. Fetch Low Stock Items (This is always for the current status)
+            const lowStockDataPromise = apiFetch('/reports/low-stock-items');
+
+            const [financialData, lowStockData] = await Promise.all([financialDataPromise, lowStockDataPromise]);
 
             if (financialData) {
                 renderKpis(financialData, lowStockData || { count: 0 });
                 renderFinancialChart(financialData.chartData);
+            } else {
+                 chartLoadingStatus.textContent = 'Failed to load financial data. Check console for details.';
             }
 
             if (lowStockData) {
                 renderLowStockTable(lowStockData.items);
             }
         }
-        
-        // --- Initialization ---
+
+        // --- Event Listeners and Initialization ---
         loginButton.addEventListener('click', handleLogin);
         logoutButton.addEventListener('click', handleLogout);
+        applyFilterButton.addEventListener('click', loadDashboardData);
 
         document.addEventListener('DOMContentLoaded', () => {
             if (authToken) {
