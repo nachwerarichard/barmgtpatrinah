@@ -188,32 +188,35 @@ What would you like to know about running your business?</div>
         }
 
         // Fetch business data
-        async function fetchBusinessData() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found. Please log in.');
-            }
+       // dash4.html:191 - MODIFIED
+async function fetchBusinessData() {
+    // 1. Remove the token check:
+    // const token = localStorage.getItem('token');
+    // if (!token) {
+    //     throw new Error('No authentication token found. Please log in.');
+    // }
 
-            const headers = {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            };
+    // 2. Define headers without the Authorization field:
+    const headers = {
+        'Content-Type': 'application/json'
+        // 'Authorization': `Bearer ${token}` <-- Removed
+    };
+    
+    // 3. Update the fetch calls to use only the Content-Type header
+    const salesRes = await fetch(API_BASE + '/sales?limit=50', { headers: headers });
+    const inventoryRes = await fetch(API_BASE + '/inventory?limit=50', { headers: headers });
+    const expensesRes = await fetch(API_BASE + '/expenses?limit=50', { headers: headers });
 
-            const salesRes = await fetch(API_BASE + '/sales?limit=50', { headers: headers });
-            const inventoryRes = await fetch(API_BASE + '/inventory?limit=50', { headers: headers });
-            const expensesRes = await fetch(API_BASE + '/expenses?limit=50', { headers: headers });
+    if (!salesRes.ok || !inventoryRes.ok || !expensesRes.ok) {
+        throw new Error('Failed to fetch business data. Please check the API status.');
+    }
 
-            if (!salesRes.ok || !inventoryRes.ok || !expensesRes.ok) {
-                throw new Error('Failed to fetch business data. Please check your connection.');
-            }
+    const salesData = await salesRes.json();
+    const inventoryData = await inventoryRes.json();
+    const expensesData = await expensesRes.json();
 
-            const salesData = await salesRes.json();
-            const inventoryData = await inventoryRes.json();
-            const expensesData = await expensesRes.json();
-
-            return { salesData: salesData, inventoryData: inventoryData, expensesData: expensesData };
-        }
-
+    return { salesData: salesData, inventoryData: inventoryData, expensesData: expensesData };
+}
         // Build context for AI
         function buildContext(data) {
             const salesData = data.salesData;
