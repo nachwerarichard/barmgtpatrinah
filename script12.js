@@ -2667,7 +2667,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const navAuditLogs = document.getElementById('nav-audit-logs');
     if (navAuditLogs) navAuditLogs.addEventListener('click', () => showSection('audit-logs'));
-
+ const navAuditLogs = document.getElementById('nav-dashboard');
+    if (navAuditLogs) navAuditLogs.addEventListener('click', () => showSection('dashboard'));
     // Attach event listeners for filter buttons
     const applyInventoryFilter = document.getElementById('apply-inventory-filter');
     if (applyInventoryFilter) applyInventoryFilter.addEventListener('click', fetchInventory);
