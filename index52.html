@@ -241,6 +241,9 @@
             </button>
         </div>
 
+
+       
+
         <div class="mb-1">
             <button id="nav-inventory" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
                 <span class="tilt-content flex items-center">
@@ -306,6 +309,14 @@
             </ul>
         </div>
 
+        <div class="mb-1">
+            <button id="nav-ai" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('ai','nav-ai')">
+                <span class="tilt-content flex items-center">
+                    <span class="ml-3">AI</span>
+                </span>
+            </button>
+        </div>
+      
         <div class="mb-1">
             <button id="nav-audit-logs" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs')">
                 <span class="tilt-content flex items-center">
@@ -649,6 +660,13 @@
             </table>
           </div>
         </section>
+
+                <section id="ai" class="section-content bg-white p-6 rounded-xl shadow-lg mb-6 hidden">
+          <h2 class="text-2xl font-bold mb-4 text-emerald-600">Audit Logs</h2>
+          
+        </section>
+
+        
 
         <section id="dashboard" class="section-content bg-white p-6 rounded-xl shadow-lg mb-6 hidden">
     <h2 class="text-2xl font-bold mb-4 text-emerald-600">Dashboard</h2>
