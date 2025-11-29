@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Business Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <div class="max-w-4xl mx-auto p-4 h-screen flex flex-col">
+        <!-- Header -->
+        <div class="bg-white rounded-t-2xl shadow-lg p-6 border-b border-gray-200">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-3 rounded-xl">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">AI Business Assistant</h1>
+                    <p class="text-sm text-gray-600">Powered by Claude Sonnet 4</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white px-6 py-4 border-b border-gray-200">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Quick Actions</p>
+            <div class="flex gap-2 flex-wrap" id="quickActions">
+                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="Analyze my sales trends">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                    Analyze my sales trends
+                </button>
+                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="Check inventory health">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Check inventory health
+                </button>
+                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="Suggest improvements">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    Suggest improvements
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="flex-1 overflow-y-auto bg-white p-6 space-y-4" id="messagesContainer">
+            <div class="flex justify-start">
+                <div class="max-w-[80%] rounded-2xl px-4 py-3 bg-gray-100 text-gray-900">
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="text-xs font-semibold text-indigo-600">AI Assistant</span>
+                    </div>
+                    <div class="whitespace-pre-wrap text-sm leading-relaxed">Hello! I'm your AI business assistant. I can help you with:
+
+• <strong>Business Recommendations</strong> - Get insights on inventory, sales, and operations
+• <strong>Sales Forecasts</strong> - Predict future trends based on your data
+• <strong>Strategic Advice</strong> - Receive guidance on business decisions
+
+What would you like to know about your business?</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="bg-white rounded-b-2xl shadow-lg p-4 border-t border-gray-200">
+            <div class="flex gap-2">
+                <textarea 
+                    id="messageInput"
+                    placeholder="Ask about sales trends, inventory recommendations, or business advice..."
+                    class="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    rows="2"
+                ></textarea>
+                <button
+                    id="sendButton"
+                    class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl px-6 py-3 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 self-end"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://pos-backend-h0g7.onrender.com';
+        let messages = [];
+        let isLoading = false;
+
+        // DOM Elements
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const quickActions = document.querySelectorAll('.quick-action');
+
+        // Initialize
+        function init() {
+            sendButton.addEventListener('click', handleSend);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                }
+            });
+
+            quickActions.forEach(button => {
+                button.addEventListener('click', () => {
+                    const prompt = button.dataset.prompt;
+                    handleSend(prompt);
+                });
+            });
+        }
+
+        // Add message to UI
+        function addMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = `max-w-[80%] rounded-2xl px-4 py-3 ${
+                role === 'user'
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-900'
+            }`;
+
+            if (role === 'assistant') {
+                contentDiv.innerHTML = `
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="text-xs font-semibold text-indigo-600">AI Assistant</span>
+                    </div>
+                    <div class="whitespace-pre-wrap text-sm leading-relaxed">${content}</div>
+                `;
+            } else {
+                contentDiv.innerHTML = `<div class="whitespace-pre-wrap text-sm leading-relaxed">${content}</div>`;
+            }
+
+            messageDiv.appendChild(contentDiv);
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Show loading indicator
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingIndicator';
+            loadingDiv.className = 'flex justify-start';
+            loadingDiv.innerHTML = `
+                <div class="bg-gray-100 rounded-2xl px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <span class="text-sm text-gray-600">Analyzing your business data...</span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(loadingDiv);
+            scrollToBottom();
+        }
+
+        // Remove loading indicator
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loadingIndicator');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        // Scroll to bottom
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Fetch business data
+        async function fetchBusinessData() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found. Please log in.');
+            }
+
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+
+            const salesRes = await fetch(API_BASE + '/sales?limit=50', { headers: headers });
+            const inventoryRes = await fetch(API_BASE + '/inventory?limit=50', { headers: headers });
+            const expensesRes = await fetch(API_BASE + '/expenses?limit=50', { headers: headers });
+
+            if (!salesRes.ok || !inventoryRes.ok || !expensesRes.ok) {
+                throw new Error('Failed to fetch business data. Please check your connection.');
+            }
+
+            const salesData = await salesRes.json();
+            const inventoryData = await inventoryRes.json();
+            const expensesData = await expensesRes.json();
+
+            return { salesData: salesData, inventoryData: inventoryData, expensesData: expensesData };
+        }
+
+        // Build context for AI
+        function buildContext(data) {
+            const salesData = data.salesData;
+            const inventoryData = data.inventoryData;
+            const expensesData = data.expensesData;
+
+            return 'You are an AI business consultant analyzing data for a retail/inventory business. Here is the current business data:\n\n' +
+                '**Recent Sales (last 50 transactions):**\n' +
+                JSON.stringify(salesData.data ? salesData.data.slice(0, 10) : [], null, 2) + '\n' +
+                'Total sales records: ' + (salesData.total || 0) + '\n\n' +
+                '**Current Inventory:**\n' +
+                JSON.stringify(inventoryData.data ? inventoryData.data.slice(0, 10) : [], null, 2) + '\n' +
+                'Total inventory items: ' + (inventoryData.total || 0) + '\n\n' +
+                '**Recent Expenses:**\n' +
+                JSON.stringify(expensesData.data ? expensesData.data.slice(0, 10) : [], null, 2) + '\n' +
+                'Total expense records: ' + (expensesData.total || 0) + '\n\n' +
+                'Based on this data, provide actionable insights, recommendations, and analysis. Be specific and reference the actual data when making suggestions.';
+        }
+
+        // Call Claude API
+        async function callClaudeAPI(userMessage, context) {
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514',
+                    max_tokens: 1000,
+                    messages: [
+                        { role: 'user', content: context },
+                        ...messages,
+                        { role: 'user', content: userMessage }
+                    ]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get AI response. Please try again.');
+            }
+
+            const data = await response.json();
+            return data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'I apologize, but I encountered an error processing your request. Please try again.';
+        }
+
+        // Handle send message
+        async function handleSend(text) {
+            const messageText = text || messageInput.value.trim();
+            
+            if (!messageText || isLoading) return;
+
+            // Add user message
+            addMessage('user', messageText);
+            messages.push({ role: 'user', content: messageText });
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Set loading state
+            isLoading = true;
+            sendButton.disabled = true;
+            messageInput.disabled = true;
+            quickActions.forEach(btn => btn.disabled = true);
+            showLoading();
+
+            try {
+                // Fetch business data
+                const businessData = await fetchBusinessData();
+                
+                // Build context
+                const context = buildContext(businessData);
+                
+                // Get AI response
+                const aiResponse = await callClaudeAPI(messageText, context);
+                
+                // Add assistant message
+                hideLoading();
+                addMessage('assistant', aiResponse);
+                messages.push({ role: 'assistant', content: aiResponse });
+
+            } catch (error) {
+                console.error('Error:', error);
+                hideLoading();
+                addMessage('assistant', 'I encountered an error: ' + error.message + '\n\nPlease ensure you are logged in and try again.');
+            } finally {
+                // Reset loading state
+                isLoading = false;
+                sendButton.disabled = false;
+                messageInput.disabled = false;
+                quickActions.forEach(btn => btn.disabled = false);
+                messageInput.focus();
+            }
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
