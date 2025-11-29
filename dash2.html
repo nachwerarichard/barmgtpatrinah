@@ -185,7 +185,10 @@
             startDateInput.value = getDateString(sevenDaysAgo);
         }
 
-
+        /**
+         * Robust function to fetch API data and handle both success (JSON) and error (non-JSON) states correctly.
+         * Fixes SyntaxError when a non-JSON error page is returned (e.g., 404 HTML).
+         */
         async function apiFetch(endpoint) {
             if (!authToken) {
                 showMessage('Authentication Error', 'You are not logged in.', true);
@@ -201,23 +204,33 @@
                 });
 
                 if (response.status === 401 || response.status === 403) {
-                    // Force logout on auth failure
+                    // Force logout on explicit auth failure
                     handleLogout();
                     showMessage('Session Expired', 'Your session has expired. Please log in again.', true);
                     return null;
                 }
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    // Server responded with an error status (e.g., 404, 500).
+                    // Read body as plain text to avoid the JSON parsing error you experienced.
+                    const errorBodyText = await response.text(); 
+                    console.error(`API Error - Status: ${response.status} for ${endpoint}`, errorBodyText.substring(0, 100) + '...');
+                    
+                    // Try to infer a message, otherwise just show the status.
+                    const errorMessage = `API call to ${endpoint} failed with status ${response.status}. The requested resource might not exist or the backend is offline.`;
+                    showMessage('Data Fetch Error', errorMessage, true);
+                    
+                    // Do not throw, just return null so the page doesn't crash
+                    return null;
                 }
-
+                
+                // If response is OK (200-299), then safely parse it as JSON
                 return response.json();
 
             } catch (error) {
+                // Handle network errors or true JSON parsing errors (if Content-Type check was bypassed)
                 console.error('API Fetch Error:', error);
-                // Note: Network errors should not trigger logout, just show message
-                showMessage('Network Error', `Could not fetch data from ${endpoint}: ${error.message}.`, true);
+                showMessage('Network Error', `Could not fetch data from ${endpoint}. Check your connection or API host: ${error.message}.`, true);
                 return null;
             }
         }
@@ -494,10 +507,11 @@
                 renderLowStockTable(lowStockData.items);
             }
             
+            // Only render audit logs if the data was successfully fetched (not null)
             if (auditLogData) {
                 renderAuditLogs(auditLogData);
             } else {
-                auditLogList.innerHTML = '<p class="text-sm text-red-400 text-center py-4">Failed to load audit logs.</p>';
+                auditLogList.innerHTML = '<p class="text-sm text-red-400 text-center py-4">Failed to load audit logs due to API error.</p>';
             }
         }
 
