@@ -1,0 +1,426 @@
+/* app.js
+   Vanilla JS dashboard client for your backend analytics.
+   Configure API_BASE below to point to your server.
+*/
+
+const API_BASE = location.origin; // change if your API runs elsewhere, e.g. "https://api.example.com"
+const authKey = "authToken_v1";
+
+// Utility: get stored token
+function getToken() {
+  return localStorage.getItem(authKey);
+}
+function setToken(t) {
+  localStorage.setItem(authKey, t);
+}
+function clearToken() {
+  localStorage.removeItem(authKey);
+}
+
+// Helpers for UI
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+function showMsg(selector, text, color = 'red') {
+  const el = $(selector);
+  if (!el) return;
+  el.textContent = text;
+  el.style.color = color;
+  setTimeout(() => { if (el.textContent === text) el.textContent = ''; }, 5000);
+}
+
+// Format currency (simple)
+function fmt(n) {
+  if (n === null || n === undefined) return '—';
+  return n.toLocaleString(undefined, { style: 'currency', currency: 'UGX', maximumFractionDigits: 0 });
+}
+
+function fmtNum(n) {
+  if (n === undefined || n === null) return '—';
+  return Number(n).toLocaleString();
+}
+
+// Basic fetch wrapper with auth & error handling, returns json or throws
+async function apiFetch(path, opts = {}) {
+  const token = getToken();
+  const headers = opts.headers || {};
+  if (token) headers['Authorization'] = 'Basic ' + token;
+  headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+  try {
+    const res = await fetch(API_BASE + path, { ...opts, headers });
+    if (!res.ok) {
+      const txt = await res.text().catch(()=>null);
+      throw new Error(`${res.status} ${res.statusText} ${txt ? '- '+txt : ''}`);
+    }
+    return await res.json();
+  } catch (err) {
+    console.error('API fetch error', path, err);
+    throw err;
+  }
+}
+
+// DOM references
+const loginForm = document.getElementById('loginForm');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const loggedUser = document.getElementById('loggedUser');
+const logoutBtn = document.getElementById('logoutBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+const applyFiltersBtn = document.getElementById('applyFilters');
+const filterDate = document.getElementById('filterDate');
+const limitTop = document.getElementById('limitTop');
+
+const kpiSales = document.getElementById('kpiSales');
+const kpiProfit = document.getElementById('kpiProfit');
+const kpiExpenses = document.getElementById('kpiExpenses');
+const kpiLowStock = document.getElementById('kpiLowStock');
+
+const lowStockList = document.getElementById('lowStockList');
+const auditTable = document.getElementById('auditTable');
+
+let charts = {};
+
+// Demo fallback data
+const demo = {
+  salesSummary: [
+    { _id: "2025-11-20", totalSales: 200000, totalProfit: 80000 },
+    { _id: "2025-11-21", totalSales: 150000, totalProfit: 60000 },
+    { _id: "2025-11-22", totalSales: 250000, totalProfit: 110000 },
+    { _id: "2025-11-23", totalSales: 190000, totalProfit: 70000 },
+    { _id: "2025-11-24", totalSales: 210000, totalProfit: 90000 },
+  ],
+  topItems: [
+    { _id: "Soda", totalSold: 120 },
+    { _id: "Sandwich", totalSold: 95 },
+    { _id: "Bread", totalSold: 80 },
+    { _id: "Coffee", totalSold: 72 },
+    { _id: "Tea", totalSold: 60 },
+  ],
+  inventorySummary: [
+    { _id: "Soda", closing: 40 },
+    { _id: "Sandwich", closing: 10 },
+    { _id: "Bread", closing: 5 },
+    { _id: "Coffee", closing: 25 },
+    { _id: "Tea", closing: 2 },
+  ],
+  expensesSummary: [
+    { _id: "2025-11-20", totalExpenses: 20000 },
+    { _id: "2025-11-21", totalExpenses: 15000 },
+    { _id: "2025-11-22", totalExpenses: 22000 },
+    { _id: "2025-11-23", totalExpenses: 18000 },
+    { _id: "2025-11-24", totalExpenses: 25000 },
+  ],
+  cashSummary: [
+    { _id: "2025-11-20", cashAtHand: 50000, cashBanked: 200000 },
+    { _id: "2025-11-21", cashAtHand: 45000, cashBanked: 210000 },
+    { _id: "2025-11-22", cashAtHand: 60000, cashBanked: 230000 },
+    { _id: "2025-11-23", cashAtHand: 42000, cashBanked: 225000 },
+    { _id: "2025-11-24", cashAtHand: 48000, cashBanked: 235000 },
+  ],
+  lowStock: [
+    { item: "Tea", closing: 2 },
+    { item: "Bread", closing: 5 }
+  ],
+  audit: [
+    { timestamp: new Date().toISOString(), user: "Admin", action: "Login Successful", details: {} }
+  ]
+};
+
+// Chart creation functions
+function createLineChart(ctx, label, datasets = []) {
+  return new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: true } },
+      scales: {
+        x: { ticks: { maxRotation: 0, autoSkip: true } },
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+
+function createBarChart(ctx, label, datasets = []) {
+  return new Chart(ctx, {
+    type: 'bar',
+    data: { labels: [], datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+}
+
+// Render helpers
+function updateKPIs(salesData, profitData, expensesData, lowStockData) {
+  const totalSales = (salesData || []).reduce((s, r) => s + (r.totalSales || 0), 0);
+  const totalProfit = (salesData || []).reduce((s, r) => s + (r.totalProfit || 0), 0);
+  const totalExpenses = (expensesData || []).reduce((s, r) => s + (r.totalExpenses || 0), 0);
+  kpiSales.textContent = fmt(totalSales);
+  kpiProfit.textContent = fmt(totalProfit);
+  kpiExpenses.textContent = fmt(totalExpenses);
+  kpiLowStock.textContent = (lowStockData || []).length;
+}
+
+function renderLowStock(list) {
+  lowStockList.innerHTML = '';
+  if (!list || list.length === 0) {
+    lowStockList.innerHTML = `<li class="text-sm text-gray-500">All good — no low stock items.</li>`;
+    return;
+  }
+  list.forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'flex items-center justify-between';
+    li.innerHTML = `<span class="text-sm">${item.item || item._id || '—'}</span><span class="text-sm font-semibold">${fmtNum(item.closing ?? item.closing)}</span>`;
+    lowStockList.appendChild(li);
+  });
+}
+
+function renderAudit(logs) {
+  auditTable.innerHTML = '';
+  (logs || []).slice(0, 50).forEach(l => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="p-2 align-top text-xs">${new Date(l.timestamp || l.date || Date.now()).toLocaleString()}</td>
+      <td class="p-2 align-top text-sm">${l.user || l.recordedBy || 'system'}</td>
+      <td class="p-2 align-top text-sm">${l.action || ''}</td>
+      <td class="p-2 align-top text-xs text-gray-600">${JSON.stringify(l.details || l)}</td>
+    `;
+    auditTable.appendChild(tr);
+  });
+}
+
+// Chart update functions
+function updateSalesChart(data) {
+  const labels = data.map(d => d._id);
+  const totals = data.map(d => d.totalSales || 0);
+  const profits = data.map(d => d.totalProfit || 0);
+
+  if (!charts.sales) {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    charts.sales = createLineChart(ctx, 'Sales', [
+      { label: 'Sales', data: totals, fill: true, tension: 0.2 },
+      { label: 'Profit', data: profits, fill: false, tension: 0.2 }
+    ]);
+  } else {
+    charts.sales.data.labels = labels;
+    charts.sales.data.datasets[0].data = totals;
+    charts.sales.data.datasets[1].data = profits;
+    charts.sales.update();
+  }
+}
+
+function updateProfitChart(data) {
+  const labels = data.map(d => d._id);
+  const profits = data.map(d => d.totalProfit || 0);
+  if (!charts.profit) {
+    const ctx = document.getElementById('profitChart').getContext('2d');
+    charts.profit = createLineChart(ctx, 'Profit', [{ label: 'Profit', data: profits, fill: true, tension: 0.2 }]);
+  } else {
+    charts.profit.data.labels = labels;
+    charts.profit.data.datasets[0].data = profits;
+    charts.profit.update();
+  }
+}
+
+function updateTopItemsChart(data) {
+  const labels = data.map(d => d._id);
+  const values = data.map(d => d.totalSold || 0);
+  if (!charts.topItems) {
+    const ctx = document.getElementById('topItemsChart').getContext('2d');
+    charts.topItems = createBarChart(ctx, 'Top Items', [{ label: 'Units sold', data: values }]);
+  } else {
+    charts.topItems.data.labels = labels;
+    charts.topItems.data.datasets[0].data = values;
+    charts.topItems.update();
+  }
+}
+
+function updateInventoryChart(data) {
+  const labels = data.map(d => d._id);
+  const values = data.map(d => d.closing || 0);
+  if (!charts.inventory) {
+    const ctx = document.getElementById('inventoryChart').getContext('2d');
+    charts.inventory = createBarChart(ctx, 'Inventory', [{ label: 'Closing stock', data: values }]);
+  } else {
+    charts.inventory.data.labels = labels;
+    charts.inventory.data.datasets[0].data = values;
+    charts.inventory.update();
+  }
+}
+
+function updateExpensesChart(data) {
+  const labels = data.map(d => d._id);
+  const values = data.map(d => d.totalExpenses || 0);
+  if (!charts.expenses) {
+    const ctx = document.getElementById('expensesChart').getContext('2d');
+    charts.expenses = createLineChart(ctx, 'Expenses', [{ label: 'Expenses', data: values, fill: true }]);
+  } else {
+    charts.expenses.data.labels = labels;
+    charts.expenses.data.datasets[0].data = values;
+    charts.expenses.update();
+  }
+}
+
+function updateCashChart(data) {
+  const labels = data.map(d => d._id);
+  const atHand = data.map(d => d.cashAtHand || 0);
+  const banked = data.map(d => d.cashBanked || 0);
+  if (!charts.cash) {
+    const ctx = document.getElementById('cashChart').getContext('2d');
+    charts.cash = createLineChart(ctx, 'Cash', [
+      { label: 'Cash at hand', data: atHand, fill: false },
+      { label: 'Cash banked', data: banked, fill: false }
+    ]);
+  } else {
+    charts.cash.data.labels = labels;
+    charts.cash.data.datasets[0].data = atHand;
+    charts.cash.data.datasets[1].data = banked;
+    charts.cash.update();
+  }
+}
+
+// Main data loader
+async function loadDashboard() {
+  // show date in topbar
+  $('#currentDate').textContent = new Date().toLocaleDateString();
+
+  // read filters
+  const date = filterDate.value || null;
+  const topLimit = parseInt(limitTop.value) || 5;
+
+  try {
+    // fetch parallel
+    const [
+      salesSummary, topItems, inventorySummary,
+      lowStock, expensesSummary, cashSummary,
+      auditLogs
+    ] = await Promise.all([
+      apiFetch(`/analytics/sales-summary?date=${date}`).catch(()=>demo.salesSummary),
+      apiFetch(`/analytics/top-items?limit=${topLimit}`).catch(()=>demo.topItems.slice(0, topLimit)),
+      apiFetch(`/analytics/inventory-summary`).catch(()=>demo.inventorySummary),
+      apiFetch(`/analytics/low-stock`).catch(()=>demo.lowStock),
+      apiFetch(`/analytics/expenses-summary?date=${date}`).catch(()=>demo.expensesSummary),
+      apiFetch(`/analytics/cash-summary?date=${date}`).catch(()=>demo.cashSummary),
+      apiFetch(`/audit-logs?page=1&limit=50`).catch(()=>demo.audit),
+    ]);
+
+    // update UI
+    updateKPIs(salesSummary, salesSummary, expensesSummary, lowStock);
+    renderLowStock(lowStock);
+    renderAudit(auditLogs);
+
+    updateSalesChart(salesSummary);
+    updateProfitChart(salesSummary);
+    updateTopItemsChart(topItems);
+    updateInventoryChart(inventorySummary);
+    updateExpensesChart(expensesSummary);
+    updateCashChart(cashSummary);
+
+    // set logged user label
+    const token = getToken();
+    if (token) {
+      const creds = atob(token).split(':')[0];
+      loggedUser.textContent = creds;
+    }
+
+  } catch (err) {
+    console.warn('Dashboard load partially failed; showing demo data.', err);
+    // fallback to demo
+    updateKPIs(demo.salesSummary, demo.salesSummary, demo.expensesSummary, demo.lowStock);
+    renderLowStock(demo.lowStock);
+    renderAudit(demo.audit);
+    updateSalesChart(demo.salesSummary);
+    updateProfitChart(demo.salesSummary);
+    updateTopItemsChart(demo.topItems);
+    updateInventoryChart(demo.inventorySummary);
+    updateExpensesChart(demo.expensesSummary);
+    updateCashChart(demo.cashSummary);
+  }
+}
+
+// Auth: login form submit
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value;
+  if (!username || !password) {
+    showMsg('#loginMsg', 'Please provide username & password');
+    return;
+  }
+
+  try {
+    // call your /login endpoint (which returns token)
+    const res = await fetch(API_BASE + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    if (!res.ok) {
+      const errtxt = await res.text().catch(()=>null);
+      throw new Error(`${res.status} ${res.statusText} ${errtxt ? '- ' + errtxt : ''}`);
+    }
+    const body = await res.json();
+    if (body.token) {
+      setToken(body.token);
+      showMsg('#loginMsg', 'Login successful', 'green');
+      usernameInput.value = '';
+      passwordInput.value = '';
+      loggedUser.textContent = username;
+      // reload dashboard
+      await loadDashboard();
+    } else {
+      showMsg('#loginMsg', 'Login failed: token not returned');
+    }
+  } catch (err) {
+    console.error('Login error', err);
+    showMsg('#loginMsg', 'Login failed: ' + (err.message || err));
+  }
+});
+
+// Logout
+logoutBtn.addEventListener('click', async () => {
+  const token = getToken();
+  if (!token) {
+    clearToken();
+    loggedUser.textContent = '';
+    showMsg('#loginMsg', 'Logged out', 'green');
+    return;
+  }
+  try {
+    await apiFetch('/logout', { method: 'POST' });
+  } catch (err) {
+    // ignore errors from logout
+    console.warn('Logout error', err);
+  } finally {
+    clearToken();
+    loggedUser.textContent = '';
+    showMsg('#loginMsg', 'Logged out', 'green');
+  }
+});
+
+// Refresh
+refreshBtn.addEventListener('click', loadDashboard);
+applyFiltersBtn.addEventListener('click', loadDashboard);
+
+// init
+document.addEventListener('DOMContentLoaded', () => {
+  // pre-fill filter date with today (EAT / local)
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  filterDate.value = `${y}-${m}-${d}`;
+
+  // if a token exists, set the username text
+  const token = getToken();
+  if (token) {
+    const username = atob(token).split(':')[0];
+    loggedUser.textContent = username;
+  }
+
+  loadDashboard();
+});
