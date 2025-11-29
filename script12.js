@@ -271,6 +271,11 @@ function toggleSubmenu(submenuId) {
  */
 function showSubSection(sectionId, parentNavId = null) {
     const mainSectionId = sectionId.split('-')[0];
+    
+    // Assume all main content containers have the class '.section-content'
+    // You must verify this class name in your HTML structure!
+    const ALL_MAIN_SECTIONS_SELECTOR = '.section-content'; 
+    const ALL_SUB_SECTIONS_SELECTOR = '.section'; // Already in your code
 
     // --- Role-based Access Check ---
     const allowedSections = {
@@ -285,8 +290,7 @@ function showSubSection(sectionId, parentNavId = null) {
     const checkSectionId = mainSectionId.startsWith('cash') ? 'cash' : (mainSectionId === 'audit' ? 'audit' : mainSectionId);
 
     if (currentUserRole && !allowedSections[currentUserRole]?.includes(checkSectionId)) {
-        
-        // Redirect logic to ensure a safe landing page
+        // ... (Your existing redirection/access denial logic)
         const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
         if (fullAccessRoles.includes(currentUserRole)) {
             initSidebarState(); 
@@ -296,11 +300,32 @@ function showSubSection(sectionId, parentNavId = null) {
         return;
     }
 
-    // --- Show/Hide Sections ---
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    // =================================================================
+    // 🛑 NEW GLOBAL HIDING LOGIC 🛑
+    // This step ensures ALL main sections are closed before opening one.
+    // =================================================================
+    document.querySelectorAll(ALL_MAIN_SECTIONS_SELECTOR).forEach(section => {
+        section.style.display = 'none';
+    });
+
+
+    // --- Show/Hide Subsections (Existing Logic) ---
+    // This clears the 'active' class from all subsections (assuming they use the '.section' class)
+    document.querySelectorAll(ALL_SUB_SECTIONS_SELECTOR).forEach(s => s.classList.remove('active'));
+    
     const target = document.getElementById(sectionId);
     if (target) {
-        target.classList.add('active');
+        // Show the subsection content container
+        target.classList.add('active'); 
+        
+        // 🚨 IMPORTANT: You must also ensure the main parent section is visible.
+        // Assuming the main parent container is wrapped around the subsection.
+        // You might need to adjust this depending on your HTML structure.
+        const mainContainer = target.closest(ALL_MAIN_SECTIONS_SELECTOR);
+        if (mainContainer) {
+             mainContainer.style.display = 'block'; // Or 'flex', 'grid'
+        }
+        
     } else {
         console.warn(`Section with ID ${sectionId} not found.`);
         return;
@@ -313,13 +338,14 @@ function showSubSection(sectionId, parentNavId = null) {
     const clicked = document.querySelector(`.sub-item[data-show="${sectionId}"]`);
     if (clicked) clicked.classList.add('active');
 
+    // ... (Remaining highlighting and submenu logic)
     // Highlight parent main nav button
     if (parentNavId) {
         const mainBtn = document.getElementById(parentNavId);
         if (mainBtn) mainBtn.classList.add('active');
     } else {
-         const singleBtn = document.getElementById(`nav-${mainSectionId}-logs`) || document.getElementById(`nav-${sectionId}`);
-         if (singleBtn) singleBtn.classList.add('active');
+        const singleBtn = document.getElementById(`nav-${mainSectionId}-logs`) || document.getElementById(`nav-${sectionId}`);
+        if (singleBtn) singleBtn.classList.add('active');
     }
 
     // Ensure the parent submenu is open (only if section is inside a submenu)
@@ -363,7 +389,6 @@ function showSubSection(sectionId, parentNavId = null) {
     // mobile: close sidebar after selection
     if (window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full');
 }
-
 
 /**
  * Initializes default open section & styles for the main application view.
