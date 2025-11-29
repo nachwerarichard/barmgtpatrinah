@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Operations Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Chart.js for visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         /* Custom scrollbar for a nicer look */
@@ -72,7 +73,7 @@
             
             <!-- Revenue & Profit Chart (2/3 width) -->
             <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-xl">
-                <h2 class="text-xl font-semibold mb-4 text-indigo-400">Financial Trend</h2>
+                <h2 class="text-xl font-semibold mb-4 text-indigo-400">Financial Trend: Revenue, Expenses, and Gross Profit</h2>
                 <div class="chart-container">
                     <canvas id="financialChart"></canvas>
                 </div>
@@ -273,32 +274,42 @@
 
             const ctx = document.getElementById('financialChart').getContext('2d');
             chartInstance = new Chart(ctx, {
-                type: 'bar',
+                type: 'bar', // Default type is bar, line types are defined in datasets
                 data: {
                     labels: labels,
                     datasets: [
                         {
+                            // Gross Profit is a line for clarity on margin
                             type: 'line',
                             label: 'Gross Profit',
                             data: profits,
-                            backgroundColor: 'rgba(52, 211, 153, 0.7)', // green-400
+                            backgroundColor: 'rgba(52, 211, 153, 0.9)', // green-400
                             borderColor: 'rgb(52, 211, 153)',
-                            tension: 0.3,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgb(52, 211, 153)',
+                            tension: 0.4,
                             fill: false,
+                            borderWidth: 3,
                             yAxisID: 'y'
                         },
                         {
+                            // Revenue is a bar
                             type: 'bar',
                             label: 'Total Revenue',
                             data: revenues,
                             backgroundColor: 'rgba(99, 102, 241, 0.8)', // indigo-500
+                            borderColor: 'rgb(99, 102, 241)',
+                            borderWidth: 1,
                             yAxisID: 'y'
                         },
                          {
+                            // Expenses is a bar
                             type: 'bar',
                             label: 'Total Expenses',
                             data: expenses,
                             backgroundColor: 'rgba(239, 68, 68, 0.8)', // red-500
+                            borderColor: 'rgb(239, 68, 68)',
+                            borderWidth: 1,
                             yAxisID: 'y'
                         }
                     ]
@@ -306,23 +317,43 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    // IMPORTANT: Stacked is set to false to show Revenue and Expense bars side-by-side
                     scales: {
                         x: {
-                            stacked: true,
+                            stacked: false, 
                             title: { display: true, text: 'Date (EAT)', color: '#9CA3AF' },
                             grid: { color: 'rgba(255, 255, 255, 0.1)' },
                             ticks: { color: '#D1D5DB' }
                         },
                         y: {
-                            stacked: true,
+                            stacked: false, // Ensures bars are not stacked vertically
                             beginAtZero: true,
                             title: { display: true, text: 'Amount (USD)', color: '#9CA3AF' },
                             grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#D1D5DB' }
+                            ticks: { 
+                                color: '#D1D5DB',
+                                callback: function(value) {
+                                    return formatCurrency(value); // Format ticks as currency
+                                } 
+                            }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#D1D5DB' } }
+                        legend: { labels: { color: '#D1D5DB' } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += formatCurrency(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
                     }
                 }
             });
