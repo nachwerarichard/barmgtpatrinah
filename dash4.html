@@ -35,23 +35,23 @@
         <div class="bg-white px-6 py-4 border-b border-gray-200">
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Quick Actions</p>
             <div class="flex gap-2 flex-wrap" id="quickActions">
-                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="Analyze my sales trends">
+                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="How can I increase my sales revenue?">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                     </svg>
-                    Analyze my sales trends
+                    Increase sales revenue
                 </button>
-                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="Check inventory health">
+                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="Best practices for inventory management">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
-                    Check inventory health
+                    Inventory best practices
                 </button>
-                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="Suggest improvements">
+                <button class="quick-action flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-lg text-sm font-medium transition-all" data-prompt="How to reduce business expenses?">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                     </svg>
-                    Suggest improvements
+                    Reduce expenses
                 </button>
             </div>
         </div>
@@ -66,13 +66,14 @@
                         </svg>
                         <span class="text-xs font-semibold text-indigo-600">AI Assistant</span>
                     </div>
-                    <div class="whitespace-pre-wrap text-sm leading-relaxed">Hello! I'm your AI business assistant. I can help you with:
+                    <div class="whitespace-pre-wrap text-sm leading-relaxed">Hello! I'm your AI business consultant. I can help you with:
 
-• <strong>Business Recommendations</strong> - Get insights on inventory, sales, and operations
-• <strong>Sales Forecasts</strong> - Predict future trends based on your data
-• <strong>Strategic Advice</strong> - Receive guidance on business decisions
+• <strong>Sales & Revenue Growth</strong> - Strategies to increase your sales
+• <strong>Inventory Management</strong> - Best practices and optimization tips
+• <strong>Cost Reduction</strong> - Ways to reduce expenses and improve margins
+• <strong>Business Strategy</strong> - Planning, forecasting, and market insights
 
-What would you like to know about your business?</div>
+What would you like to know about running your business?</div>
                 </div>
             </div>
         </div>
@@ -82,7 +83,7 @@ What would you like to know about your business?</div>
             <div class="flex gap-2">
                 <textarea 
                     id="messageInput"
-                    placeholder="Ask about sales trends, inventory recommendations, or business advice..."
+                    placeholder="Ask about sales strategies, inventory tips, cost reduction, or business advice..."
                     class="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     rows="2"
                 ></textarea>
@@ -100,7 +101,7 @@ What would you like to know about your business?</div>
     </div>
 
     <script>
-        const API_BASE = 'https://patrinahhotelmgtsys.onrender.com';
+        const API_BASE = 'https://pos-backend-h0g7.onrender.com';
         let messages = [];
         let isLoading = false;
 
@@ -131,27 +132,24 @@ What would you like to know about your business?</div>
         // Add message to UI
         function addMessage(role, content) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+            messageDiv.className = 'flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
             
             const contentDiv = document.createElement('div');
-            contentDiv.className = `max-w-[80%] rounded-2xl px-4 py-3 ${
-                role === 'user'
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
-                    : 'bg-gray-100 text-gray-900'
-            }`;
+            const contentClass = role === 'user' 
+                ? 'max-w-[80%] rounded-2xl px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                : 'max-w-[80%] rounded-2xl px-4 py-3 bg-gray-100 text-gray-900';
+            contentDiv.className = contentClass;
 
             if (role === 'assistant') {
-                contentDiv.innerHTML = `
-                    <div class="flex items-center gap-2 mb-2">
-                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                        <span class="text-xs font-semibold text-indigo-600">AI Assistant</span>
-                    </div>
-                    <div class="whitespace-pre-wrap text-sm leading-relaxed">${content}</div>
-                `;
+                contentDiv.innerHTML = '<div class="flex items-center gap-2 mb-2">' +
+                    '<svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>' +
+                    '</svg>' +
+                    '<span class="text-xs font-semibold text-indigo-600">AI Assistant</span>' +
+                    '</div>' +
+                    '<div class="whitespace-pre-wrap text-sm leading-relaxed">' + content + '</div>';
             } else {
-                contentDiv.innerHTML = `<div class="whitespace-pre-wrap text-sm leading-relaxed">${content}</div>`;
+                contentDiv.innerHTML = '<div class="whitespace-pre-wrap text-sm leading-relaxed">' + content + '</div>';
             }
 
             messageDiv.appendChild(contentDiv);
@@ -164,16 +162,14 @@ What would you like to know about your business?</div>
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'loadingIndicator';
             loadingDiv.className = 'flex justify-start';
-            loadingDiv.innerHTML = `
-                <div class="bg-gray-100 rounded-2xl px-4 py-3">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
-                        <span class="text-sm text-gray-600">Analyzing your business data...</span>
-                    </div>
-                </div>
-            `;
+            loadingDiv.innerHTML = '<div class="bg-gray-100 rounded-2xl px-4 py-3">' +
+                '<div class="flex items-center gap-2">' +
+                '<svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>' +
+                '</svg>' +
+                '<span class="text-sm text-gray-600">Analyzing your business data...</span>' +
+                '</div>' +
+                '</div>';
             messagesContainer.appendChild(loadingDiv);
             scrollToBottom();
         }
@@ -224,17 +220,17 @@ What would you like to know about your business?</div>
             const inventoryData = data.inventoryData;
             const expensesData = data.expensesData;
 
-            return 'You are an AI business consultant analyzing data for a retail/inventory business. Here is the current business data:\n\n' +
-                '**Recent Sales (last 50 transactions):**\n' +
-                JSON.stringify(salesData.data ? salesData.data.slice(0, 10) : [], null, 2) + '\n' +
-                'Total sales records: ' + (salesData.total || 0) + '\n\n' +
-                '**Current Inventory:**\n' +
-                JSON.stringify(inventoryData.data ? inventoryData.data.slice(0, 10) : [], null, 2) + '\n' +
-                'Total inventory items: ' + (inventoryData.total || 0) + '\n\n' +
-                '**Recent Expenses:**\n' +
-                JSON.stringify(expensesData.data ? expensesData.data.slice(0, 10) : [], null, 2) + '\n' +
-                'Total expense records: ' + (expensesData.total || 0) + '\n\n' +
-                'Based on this data, provide actionable insights, recommendations, and analysis. Be specific and reference the actual data when making suggestions.';
+            return 'You are an AI business consultant providing advice for retail and inventory businesses. ' +
+                'Provide general business insights, recommendations, and strategic advice on topics like:\n\n' +
+                '- Sales optimization and revenue growth\n' +
+                '- Inventory management best practices\n' +
+                '- Expense reduction strategies\n' +
+                '- Profit margin improvement\n' +
+                '- Customer retention and satisfaction\n' +
+                '- Business forecasting and planning\n' +
+                '- Cash flow management\n' +
+                '- Market trends and opportunities\n\n' +
+                'Be specific, actionable, and practical in your recommendations. Use examples and best practices from successful retail businesses.';
         }
 
         // Call Claude API
@@ -301,7 +297,7 @@ What would you like to know about your business?</div>
             } catch (error) {
                 console.error('Error:', error);
                 hideLoading();
-                addMessage('assistant', 'I encountered an error: ' + error.message + '\n\nPlease ensure you are logged in and try again.');
+                addMessage('assistant', 'I encountered an error: ' + error.message + '\n\nPlease try again in a moment.');
             } finally {
                 // Reset loading state
                 isLoading = false;
