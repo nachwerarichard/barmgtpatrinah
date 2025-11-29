@@ -1,4 +1,219 @@
-/* app.js
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Business Analytics Dashboard</title>
+
+  <!-- Tailwind CDN (for quick start) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Icons (Heroicons) -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    /* small helpers */
+    .kpi { min-width: 160px; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 6px 18px rgba(15,23,42,0.06); }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Topbar -->
+  <header class="bg-white shadow sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <button id="menuBtn" class="p-2 rounded-md hover:bg-gray-100"><i data-feather="menu"></i></button>
+        <h1 class="text-2xl font-semibold">Business Analytics</h1>
+        <span id="currentDate" class="text-gray-500 ml-4"></span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div id="loggedUser" class="text-sm text-gray-600"></div>
+        <button id="refreshBtn" class="px-3 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Refresh</button>
+        <button id="logoutBtn" class="px-3 py-2 rounded-md border">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-4 grid grid-cols-12 gap-4">
+
+    <!-- Left: Sidebar -->
+    <aside class="col-span-12 md:col-span-3 lg:col-span-2">
+      <div class="card p-4">
+        <div class="mb-3">
+          <h2 class="font-medium text-lg">Filters</h2>
+        </div>
+        <div class="space-y-3">
+          <label class="block text-sm">Date (EAT)</label>
+          <input id="filterDate" type="date" class="w-full p-2 border rounded" />
+
+          <label class="block text-sm">Top items limit</label>
+          <input id="limitTop" type="number" value="5" min="1" class="w-full p-2 border rounded" />
+
+          <button id="applyFilters" class="w-full mt-2 p-2 bg-indigo-600 text-white rounded">Apply</button>
+
+          <hr class="my-3" />
+          <h3 class="text-sm font-semibold">Quick Links</h3>
+          <ul class="text-sm mt-2 space-y-1">
+            <li><a href="#sales" class="text-indigo-600 hover:underline">Sales trend</a></li>
+            <li><a href="#top-items" class="text-indigo-600 hover:underline">Top items</a></li>
+            <li><a href="#inventory" class="text-indigo-600 hover:underline">Inventory</a></li>
+            <li><a href="#expenses" class="text-indigo-600 hover:underline">Expenses</a></li>
+            <li><a href="#audit" class="text-indigo-600 hover:underline">Audit logs</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card p-4 mt-4">
+        <h3 class="font-medium mb-2">Low Stock</h3>
+        <ul id="lowStockList" class="text-sm space-y-2 max-h-56 overflow-auto"></ul>
+      </div>
+
+      <div class="card p-4 mt-4">
+        <h3 class="font-medium mb-2">Login</h3>
+        <form id="loginForm" class="space-y-2">
+          <input id="username" placeholder="username" class="w-full p-2 border rounded" />
+          <input id="password" type="password" placeholder="password" class="w-full p-2 border rounded" />
+          <button type="submit" class="w-full p-2 bg-green-600 text-white rounded">Sign in</button>
+        </form>
+        <div id="loginMsg" class="text-sm mt-2 text-red-600"></div>
+      </div>
+    </aside>
+
+    <!-- Right: Main content -->
+    <section class="col-span-12 md:col-span-9 lg:col-span-10 space-y-4">
+
+      <!-- KPI row -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="card p-4 kpi">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">Total Sales</div>
+              <div id="kpiSales" class="text-2xl font-bold">—</div>
+            </div>
+            <div class="text-green-600 font-semibold">▲</div>
+          </div>
+        </div>
+
+        <div class="card p-4 kpi">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">Total Profit</div>
+              <div id="kpiProfit" class="text-2xl font-bold">—</div>
+            </div>
+            <div class="text-indigo-600 font-semibold">%</div>
+          </div>
+        </div>
+
+        <div class="card p-4 kpi">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">Total Expenses</div>
+              <div id="kpiExpenses" class="text-2xl font-bold">—</div>
+            </div>
+            <div class="text-red-600 font-semibold">▼</div>
+          </div>
+        </div>
+
+        <div class="card p-4 kpi">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">Items below threshold</div>
+              <div id="kpiLowStock" class="text-2xl font-bold">—</div>
+            </div>
+            <div><i data-feather="alert-triangle"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div id="sales" class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Sales Trend</h3>
+            <div class="text-sm text-gray-500">Daily total sales</div>
+          </div>
+          <canvas id="salesChart" height="160"></canvas>
+        </div>
+
+        <div id="profit" class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Profit Trend</h3>
+            <div class="text-sm text-gray-500">Daily profit</div>
+          </div>
+          <canvas id="profitChart" height="160"></canvas>
+        </div>
+
+        <div id="top-items" class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Top Selling Items</h3>
+            <div class="text-sm text-gray-500">By number sold</div>
+          </div>
+          <canvas id="topItemsChart" height="160"></canvas>
+        </div>
+
+        <div id="inventory" class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Inventory Snapshot</h3>
+            <div class="text-sm text-gray-500">Latest closing stock</div>
+          </div>
+          <canvas id="inventoryChart" height="160"></canvas>
+        </div>
+      </div>
+
+      <!-- Expenses & Cash -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div id="expenses" class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Expenses Trend</h3>
+            <div class="text-sm text-gray-500">Daily total expenses</div>
+          </div>
+          <canvas id="expensesChart" height="140"></canvas>
+        </div>
+
+        <div id="cash" class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Cash Trend</h3>
+            <div class="text-sm text-gray-500">Cash at hand vs banked</div>
+          </div>
+          <canvas id="cashChart" height="140"></canvas>
+        </div>
+      </div>
+
+      <!-- Audit logs -->
+      <div id="audit" class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold">Recent Audit Logs</h3>
+          <div class="text-sm text-gray-500">Last 50 actions</div>
+        </div>
+        <div class="overflow-auto max-h-72">
+          <table class="min-w-full text-sm">
+            <thead class="text-left text-gray-500">
+              <tr>
+                <th class="p-2">Time</th>
+                <th class="p-2">User</th>
+                <th class="p-2">Action</th>
+                <th class="p-2">Details</th>
+              </tr>
+            </thead>
+            <tbody id="auditTable" class="divide-y"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- App script -->
+  <script src="./app.js"></script>
+  <script>
+    feather.replace()
+
+     /* app.js
    Vanilla JS dashboard client for your backend analytics.
    Configure API_BASE below to point to your server.
 */
@@ -424,3 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadDashboard();
 });
+
+  </script>
+</body>
+</html>
