@@ -7,6 +7,8 @@
   <title>BMS</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
   <style>
     /* Keep your section visibility rules */
     .section { display: none; }
@@ -104,6 +106,14 @@
        The border-top method above is the standard, simple implementation. */
 }
 
+     /* Custom scrollbar for a nicer look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; /* bg-gray-800 */ }
+        ::-webkit-scrollbar-thumb { background: #4b5563; /* bg-gray-600 */ border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; /* bg-gray-500 */ }
+        
+        /* Ensures the charts adapt cleanly */
+        .chart-container { height: 350px; width: 100%; }
 
   </style>
 </head>
