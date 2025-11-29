@@ -392,8 +392,8 @@ function initSidebarState() {
 function updateUIForUserRole() {
     // MAPPING FIX: Confirmed all 6 main nav items for full-access roles.
     const rolePermissions = {
-        'Nachwera Richard': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs'],
-        'Nelson': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs'],
+        'Nachwera Richard': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashbaord'],
+        'Nelson': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashboard'],
         'Florence': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs'],
         'Martha': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management'],
         'Mercy': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management'],
