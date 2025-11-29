@@ -102,470 +102,366 @@ Try asking: "Show me a business summary" or "Which items need restocking?"</div>
             </div>
         </div>
     </div>
+<script>
+    const API_BASE = 'https://patrinahhotelmgtsys.onrender.com';
+    let isLoading = false;
 
-    <script>
-        const API_BASE = 'https://patrinahhotelmgtsys.onrender.com';
-        let isLoading = false;
+    // DOM Elements
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const quickActions = document.querySelectorAll('.quick-action');
 
-        // DOM Elements
-        const messagesContainer = document.getElementById('messagesContainer');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const quickActions = document.querySelectorAll('.quick-action');
-
-        // Initialize
-        function init() {
-            sendButton.addEventListener('click', handleSend);
-            messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                }
-            });
-
-            quickActions.forEach(button => {
-                button.addEventListener('click', () => {
-                    const prompt = button.dataset.prompt;
-                    messageInput.value = prompt;
-                    handleSend();
-                });
-            });
-        }
-
-        // Add message to UI
-        function addMessage(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
-            
-            const contentDiv = document.createElement('div');
-            const contentClass = role === 'user' 
-                ? 'max-w-[80%] rounded-2xl px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
-                : 'max-w-[80%] rounded-2xl px-4 py-3 bg-gray-100 text-gray-900';
-            contentDiv.className = contentClass;
-
-            if (role === 'assistant') {
-                contentDiv.innerHTML = '<div class="flex items-center gap-2 mb-2">' +
-                    '<svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>' +
-                    '</svg>' +
-                    '<span class="text-xs font-semibold text-indigo-600">AI Assistant</span>' +
-                    '</div>' +
-                    '<div class="whitespace-pre-wrap text-sm leading-relaxed">' + content + '</div>';
-            } else {
-                contentDiv.innerHTML = '<div class="whitespace-pre-wrap text-sm leading-relaxed">' + content + '</div>';
+    // Utility Functions (Same as before)
+    function init() {
+        sendButton.addEventListener('click', handleSend);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
             }
+        });
 
-            messageDiv.appendChild(contentDiv);
-            messagesContainer.appendChild(messageDiv);
-            scrollToBottom();
-        }
+        quickActions.forEach(button => {
+            button.addEventListener('click', () => {
+                const prompt = button.dataset.prompt;
+                messageInput.value = prompt;
+                handleSend();
+            });
+        });
+    }
 
-        // Show loading indicator
-        function showLoading() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'loadingIndicator';
-            loadingDiv.className = 'flex justify-start';
-            loadingDiv.innerHTML = '<div class="bg-gray-100 rounded-2xl px-4 py-3">' +
-                '<div class="flex items-center gap-2">' +
-                '<svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>' +
+    function addMessage(role, content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
+        
+        const contentDiv = document.createElement('div');
+        const contentClass = role === 'user' 
+            ? 'max-w-[80%] rounded-2xl px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+            : 'max-w-[80%] rounded-2xl px-4 py-3 bg-gray-100 text-gray-900';
+        contentDiv.className = contentClass;
+
+        if (role === 'assistant') {
+            contentDiv.innerHTML = '<div class="flex items-center gap-2 mb-2">' +
+                '<svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>' +
                 '</svg>' +
-                '<span class="text-sm text-gray-600">Analyzing your business data...</span>' +
+                '<span class="text-xs font-semibold text-indigo-600">AI Assistant</span>' +
                 '</div>' +
-                '</div>';
-            messagesContainer.appendChild(loadingDiv);
-            scrollToBottom();
+                '<div class="whitespace-pre-wrap text-sm leading-relaxed">' + content + '</div>';
+        } else {
+            contentDiv.innerHTML = '<div class="whitespace-pre-wrap text-sm leading-relaxed">' + content + '</div>';
         }
 
-        // Remove loading indicator
-        function hideLoading() {
-            const loadingDiv = document.getElementById('loadingIndicator');
-            if (loadingDiv) {
-                loadingDiv.remove();
-            }
+        messageDiv.appendChild(contentDiv);
+        messagesContainer.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    function showLoading() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'loadingIndicator';
+        loadingDiv.className = 'flex justify-start';
+        loadingDiv.innerHTML = '<div class="bg-gray-100 rounded-2xl px-4 py-3">' +
+            '<div class="flex items-center gap-2">' +
+            '<svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>' +
+            '</svg>' +
+            '<span class="text-sm text-gray-600">Analyzing your business data...</span>' +
+            '</div>' +
+            '</div>';
+        messagesContainer.appendChild(loadingDiv);
+        scrollToBottom();
+    }
+
+    function hideLoading() {
+        const loadingDiv = document.getElementById('loadingIndicator');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+    }
+
+    function scrollToBottom() {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function formatCurrency(amount) {
+        return 'UGX ' + Math.round(amount).toLocaleString();
+    }
+
+    // --- CORE LOGIC CHANGE STARTS HERE ---
+
+    /**
+     * @description Fetches all business data and ensures a consistent data structure.
+     * To get real insights, we increase the limit to a significant number (e.g., 500)
+     * and assume the backend handles the necessary time/data filtering via parameters 
+     * or defaults to a relevant time period.
+     */
+    async function fetchBusinessData(limit = 500) {
+        // Fetch all data concurrently to reduce loading time
+        const [salesRes, inventoryRes, expensesRes] = await Promise.all([
+            fetch(`${API_BASE}/sales?limit=${limit}`),
+            fetch(`${API_BASE}/inventory?limit=${limit}`),
+            fetch(`${API_BASE}/expenses?limit=${limit}`)
+        ]);
+
+        if (!salesRes.ok || !inventoryRes.ok || !expensesRes.ok) {
+            throw new Error(`Failed to fetch business data. Status: ${salesRes.status}/${inventoryRes.status}/${expensesRes.status}`);
         }
 
-        // Scroll to bottom
-        function scrollToBottom() {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+        const salesData = await salesRes.json();
+        const inventoryData = await inventoryRes.json();
+        const expensesData = await expensesRes.json();
 
-        // Fetch business data
-        async function fetchBusinessData() {
-            // NOTE: Authentication removed. API calls proceed without token.
+        // Return the clean data arrays
+        return { 
+            sales: salesData.data || [], 
+            inventory: inventoryData.data || [], 
+            expenses: expensesData.data || [] 
+        };
+    }
 
-            const salesRes = await fetch(API_BASE + '/sales?limit=50');
-            const inventoryRes = await fetch(API_BASE + '/inventory?limit=50');
-            const expensesRes = await fetch(API_BASE + '/expenses?limit=50');
+    /**
+     * @description Performs deeper analysis on the fetched data to derive real insights.
+     */
+    function performDataAnalysis(data) {
+        const { sales, inventory, expenses } = data;
 
-            if (!salesRes.ok || !inventoryRes.ok || !expensesRes.ok) {
-                throw new Error('Failed to fetch business data. Please check the API server status.');
+        // --- 1. CORE FINANCIAL METRICS ---
+        const totalSales = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
+        const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+        const netProfit = totalSales - totalExpenses;
+        const profitMargin = totalSales > 0 ? ((netProfit / totalSales) * 100).toFixed(1) : 0;
+
+        // --- 2. SALES AGGREGATION (Top Items) ---
+        const salesByItem = {};
+        sales.forEach(sale => {
+            const item = sale.item || 'Unknown Item';
+            salesByItem[item] = (salesByItem[item] || 0) + (sale.amount || 0);
+        });
+        const topSellingItems = Object.entries(salesByItem)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        // --- 3. INVENTORY ANALYSIS (Low Stock) ---
+        const lowStockItems = inventory.filter(item => (item.closing || 0) < 10);
+        const outOfStockItems = inventory.filter(item => (item.closing || 0) === 0);
+
+        // --- 4. EXPENSE ANALYSIS (Top Categories) ---
+        const expensesByCategory = {};
+        expenses.forEach(expense => {
+            const category = expense.category || expense.description || 'Other';
+            expensesByCategory[category] = (expensesByCategory[category] || 0) + (expense.amount || 0);
+        });
+        const topExpenseCategories = Object.entries(expensesByCategory)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        return {
+            totalSales, totalExpenses, netProfit, profitMargin,
+            topSellingItems, lowStockItems, outOfStockItems,
+            topExpenseCategories
+        };
+    }
+
+    /**
+     * @description Generates an intelligent, data-driven response based on the query and analysed data.
+     * All responses now pull metrics from the data analysis object.
+     */
+    function generateResponse(query, analysis) {
+        const lowerQuery = query.toLowerCase();
+        const {
+            totalSales, totalExpenses, netProfit, profitMargin,
+            topSellingItems, lowStockItems, outOfStockItems,
+            topExpenseCategories
+        } = analysis;
+
+        // --- Business Summary (Default / Summary Query) ---
+        if (lowerQuery.includes('summary') || lowerQuery.includes('overview') || lowerQuery.includes('dashboard') ||
+            lowerQuery.includes('status') || lowerQuery.includes('how') && lowerQuery.includes('doing')) {
+
+            let lowStockAlerts = '';
+            if (lowStockItems.length > 0) {
+                const itemNames = lowStockItems.slice(0, 5).map(i => i.item).join(', ');
+                lowStockAlerts = `• Low Stock Alerts: **${lowStockItems.length} items**\n• Needs Restock: ${itemNames}`;
+            } else {
+                lowStockAlerts = '• Inventory Status: **All items adequately stocked**';
             }
+            
+            return `📊 **Business Performance Summary**
 
-            const salesData = await salesRes.json();
-            const inventoryData = await inventoryRes.json();
-            const expensesData = await expensesRes.json();
+---
 
-            return { 
-                sales: salesData.data || [], 
-                inventory: inventoryData.data || [], 
-                expenses: expensesData.data || [] 
-            };
-        }
-
-        // Format currency
-        function formatCurrency(amount) {
-            return 'UGX ' + Math.round(amount).toLocaleString();
-        }
-
-        // Generate intelligent response based on query
-        function generateResponse(query, data) {
-            const lowerQuery = query.toLowerCase();
-            const { sales, inventory, expenses } = data;
-
-            // Calculate key metrics
-            const totalSales = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
-            const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-            const profit = totalSales - totalExpenses;
-            const profitMargin = totalSales > 0 ? ((profit / totalSales) * 100).toFixed(1) : 0;
-
-            // Business Summary / Overview / Dashboard
-            if (lowerQuery.includes('summary') || lowerQuery.includes('overview') || 
-                lowerQuery.includes('dashboard') || lowerQuery.includes('status') ||
-                lowerQuery.includes('how') && (lowerQuery.includes('doing') || lowerQuery.includes('business'))) {
-                
-                const lowStock = inventory.filter(item => item.closing < 10);
-                const avgSale = sales.length > 0 ? (totalSales / sales.length) : 0;
-                
-                return `📊 <strong>Business Performance Summary</strong>
-
-💰 <strong>Financial Overview:</strong>
-• Total Sales: ${formatCurrency(totalSales)} (${sales.length} transactions)
-• Total Expenses: ${formatCurrency(totalExpenses)} (${expenses.length} items)
-• Net Profit: ${formatCurrency(profit)}
-• Profit Margin: ${profitMargin}%
-
-📦 <strong>Inventory Status:</strong>
-• Total Items: ${inventory.length}
-• Low Stock Alerts: ${lowStock.length} items
-${lowStock.length > 0 ? '• Items Needing Restock: ' + lowStock.slice(0, 5).map(i => i.item).join(', ') : '• All items adequately stocked'}
-
-📈 <strong>Sales Insights:</strong>
-• Average Transaction: ${formatCurrency(avgSale)}
-• Performance: ${profit > 0 ? '✅ Profitable' : '⚠️ Needs Attention'}
-
-${profit < 0 ? '\n⚠️ <strong>Recommendation:</strong> Your expenses exceed sales. Consider reviewing high-cost items and focusing on revenue growth strategies.' : ''}`;
-            }
-
-            // Sales queries
-            if (lowerQuery.includes('sales') || lowerQuery.includes('revenue') || lowerQuery.includes('income')) {
-                if (sales.length === 0) {
-                    return '📊 <strong>Sales Report</strong>\n\nNo sales records found. Start recording your sales to see insights here.';
-                }
-
-                // Group sales by item/category if available
-                const salesByItem = {};
-                sales.forEach(sale => {
-                    const item = sale.item || 'Other';
-                    salesByItem[item] = (salesByItem[item] || 0) + (sale.amount || 0);
-                });
-
-                const topItems = Object.entries(salesByItem)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 5);
-
-                let response = `💰 <strong>Sales Analysis</strong>
-
-<strong>Revenue Summary:</strong>
-• Total Sales: ${formatCurrency(totalSales)}
-• Number of Transactions: ${sales.length}
-• Average Sale: ${formatCurrency(totalSales / sales.length)}`;
-
-                if (topItems.length > 0 && topItems[0][0] !== 'Other') {
-                    response += `\n\n<strong>Top Selling Items:</strong>\n`;
-                    topItems.forEach(([item, amount], idx) => {
-                        response += `${idx + 1}. ${item}: ${formatCurrency(amount)}\n`;
-                    });
-                }
-
-                response += `\n💡 <strong>Insight:</strong> `;
-                if (totalSales > totalExpenses) {
-                    response += `Your sales are exceeding expenses by ${formatCurrency(profit)}. Great work! Consider reinvesting in top-performing items.`;
-                } else {
-                    response += `Focus on increasing sales volume and promoting your best-selling items to improve profitability.`;
-                }
-
-                return response;
-            }
-
-            // Inventory queries
-            if (lowerQuery.includes('inventory') || lowerQuery.includes('stock') || 
-                lowerQuery.includes('restock') || lowerQuery.includes('items')) {
-                
-                if (inventory.length === 0) {
-                    return '📦 <strong>Inventory Report</strong>\n\nNo inventory records found. Add items to your inventory to track stock levels.';
-                }
-
-                const lowStock = inventory.filter(item => item.closing < 10);
-                const outOfStock = inventory.filter(item => item.closing === 0);
-                const adequateStock = inventory.filter(item => item.closing >= 10);
-                const totalValue = inventory.reduce((sum, item) => sum + ((item.closing || 0) * (item.price || 0)), 0);
-
-                let response = `📦 <strong>Inventory Status Report</strong>
-
-<strong>Stock Overview:</strong>
-• Total Items: ${inventory.length}
-• Items in Stock: ${adequateStock.length}
-• Low Stock: ${lowStock.length} items
-• Out of Stock: ${outOfStock.length} items`;
-
-                if (lowStock.length > 0) {
-                    response += `\n\n⚠️ <strong>Low Stock Alerts:</strong>\n`;
-                    lowStock.slice(0, 10).forEach(item => {
-                        response += `• ${item.item}: ${item.closing} units remaining\n`;
-                    });
-                }
-
-                if (outOfStock.length > 0) {
-                    response += `\n\n🚨 <strong>Out of Stock:</strong>\n`;
-                    outOfStock.slice(0, 5).forEach(item => {
-                        response += `• ${item.item}\n`;
-                    });
-                }
-
-                response += `\n\n💡 <strong>Recommendation:</strong> `;
-                if (lowStock.length > 0) {
-                    response += `Reorder ${lowStock.length} items to avoid stockouts. Maintain at least 10-15 units of fast-moving items.`;
-                } else {
-                    response += `Your inventory levels look healthy! Continue monitoring daily to stay ahead of demand.`;
-                }
-
-                return response;
-            }
-
-            // Expense queries
-            if (lowerQuery.includes('expense') || lowerQuery.includes('cost') || 
-                lowerQuery.includes('spending') || lowerQuery.includes('spend')) {
-                
-                if (expenses.length === 0) {
-                    return '💳 <strong>Expense Report</strong>\n\nNo expense records found. Track your expenses to better manage costs.';
-                }
-
-                // Group expenses by category
-                const expensesByCategory = {};
-                expenses.forEach(expense => {
-                    const category = expense.category || expense.description || 'Other';
-                    expensesByCategory[category] = (expensesByCategory[category] || 0) + (expense.amount || 0);
-                });
-
-                const topExpenses = Object.entries(expensesByCategory)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 5);
-
-                let response = `💳 <strong>Expense Analysis</strong>
-
-<strong>Spending Summary:</strong>
+💰 **Financials**
+• Total Sales: **${formatCurrency(totalSales)}**
 • Total Expenses: ${formatCurrency(totalExpenses)}
-• Number of Expenses: ${expenses.length}
-• Average Expense: ${formatCurrency(totalExpenses / expenses.length)}
+• Net Profit: **${formatCurrency(netProfit)}**
+• Profit Margin: **${profitMargin}%**
 
-<strong>Top Expense Categories:</strong>
-`;
-                topExpenses.forEach(([category, amount], idx) => {
-                    const percentage = ((amount / totalExpenses) * 100).toFixed(1);
-                    response += `${idx + 1}. ${category}: ${formatCurrency(amount)} (${percentage}%)\n`;
+---
+
+📦 **Inventory Health**
+${lowStockAlerts}
+• Out of Stock: ${outOfStockItems.length} items
+
+---
+
+📈 **Key Insights**
+• Top Seller: **${topSellingItems[0] ? topSellingItems[0][0] : 'N/A'}** (${formatCurrency(topSellingItems[0] ? topSellingItems[0][1] : 0)})
+• Top Expense: **${topExpenseCategories[0] ? topExpenseCategories[0][0] : 'N/A'}** (${formatCurrency(topExpenseCategories[0] ? topExpenseCategories[0][1] : 0)})
+• Performance: ${netProfit > 0 ? '✅ Profitable' : '⚠️ Needs Immediate Attention'}`;
+        }
+        
+        // --- Sales Analysis ---
+        if (lowerQuery.includes('sales') || lowerQuery.includes('revenue') || lowerQuery.includes('income') || lowerQuery.includes('selling')) {
+            let topSellersOutput = 'No sales data available.';
+            if (topSellingItems.length > 0) {
+                topSellersOutput = ``;
+                topSellingItems.forEach(([item, amount], idx) => {
+                    topSellersOutput += `${idx + 1}. **${item}**: ${formatCurrency(amount)}\n`;
                 });
-
-                response += `\n💡 <strong>Cost Management Tips:</strong>\n`;
-                if (totalExpenses > totalSales * 0.7) {
-                    response += `• Your expenses are ${((totalExpenses/totalSales)*100).toFixed(0)}% of sales. Aim to reduce to 60-70%\n`;
-                    response += `• Review your top expense category: ${topExpenses[0][0]}\n`;
-                    response += `• Look for cost-saving opportunities in recurring expenses`;
-                } else {
-                    response += `• Your expense ratio is healthy at ${((totalExpenses/totalSales)*100).toFixed(0)}% of sales\n`;
-                    response += `• Continue monitoring ${topExpenses[0][0]} as your largest expense\n`;
-                    response += `• Maintain this discipline for sustained profitability`;
-                }
-
-                return response;
             }
 
-            // Profit queries
-            if (lowerQuery.includes('profit') || lowerQuery.includes('margin') || 
-                lowerQuery.includes('earning') || lowerQuery.includes('net')) {
-                
-                let response = `📈 <strong>Profitability Analysis</strong>
+            return `💰 **Detailed Sales Analysis**
 
-<strong>Financial Performance:</strong>
-• Total Revenue: ${formatCurrency(totalSales)}
-• Total Costs: ${formatCurrency(totalExpenses)}
-• Net Profit: ${formatCurrency(profit)}
-• Profit Margin: ${profitMargin}%
+---
 
-<strong>Status:</strong> ${profit > 0 ? '✅ Profitable' : '⚠️ Operating at a Loss'}
+**Revenue Overview:**
+• Total Revenue: **${formatCurrency(totalSales)}**
+• Profitability: ${netProfit > 0 ? 'Net Profit' : 'Net Loss'} of ${formatCurrency(Math.abs(netProfit))}
 
-`;
+**Top 5 Selling Items (by Revenue):**
+${topSellersOutput}
 
-                if (profit > 0) {
-                    response += `🎉 <strong>Great job!</strong> Your business is profitable.\n\n`;
-                    response += `<strong>Growth Strategies:</strong>\n`;
-                    response += `• Reinvest ${(profit * 0.3).toFixed(0)} (30%) back into inventory\n`;
-                    response += `• Focus on scaling your top-selling items\n`;
-                    response += `• Consider expanding product range based on demand`;
-                } else {
-                    response += `⚠️ <strong>Action Required:</strong> You need to improve profitability.\n\n`;
-                    response += `<strong>Immediate Steps:</strong>\n`;
-                    response += `• Reduce expenses by ${formatCurrency(Math.abs(profit))} to break even\n`;
-                    response += `• Increase sales focus on high-margin items\n`;
-                    response += `• Review and cut non-essential expenses\n`;
-                    response += `• Consider price adjustments for better margins`;
-                }
+💡 **Recommendation:** ${topSellingItems.length > 0 ? `Focus marketing and stock ordering on your top item: **${topSellingItems[0][0]}** to maximize revenue.` : `No sales data to analyse.`}`;
+        }
 
-                return response;
+        // --- Inventory Check ---
+        if (lowerQuery.includes('inventory') || lowerQuery.includes('stock') || lowerQuery.includes('restock')) {
+            let lowStockOutput = '✅ All key items are adequately stocked.';
+            if (lowStockItems.length > 0) {
+                lowStockOutput = `⚠️ **${lowStockItems.length} items** are running low (under 10 units):\n`;
+                lowStockItems.slice(0, 10).forEach(item => {
+                    lowStockOutput += `• **${item.item}**: ${item.closing || 0} units left\n`;
+                });
+            }
+            if (outOfStockItems.length > 0) {
+                lowStockOutput += `\n🚨 **${outOfStockItems.length} items are OUT OF STOCK** including: ${outOfStockItems.slice(0, 3).map(i => i.item).join(', ')}`;
             }
 
-            // Trends / performance / growth
-            if (lowerQuery.includes('trend') || lowerQuery.includes('performance') || 
-                lowerQuery.includes('grow') || lowerQuery.includes('improve')) {
-                
-                return `📊 <strong>Business Performance & Growth Insights</strong>
+            return `📦 **Inventory Status Report**
 
-<strong>Current Metrics:</strong>
-• Revenue: ${formatCurrency(totalSales)}
-• Profit: ${formatCurrency(profit)} (${profitMargin}% margin)
-• Inventory Items: ${inventory.length}
+---
 
-<strong>Growth Opportunities:</strong>
+**Stock Summary:**
+• Total Inventory Items Tracked: **${analysis.inventory.length}**
 
-1️⃣ <strong>Revenue Growth:</strong>
-   • Promote best-selling items
-   • Introduce bundled offers
-   • Focus on customer retention
+**Stock Alerts:**
+${lowStockOutput}
 
-2️⃣ <strong>Cost Optimization:</strong>
-   • Negotiate better supplier rates
-   • Reduce waste and spoilage
-   • Optimize inventory turnover
+💡 **Action Plan:** Create a reorder list immediately for the **${lowStockItems.length + outOfStockItems.length}** low/out-of-stock items to prevent lost sales.`;
+        }
 
-3️⃣ <strong>Inventory Management:</strong>
-   • Stock popular items adequately
-   • Reduce slow-moving inventory
-   • Implement just-in-time ordering
-
-4️⃣ <strong>Profitability:</strong>
-   • Target 20-30% profit margins
-   • Review pricing strategy
-   • Focus on high-margin products
-
-💡 <strong>Next Step:</strong> Focus on your top 3 selling items and ensure they're always in stock to maximize revenue.`;
+        // --- Expense Analysis ---
+        if (lowerQuery.includes('expense') || lowerQuery.includes('cost') || lowerQuery.includes('spending')) {
+            let topExpensesOutput = 'No expense data available.';
+            if (topExpenseCategories.length > 0) {
+                topExpensesOutput = ``;
+                topExpenseCategories.forEach(([category, amount], idx) => {
+                    const percentage = ((amount / totalExpenses) * 100).toFixed(1);
+                    topExpensesOutput += `${idx + 1}. **${category}**: ${formatCurrency(amount)} (${percentage}% of total)\n`;
+                });
             }
 
-            // Help / What can you do
-            if (lowerQuery.includes('help') || lowerQuery.includes('what can') || 
-                lowerQuery.includes('how to') || lowerQuery.includes('assist')) {
-                
-                return `🤖 <strong>I'm Your Business Intelligence Assistant!</strong>
+            return `💳 **Expense Analysis**
 
-I can help you analyze and understand your business data. Try asking me:
+---
 
-📊 <strong>Business Overview:</strong>
-• "Show me a business summary"
-• "How is my business doing?"
-• "Give me a dashboard"
+**Spending Summary:**
+• Total Expenses: **${formatCurrency(totalExpenses)}**
+• Expense-to-Sales Ratio: **${((totalExpenses/totalSales)*100).toFixed(0)}%**
 
-💰 <strong>Sales Analysis:</strong>
-• "What are my total sales?"
-• "Show me revenue"
-• "What are my top selling items?"
+**Top 5 Expense Categories:**
+${topExpensesOutput}
 
-📦 <strong>Inventory Management:</strong>
-• "Check inventory status"
-• "What items need restocking?"
-• "Show me low stock items"
+💡 **Recommendation:** Your largest expense is **${topExpenseCategories[0] ? topExpenseCategories[0][0] : 'N/A'}**. Review this category for potential cost-saving measures, such as negotiating supplier contracts or reducing usage.`;
+        }
 
-💳 <strong>Expense Tracking:</strong>
-• "What are my expenses?"
-• "Show me top expenses"
-• "How much am I spending?"
+        // --- Profitability Analysis ---
+        if (lowerQuery.includes('profit') || lowerQuery.includes('margin') || lowerQuery.includes('earning')) {
+             return `📈 **Profitability Analysis**
 
-📈 <strong>Profitability:</strong>
-• "Analyze my profit"
-• "What's my profit margin?"
-• "Am I making money?"
+---
 
-Just ask in plain English and I'll analyze your data!`;
-            }
+**Financial Performance:**
+• Net Profit: **${formatCurrency(netProfit)}**
+• Profit Margin: **${profitMargin}%**
+• Expense-to-Sales Ratio: **${((totalExpenses/totalSales)*100).toFixed(0)}%**
 
-            // Default response - provide helpful guidance
-            return `I'm here to help you understand your business data! 
+**Status:** ${netProfit > 0 ? '✅ **Profitable**' : '⚠️ **Operating at a Loss**'}
 
-Your current business snapshot:
+💡 **Improvement Strategy:** ${netProfit > 0
+    ? `Your profit margin is **${profitMargin}%**. Aim to maintain or increase this by focusing on high-margin products (**${topSellingItems[0] ? topSellingItems[0][0] : 'N/A'}**)`
+    : `You need to reduce expenses by at least **${formatCurrency(Math.abs(netProfit))}** or increase sales to reach the break-even point.`}`;
+        }
+
+
+        // --- Default / Ambiguous Query ---
+        return `I've analyzed your data and here's a quick look:
 • Sales: ${formatCurrency(totalSales)}
 • Expenses: ${formatCurrency(totalExpenses)}
-• Profit: ${formatCurrency(profit)}
-• Inventory: ${inventory.length} items
+• Profit: ${formatCurrency(netProfit)}
 
-Try asking me things like:
-• "Show me a business summary"
-• "Check inventory status"
-• "What are my top expenses?"
-• "Analyze my profit"
-• "How can I improve sales?"
+Try asking: "Show me a **summary**", "Check **inventory**", or "What are my **top expenses**?"`;
+    }
 
-What would you like to know?`;
+    // Handle send message (Same as before, now calls performDataAnalysis)
+    async function handleSend() {
+        const messageText = messageInput.value.trim();
+        
+        if (!messageText || isLoading) return;
+
+        addMessage('user', messageText);
+        messageInput.value = '';
+        
+        isLoading = true;
+        sendButton.disabled = true;
+        messageInput.disabled = true;
+        quickActions.forEach(btn => btn.disabled = true);
+        showLoading();
+
+        try {
+            // 1. Fetch raw data from the backend
+            const businessData = await fetchBusinessData();
+            
+            // 2. Perform analysis on the raw data
+            const analysis = performDataAnalysis(businessData);
+            
+            // 3. Generate response based on the analysis
+            const response = generateResponse(messageText, analysis);
+            
+            hideLoading();
+            addMessage('assistant', response);
+
+        } catch (error) {
+            console.error('Error:', error);
+            hideLoading();
+            
+            let errorMessage = `❌ <strong>Data Error:</strong> ${error.message}`;
+            errorMessage += '\n\n💡 Failed to connect to the business API. Please ensure the backend server is running and accessible.';
+            
+            addMessage('assistant', errorMessage);
+        } finally {
+            isLoading = false;
+            sendButton.disabled = false;
+            messageInput.disabled = false;
+            quickActions.forEach(btn => btn.disabled = false);
+            messageInput.focus();
         }
+    }
 
-        // Handle send message
-        async function handleSend() {
-            const messageText = messageInput.value.trim();
-            
-            if (!messageText || isLoading) return;
-
-            // Add user message
-            addMessage('user', messageText);
-            
-            // Clear input
-            messageInput.value = '';
-            
-            // Set loading state
-            isLoading = true;
-            sendButton.disabled = true;
-            messageInput.disabled = true;
-            quickActions.forEach(btn => btn.disabled = true);
-            showLoading();
-
-            try {
-                // Fetch business data
-                const businessData = await fetchBusinessData();
-                
-                // Generate intelligent response
-                const response = generateResponse(messageText, businessData);
-                
-                // Add assistant message
-                hideLoading();
-                addMessage('assistant', response);
-
-            } catch (error) {
-                console.error('Error:', error);
-                hideLoading();
-                
-                let errorMessage = '❌ <strong>Error:</strong> ' + error.message;
-                
-                errorMessage += '\n\n💡 Please check your connection and try again.';
-                
-                addMessage('assistant', errorMessage);
-            } finally {
-                // Reset loading state
-                isLoading = false;
-                sendButton.disabled = false;
-                messageInput.disabled = false;
-                quickActions.forEach(btn => btn.disabled = false);
-                messageInput.focus();
-            }
-        }
-
-        // Initialize on load
-        init();
-    </script>
+    // Initialize on load
+    init();
+</script>
 </body>
 </html>
