@@ -86,7 +86,6 @@
                 dashboardContent.classList.remove('hidden');
                 dashboardContent.classList.add('block');
                 const username = atob(authToken).split(':')[0];
-                document.getElementById('user-info').textContent = `Logged in as: ${username}`;
                 setDefaultDateRange(); // Set default range on login
                 loadDashboardData();
             } else {
