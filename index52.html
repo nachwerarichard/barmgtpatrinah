@@ -93,16 +93,24 @@
 }
     
 
-    /* submenu visibility */
-    .submenu { display: none; }
-    .submenu.open { display: block; }
+    /*
+ * Color Palette used:
+ * Deep Brown-Red (Dark Text): #452829
+ * Warm Beige (Accent BG): #E8D1C5 (RGB: 232, 209, 197)
+*/
 
-    /* small visual for subsection active */
-    .sub-item.active {
-      background-color: rgba(16,185,129,0.12);
-      font-weight: 700;
-      color: #065f46;
-    }
+/* submenu visibility */
+.submenu { display: none; }
+.submenu.open { display: block; }
+
+/* small visual for subsection active */
+.sub-item.active {
+  /* Active Background: Use a semi-transparent Warm Beige for a soft glow/highlight effect. */
+  background-color: rgba(232, 209, 197, 0.4); 
+  font-weight: 700;
+  /* Active Text: Use the darkest color (#452829) for high contrast and readability. */
+  color: #452829;
+}
 
     /* ensure submenu list items align */
     .sidebar-sublist button { padding-left: 1.75rem; }
