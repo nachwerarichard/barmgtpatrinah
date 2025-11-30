@@ -16,31 +16,39 @@
     const quickActions = document.querySelectorAll('.quick-action');
 
     // NEW: Toggle Chat Functionality
-    function toggleChat() {
-        isChatOpen = !isChatOpen;
-        if (isChatOpen) {
-            // Open state: Show widget, hide chat icon, show close icon
-            chatWidget.classList.remove('opacity-0', 'scale-0');
-            chatWidget.classList.add('opacity-100', 'scale-100');
-            openChatButton.classList.add('mt-4'); // Keep spacing consistent
-            openChatButton.classList.remove('mt-0');
+  function toggleChat() {
+    isChatOpen = !isChatOpen;
 
-            chatIcon.classList.add('hidden');
-            closeIcon.classList.remove('hidden');
+    if (isChatOpen) {
+        // OPEN
+        chatWidget.classList.remove('opacity-0', 'scale-0');
+        chatWidget.classList.add('opacity-100', 'scale-100');
 
-            // Set the chat widget to appear above the button
-            chatWidget.style.marginBottom = `${openChatButton.offsetHeight + 16}px`; // Add space for button + margin
-        } else {
-            // Closed state: Hide widget, show chat icon, hide close icon
-            chatWidget.classList.remove('opacity-100', 'scale-100');
-            chatWidget.classList.add('opacity-0', 'scale-0');
-            openChatButton.classList.remove('mt-4');
-            openChatButton.classList.add('mt-0');
-            
-            chatIcon.classList.remove('hidden');
-            closeIcon.classList.add('hidden');
-        }
+        chatWidget.style.pointerEvents = "auto";
+        chatWidget.style.visibility = "visible";
+
+        openChatButton.classList.add('mt-4');
+        openChatButton.classList.remove('mt-0');
+        chatIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+
+        chatWidget.style.marginBottom = `${openChatButton.offsetHeight + 16}px`;
+
+    } else {
+        // CLOSE
+        chatWidget.classList.remove('opacity-100', 'scale-100');
+        chatWidget.classList.add('opacity-0', 'scale-0');
+
+        chatWidget.style.pointerEvents = "none";  // ← prevents blocking clicks
+        chatWidget.style.visibility = "hidden";    // ← removes it visually but keeps animation smooth
+
+        openChatButton.classList.remove('mt-4');
+        openChatButton.classList.add('mt-0');
+        chatIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
     }
+}
+
 
     // Utility Functions (Same as before)
     function init() {
