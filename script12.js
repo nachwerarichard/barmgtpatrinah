@@ -2804,6 +2804,20 @@ function showSection(sectionId) {
         section.style.display = 'none';
     });
 
+
+document.querySelectorAll('.submenu').forEach(s => {
+        const navButton = document.querySelector(`[data-target="${s.id}"]`);
+        const arrow = navButton?.querySelector('.arrow-icon');
+        
+        s.classList.remove('open');
+        
+        if (arrow) {
+            arrow.classList.remove('fa-chevron-up');
+            arrow.classList.add('fa-chevron-down');
+        }
+    });
+    
+    
     // 3. Find the requested section and show it.
     const targetSection = document.getElementById(sectionId);
 
