@@ -269,10 +269,9 @@
                 const row = document.createElement('tr');
                 row.classList.add('hover:bg-gray-700', 'transition', 'duration-150');
                 row.innerHTML = `
-                    <td class="py-3 text-sm font-medium text-white">${item.item}</td>
-                    <td class="py-3 text-sm text-right font-bold text-red-400">${item.closingStock} units</td>
-                `;
-                lowStockList.appendChild(row);
+                    <td class="py-3 text-sm font-medium text-gray-800">${item.item}</td>
+                <td class="py-3 text-sm text-right font-bold text-red-500">${item.closingStock} </td>
+            `;
             });
         }
         
