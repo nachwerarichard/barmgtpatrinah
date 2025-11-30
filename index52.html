@@ -893,62 +893,66 @@ Try asking: "Show me a business summary" or "Which items need restocking?"</div>
 
         
 
-        <section id="dashboard" class="section-content bg-white p-6 rounded-xl shadow-lg mb-6 hidden">
-    <h2 class="text-2xl font-bold mb-4 text-emerald-600">Dashboard</h2>
+
+        <section id="dashboard" class="section-content bg-[#F3E8DF] p-6 rounded-xl shadow-lg mb-6 hidden">
+    <h2 class="text-2xl font-bold mb-4 text-[#452829]">Dashboard</h2>
 
     <div id="dashboard-content">
         
-
-        <div class="bg-gray-800 p-4 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <h2 class="text-lg font-semibold text-white">Financial Report Period: <span id="period-display" class="text-indigo-400">Last 7 Days</span></h2>
+        <div class="bg-[#57595B] p-4 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <h2 class="text-lg font-semibold text-[#F3E8DF]">Financial Report Period: <span id="period-display" class="text-[#E8D1C5]">Last 7 Days</span></h2>
             <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                <input type="date" id="start-date" class="p-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
-                <input type="date" id="end-date" class="p-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
-                <button id="apply-filter-button" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition duration-200">Search</button>
+                <input type="date" id="start-date" class="p-2 bg-[#452829] border border-[#E8D1C5] rounded-lg text-sm text-[#E8D1C5] focus:ring-[#E8D1C5] focus:border-[#E8D1C5]">
+                <input type="date" id="end-date" class="p-2 bg-[#452829] border border-[#E8D1C5] rounded-lg text-sm text-[#E8D1C5] focus:ring-[#E8D1C5] focus:border-[#E8D1C5]">
+                <button id="apply-filter-button" class="bg-[#452829] hover:bg-[#57595B] text-[#F3E8DF] text-sm font-semibold py-2 px-4 rounded-lg transition duration-200">Search</button>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="kpi-card bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-indigo-500">
-                <p class="text-sm text-indigo-400 font-semibold">Total Revenue</p>
-                <h3 id="kpi-revenue" class="text-3xl font-bold mt-2 text-white">$0.00</h3>
+            
+            <div class="kpi-card bg-[#57595B] p-6 rounded-xl shadow-xl border-t-4 border-[#E8D1C5]">
+                <p class="text-sm text-[#E8D1C5] font-semibold">Total Revenue</p>
+                <h3 id="kpi-revenue" class="text-3xl font-bold mt-2 text-[#F3E8DF]">$0.00</h3>
             </div>
-            <div class="kpi-card bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-green-500">
+            
+            <div class="kpi-card bg-[#57595B] p-6 rounded-xl shadow-xl border-t-4 border-green-500">
                 <p class="text-sm text-green-400 font-semibold">Gross Profit</p>
-                <h3 id="kpi-profit" class="text-3xl font-bold mt-2 text-white">$0.00</h3>
+                <h3 id="kpi-profit" class="text-3xl font-bold mt-2 text-[#F3E8DF]">$0.00</h3>
             </div>
-            <div class="kpi-card bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-red-500">
+            
+            <div class="kpi-card bg-[#57595B] p-6 rounded-xl shadow-xl border-t-4 border-red-500">
                 <p class="text-sm text-red-400 font-semibold">Total Expenses</p>
-                <h3 id="kpi-expenses" class="text-3xl font-bold mt-2 text-white">$0.00</h3>
+                <h3 id="kpi-expenses" class="text-3xl font-bold mt-2 text-[#F3E8DF]">$0.00</h3>
             </div>
-            <div class="kpi-card bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-yellow-500">
+            
+            <div class="kpi-card bg-[#57595B] p-6 rounded-xl shadow-xl border-t-4 border-yellow-500">
                 <p class="text-sm text-yellow-400 font-semibold">Low Stock Items</p>
-                <h3 id="kpi-low-stock" class="text-3xl font-bold mt-2 text-white">0</h3>
+                <h3 id="kpi-low-stock" class="text-3xl font-bold mt-2 text-[#F3E8DF]">0</h3>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-xl">
-                <h2 class="text-xl font-semibold mb-4 text-indigo-400">Financial Trend: Revenue, Expenses, and Gross Profit</h2>
+            <div class="lg:col-span-2 bg-[#57595B] p-6 rounded-xl shadow-xl">
+                <h2 class="text-xl font-semibold mb-4 text-[#E8D1C5]">Financial Trend: Revenue, Expenses, and Gross Profit</h2>
                 <div class="chart-container">
                     <canvas id="financialChart"></canvas>
                 </div>
-                <div id="chart-loading-status" class="text-sm text-gray-500 text-center mt-4">Loading financial data...</div>
+                <div id="chart-loading-status" class="text-sm text-[#E8D1C5] text-center mt-4">Loading financial data...</div>
             </div>
 
-            <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-xl h-full flex flex-col">
+            <div class="lg:col-span-1 bg-[#57595B] p-6 rounded-xl shadow-xl h-full flex flex-col">
                 <h2 class="text-xl font-semibold mb-4 text-yellow-400">Inventory Alerts (<span id="low-stock-count">0</span>)</h2>
                 <div class="overflow-y-auto flex-grow max-h-[400px]">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="sticky top-0 bg-gray-700">
+                    <table class="min-w-full divide-y divide-[#452829]">
+                        <thead class="sticky top-0 bg-[#452829]">
                             <tr>
-                                <th class="py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider rounded-tl-lg">Item</th>
-                                <th class="py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Stock</th>
+                                <th class="py-2 text-left text-xs font-medium text-[#E8D1C5] uppercase tracking-wider rounded-tl-lg">Item</th>
+                                <th class="py-2 text-left text-xs font-medium text-[#E8D1C5] uppercase tracking-wider">Stock</th>
                             </tr>
                         </thead>
-                        <tbody id="low-stock-list" class="divide-y divide-gray-800">
-                            <tr><td colspan="2" class="text-center py-4 text-gray-500">No low stock items found.</td></tr>
+                        <tbody id="low-stock-list" class="divide-y divide-[#452829] text-[#F3E8DF]">
+                            <tr><td colspan="2" class="text-center py-4 text-[#E8D1C5]">No low stock items found.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -956,15 +960,14 @@ Try asking: "Show me a business summary" or "Which items need restocking?"</div>
         </div>
 
         <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl max-w-sm w-full">
+            <div class="bg-[#57595B] p-6 rounded-xl shadow-2xl max-w-sm w-full">
                 <h3 id="modal-title" class="text-lg font-bold text-red-400 mb-3">Error</h3>
-                <p id="modal-content" class="text-gray-300 text-sm mb-4"></p>
-                <button onclick="document.getElementById('message-modal').classList.add('hidden');document.getElementById('message-modal').classList.remove('flex');" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg">Close</button>
+                <p id="modal-content" class="text-[#E8D1C5] text-sm mb-4"></p>
+                <button onclick="document.getElementById('message-modal').classList.add('hidden');document.getElementById('message-modal').classList.remove('flex');" class="w-full bg-[#452829] hover:bg-[#57595B] text-[#F3E8DF] font-bold py-2 rounded-lg">Close</button>
             </div>
         </div>
     </div>
 </section>
-
       </main>
     </div>
   </div>
