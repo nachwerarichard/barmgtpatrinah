@@ -335,95 +335,93 @@
     <div class="flex flex-1 h-[calc(100vh-64px)]">
       <!-- SIDEBAR -->
 
-      <nav id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
-         <!-- Mobile Close Button -->
-<div class="lg:hidden flex justify-end p-2">
-  <button id="close-sidebar"
-          class="text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md focus:outline-none transition">
-    <i class="fas fa-times text-xl"></i>
-  </button>
-</div>
 
-    <div class="p-4 mb-16"> <div class="mb-4 text-center font-bold text-lg">BMS</div>
+      <nav id="sidebar" class="w-64 bg-[#1d243c] text-[#898da5] flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
+    <div class="lg:hidden flex justify-end p-2">
+      <button id="close-sidebar"
+              class="text-[#e7e9fb] bg-[#1d243c] hover:bg-[#2a314e] p-2 rounded-md focus:outline-none transition">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
 
-              <div class="mb-1">
-            <button id="nav-dashboard" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('dashboard','nav-dashboard')">
+    <div class="p-4 mb-16"> 
+        <div class="mb-4 text-center font-bold text-lg text-[#e7e9fb]">BMS</div>
+
+        <div class="mb-1">
+            <button id="nav-dashboard" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#2a314e] hover:text-[#e7e9fb] flex items-center justify-between" onclick="showSubSection('dashboard','nav-dashboard')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Dashboard</span>
                 </span>
             </button>
         </div>
 
-
-       
-
         <div class="mb-1">
-            <button id="nav-inventory" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
+            <button id="nav-inventory" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#2a314e] hover:text-[#e7e9fb] flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Inventory</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i> 
             </button>
-            <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add Inventory</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
+            <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#2a314e] p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add Inventory</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
             </ul>
         </div>
-
+        
         <div class="mb-1">
-            <button id="nav-sales" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
+            <button id="nav-sales" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#2a314e] hover:text-[#e7e9fb] flex items-center justify-between" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Sales</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </button>
-            <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
+            <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#2a314e] p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
             </ul>
         </div>
 
         <div class="mb-1">
-            <button id="nav-expenses" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
+            <button id="nav-expenses" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#2a314e] hover:text-[#e7e9fb] flex items-center justify-between" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Expenses</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </button>
-            <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
+            <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#2a314e] p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
             </ul>
         </div>
 
         <div class="mb-1">
-            <button id="nav-cash-management" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
+            <button id="nav-cash-management" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#2a314e] hover:text-[#e7e9fb] flex items-center justify-between" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Cash Management</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </button>
-            <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
+            <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#2a314e] p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
             </ul>
         </div>
 
         <div class="mb-1">
-            <button id="nav-reports" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
+            <button id="nav-reports" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#2a314e] hover:text-[#e7e9fb] flex items-center justify-between" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Reports</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </button>
-            <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-gray-900 p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-gray-800" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
+            <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#2a314e] p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1d243c] hover:text-[#e7e9fb]" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
             </ul>
         </div>
 
         <div class="mb-1">
-            <button id="nav-ai" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('ai','nav-ai')">
+             <button id="nav-ai" class="tilt-btn nav-main w-full text-left p-3 rounded-lg bg-[#5a5f7a] text-[#e7e9fb] hover:bg-[#898da5] hover:text-[#1d243c] flex items-center justify-between" onclick="showSubSection('ai','nav-ai')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">AI Business</span>
                 </span>
@@ -431,7 +429,7 @@
         </div>
       
         <div class="mb-1">
-            <button id="nav-audit-logs" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-gray-700 flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs')">
+            <button id="nav-audit-logs" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#2a314e] hover:text-[#e7e9fb] flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Audit Logs</span>
                 </span>
@@ -439,15 +437,14 @@
         </div>
     </div>
     
-    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-800">
-        <button id="logout-button" onclick="logout()" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
+    <div class="absolute bottom-0 left-0 right-0 p-4 bg-[#1d243c]">
+        <button id="logout-button" onclick="logout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
             <span>Logout</span>
             <i class="fas fa-sign-out-alt"></i>
         </button>
     </div>
-    
 </nav>
-
+      
       <!-- MAIN CONTENT -->
       <main id="main-content" class="flex-1 p-6 overflow-y-auto">
 
