@@ -2675,20 +2675,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutButton) logoutButton.addEventListener('click', logout);
 
     // Attach event listeners for navigation buttons
-    const navInventory = document.getElementById('nav-inventory');
-    if (navInventory) navInventory.addEventListener('click', () => showSection('inventory'));
-
-    const navSales = document.getElementById('nav-sales');
-    if (navSales) navSales.addEventListener('click', () => showSection('sales'));
-
-    const navExpenses = document.getElementById('nav-expenses');
-    if (navExpenses) navExpenses.addEventListener('click', () => showSection('expenses'));
-
-    const navCashManagement = document.getElementById('nav-cash-management');
-    if (navCashManagement) navCashManagement.addEventListener('click', () => showSection('cash-management'));
-
-    const navReports = document.getElementById('nav-reports');
-    if (navReports) navReports.addEventListener('click', () => showSection('reports'));
+   
 
     const navAuditLogs = document.getElementById('nav-audit-logs');
     if (navAuditLogs) navAuditLogs.addEventListener('click', () => showSection('audit-logs'));
