@@ -417,9 +417,9 @@ function initSidebarState() {
 function updateUIForUserRole() {
     // MAPPING FIX: Confirmed all 6 main nav items for full-access roles.
     const rolePermissions = {
-        'Nachwera Richard': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashbaord','nav-ai'],
-        'Nelson': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashboard','nav-ai'],
-        'Florence': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-ai'],
+        'Nachwera Richard': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashbaord'],
+        'Nelson': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashboard'],
+        'Florence': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs'],
         'Martha': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management'],
         'Mercy': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management'],
         'Joshua': ['nav-inventory', 'nav-sales']
@@ -2693,8 +2693,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navAuditLogs = document.getElementById('nav-audit-logs');
     if (navAuditLogs) navAuditLogs.addEventListener('click', () => showSection('audit-logs'));
 
-    const navAi = document.getElementById('nav-ai');
-    if (navAi) navAi.addEventListener('click', () => showSection('ai'));
+    
     
  const navDashboard = document.getElementById('nav-dashboard');
     if (navDashboard) navDashboard.addEventListener('click', () => showSection('dashboard'));
