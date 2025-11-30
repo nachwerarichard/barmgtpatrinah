@@ -147,40 +147,40 @@
 
             const ctx = document.getElementById('financialChart').getContext('2d');
             chartInstance = new Chart(ctx, {
-                type: 'bar', // Default type is bar, line types are defined in datasets
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                            // Gross Profit is a line for clarity on margin
+                            // Gross Profit (Functional Green)
                             type: 'line',
                             label: 'Gross Profit',
                             data: profits,
-                            backgroundColor: 'rgba(52, 211, 153, 0.9)', // green-400
-                            borderColor: 'rgb(52, 211, 153)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.7)', // green-500 rgba
+                            borderColor: 'rgb(16, 185, 129)',          // green-500
                             pointRadius: 5,
-                            pointBackgroundColor: 'rgb(52, 211, 153)',
+                            pointBackgroundColor: 'rgb(16, 185, 129)',
                             tension: 0.4,
                             fill: false,
                             borderWidth: 3,
                             yAxisID: 'y'
                         },
                         {
-                            // Revenue is a bar
+                            // Revenue (Primary Accent Indigo)
                             type: 'bar',
                             label: 'Total Revenue',
                             data: revenues,
-                            backgroundColor: 'rgba(99, 102, 241, 0.8)', // indigo-500
-                            borderColor: 'rgb(99, 102, 241)',
+                            backgroundColor: 'rgba(79, 70, 229, 0.8)', // indigo-600 rgba
+                            borderColor: 'rgb(79, 70, 229)',          // indigo-600
                             borderWidth: 1,
                             yAxisID: 'y'
                         },
-                         {
-                            // Expenses is a bar
+                        {
+                            // Expenses (Functional Red)
                             type: 'bar',
                             label: 'Total Expenses',
                             data: expenses,
-                            backgroundColor: 'rgba(239, 68, 68, 0.8)', // red-500
+                            backgroundColor: 'rgba(239, 68, 68, 0.8)', // red-500 rgba (maintained)
                             borderColor: 'rgb(239, 68, 68)',
                             borderWidth: 1,
                             yAxisID: 'y'
@@ -190,29 +190,31 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    // IMPORTANT: Stacked is set to false to show Revenue and Expense bars side-by-side
                     scales: {
                         x: {
                             stacked: false, 
-                            title: { display: true, text: 'Date (EAT)', color: '#9CA3AF' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#D1D5DB' }
+                            // Axis Title/Tick Color: Secondary/Primary Text for light theme
+                            title: { display: true, text: 'Date (EAT)', color: '#6B7280' },
+                            grid: { color: 'rgba(156, 163, 175, 0.2)' }, // Lighter grid lines
+                            ticks: { color: '#1F2937' }
                         },
                         y: {
-                            stacked: false, // Ensures bars are not stacked vertically
+                            stacked: false,
                             beginAtZero: true,
-                            title: { display: true, text: 'Amount (USD)', color: '#9CA3AF' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            // Axis Title/Tick Color: Secondary/Primary Text for light theme
+                            title: { display: true, text: 'Amount (USD)', color: '#6B7280' },
+                            grid: { color: 'rgba(156, 163, 175, 0.2)' }, // Lighter grid lines
                             ticks: { 
-                                color: '#D1D5DB',
+                                color: '#1F2937',
                                 callback: function(value) {
-                                    return formatCurrency(value); // Format ticks as currency
+                                    return formatCurrency(value);
                                 } 
                             }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#D1D5DB' } },
+                        // Legend Text Color: Primary Text for light theme
+                        legend: { labels: { color: '#1F2937' } },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
