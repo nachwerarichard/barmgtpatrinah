@@ -18,22 +18,23 @@
     // NEW: Toggle Chat Functionality
 
 function toggleChat() {
-    // Get references to elements
+    // Get references to all necessary elements
     const chatWidget = document.getElementById('chatWidget');
     const openChatButton = document.getElementById('openChatButton');
     const chatIcon = document.getElementById('chatIcon');
     const closeIcon = document.getElementById('closeIcon');
-    const floatingWrapper = document.getElementById('floating-wrapper'); // Reference to the main wrapper
+    const floatingWrapper = document.getElementById('floating-wrapper'); // The parent wrapper
 
-    // Determine the current state based on visibility class
-    const isChatOpen = chatWidget.classList.contains('opacity-100');
+    // FIX: Determine the current state reliably by checking the DOM classes,
+    // instead of relying on an external, potentially mis-scoped global variable.
+    const isCurrentlyOpen = chatWidget.classList.contains('opacity-100');
 
-    if (!isChatOpen) {
+    if (!isCurrentlyOpen) {
         // --- OPEN CHAT WIDGET ---
 
-        // 1. Crucial Fix: Enable mouse events on the large floating wrapper
+        // 1. Pointer Events Fix: Allow clicks on the wrapper
         floatingWrapper.classList.remove('pointer-events-none');
-        // Note: The widget itself already has pointer-events-auto defined in HTML
+        floatingWrapper.classList.add('pointer-events-auto');
         
         // 2. Visual Transition: Show widget
         chatWidget.classList.remove('opacity-0', 'scale-0');
@@ -46,27 +47,12 @@ function toggleChat() {
         chatIcon.classList.add('hidden');
         closeIcon.classList.remove('hidden');
 
-        // 4. Position Adjustment: Set the chat widget to appear above the button
-        // Note: openChatButton.offsetHeight must be used carefully as it might be 0 before the page fully renders.
-        // Assuming the fixed size of the button (p-4 + w-7/h-7) is roughly 60px, plus 16px margin (bottom-4)
-        // A direct CSS class based transformation is often simpler in Tailwind contexts.
-        // Since the widget is a sibling of the button container, we rely on the button container pushing the widget up.
-        // If they are in the same wrapper, we can simply rely on flex/flow, but here we manually adjust margin.
-        
-        // Remove style.marginBottom if the parent container handles vertical stacking correctly, 
-        // but if they are layered, this manual margin adjustment is necessary for correct appearance.
-        // Let's use Tailwind's positioning approach instead of inline styles for cleaner code.
-        // To fix positioning without inline JS:
-        // We move the widget up based on its size within the wrapper.
-        
-        // Original logic kept for context, but usually better replaced with a Tailwind utility class in a real app.
-        // chatWidget.style.marginBottom = `${openChatButton.offsetHeight + 16}px`; 
-
     } else {
         // --- CLOSE CHAT WIDGET ---
 
-        // 1. Crucial Fix: Disable mouse events on the large floating wrapper
+        // 1. Pointer Events Fix: Block clicks on the wrapper so background elements work again
         floatingWrapper.classList.add('pointer-events-none');
+        floatingWrapper.classList.remove('pointer-events-auto');
         
         // 2. Visual Transition: Hide widget
         chatWidget.classList.remove('opacity-100', 'scale-100');
@@ -78,13 +64,8 @@ function toggleChat() {
         
         chatIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');
-
-        // 4. Reset Position
-        // chatWidget.style.marginBottom = '';
     }
 }
-
-    // Utility Functions (Same as before)
     function init() {
         // NEW: Add event listener to the floating button
         openChatButton.addEventListener('click', toggleChat);
