@@ -188,12 +188,11 @@
 
   <!-- APP -->
   <div id="main-container" class="hidden h-screen overflow-hidden">
-<div id="floating-wrapper" class="fixed bottom-4 right-4 z-50">
-        
+<div id="floating-wrapper" class="fixed bottom-4 right-4 z-50 **pointer-events-none**">        
         <div 
-            id="chatWidget" 
-            class="max-w-sm w-full mx-auto shadow-2xl rounded-2xl bg-white flex flex-col transform opacity-0 scale-0"
-        >
+    id="chatWidget" 
+    class="max-w-sm w-full mx-auto shadow-2xl rounded-2xl bg-white flex flex-col transform opacity-0 scale-0 **pointer-events-auto**"
+>
             <div class="bg-white rounded-t-2xl shadow-lg p-4 border-b border-gray-200">
                 <div class="flex items-center gap-3">
                     <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-2 rounded-xl">
@@ -263,9 +262,9 @@
             </div>
         </div>
         
-       <div
+      <div
     id="chatButtonContainer"
-    class="fixed bottom-8 right-8 z-50"
+    class="fixed bottom-8 right-8 z-50 **pointer-events-auto**"
 >
     <button
         id="openChatButton"
