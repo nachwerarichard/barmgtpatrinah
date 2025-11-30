@@ -258,23 +258,33 @@
         }
 
         function renderLowStockTable(items) {
-            lowStockList.innerHTML = ''; // Clear existing content
+    const lowStockList = document.getElementById('low-stock-list'); // Assuming lowStockList is defined globally or retrieved here
+    lowStockList.innerHTML = ''; // Clear existing content
 
-            if (items.length === 0) {
-                lowStockList.innerHTML = '<tr><td colspan="2" class="text-center py-4 text-gray-500">No low stock items. Inventory looks good!</td></tr>';
-                return;
-            }
+    // 1. Placeholder Row
+    if (items.length === 0) {
+        // text-gray-500 (Secondary Text) is appropriate for the muted placeholder
+        lowStockList.innerHTML = '<tr><td colspan="2" class="text-center py-4 text-gray-500">No low stock items. Inventory looks good!</td></tr>';
+        return;
+    }
 
-            items.forEach(item => {
-                const row = document.createElement('tr');
-                row.classList.add('hover:bg-gray-700', 'transition', 'duration-150');
-                row.innerHTML = `
-                    <td class="py-3 text-sm font-medium text-gray-800">${item.item}</td>
-                <td class="py-3 text-sm text-right font-bold text-red-500">${item.closingStock} </td>
-            `;
-            });
-        }
+    // 2. Data Rows
+    items.forEach(item => {
+        const row = document.createElement('tr');
         
+        // Hover state for light mode: use a very light gray background
+        row.classList.add('hover:bg-gray-50', 'transition', 'duration-150');
+        
+        row.innerHTML = `
+            <td class="py-3 text-sm font-medium text-gray-800">${item.item}</td>
+            
+            <td class="py-3 text-sm text-right font-bold text-red-500">${item.closingStock} units</td>
+        `;
+        
+        // *** FUNCTIONAL CORRECTION: Append the created row to the table body ***
+        lowStockList.appendChild(row);
+    });
+}
         // Main function to load data
         async function loadDashboardData() {
             // Check for custom range input
