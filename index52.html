@@ -751,6 +751,13 @@
           <h2 class="text-2xl font-bold mb-4 text-emerald-600">Reports </h2>
                     <h3 class="text-xl font-medium mb-3 border-b pb-2">Overall Summary</h3>
 
+          <div class="filter-controls flex flex-wrap gap-4 mb-8 items-end p-4 border rounded-lg bg-gray-50">
+            <label for="report-start-date" class="text-sm font-medium text-gray-700">Start Date:</label>
+            <input type="date" id="report-start-date" class="p-2 border border-gray-300 rounded-md">
+            <label for="report-end-date" class="text-sm font-medium text-gray-700">End Date:</label>
+            <input type="date" id="report-end-date" class="p-2 border border-gray-300 rounded-md">
+<button id="generate-report-btn" onclick="generateReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg"><i class="fas fa-chart-pie"></i> Generate Reports</button>          </div>
+
           <div class="table-responsive">
             <button class="export-button bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3" onclick="exportTableToExcel('overall-reports-table', 'Overall_Summary_Report')">Export Overall Summary</button>
             <table id="overall-reports-table" class="min-w-full divide-y divide-gray-200 border border-gray-200">
