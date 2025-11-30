@@ -39,25 +39,48 @@
 
 
     /* Sidebar tilt design - diagonal background while keeping text horizontal */
+/*
+ * Color Palette used:
+ * Primary Background (Nav): #452829
+ * Dark Gray (Hover/Secondary BG): #57595B
+ * Warm Beige (Primary Accent/Text): #E8D1C5 (RGB: 232, 209, 197)
+ * Cream/Off-White (Highlight): #F3E8DF
+*/
 .tilt-btn {
   position: relative;
   overflow: hidden;
   z-index: 0;
 }
+
 .tilt-btn::before {
   content: "";
   position: absolute;
   inset: 0;
-  /* create a diagonal panel */
+  /* Subtle gradient using a transparent Warm Beige (#E8D1C5) 
+    This is for the subtle background change on the hover state. 
+  */
   transform-origin: left;
-  background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(16,185,129,0.18));
+  background: linear-gradient(90deg, 
+    rgba(232, 209, 197, 0.05),  /* Very light transparency of Warm Beige */
+    rgba(232, 209, 197, 0.1)   /* Slightly stronger transparency */
+  );
   z-index: -1;
   transition: transform .25s ease, opacity .25s ease;
   opacity: 0.95;
 }
+
 /* stronger background when active */
 .tilt-btn.active::before {
-  background: linear-gradient(90deg, rgba(16,185,129,0.95), rgba(6,182,129,0.95));
+  /* Solidifying the Warm Beige (#E8D1C5) for the ACTIVE state 
+    This creates a strong, yet elegant, active indicator.
+  */
+  background: linear-gradient(90deg, 
+    rgba(232, 209, 197, 0.3), /* Higher transparency of Warm Beige */
+    rgba(232, 209, 197, 0.4)  /* Even higher transparency */
+  );
+  
+  /* OPTIONAL ALTERNATIVE: Use the Dark Gray for the active background */
+  /* background: linear-gradient(90deg, #57595B, #57595B); */
 }
 
 /* keep inner text / icon horizontal by counter-skewing */
