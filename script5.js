@@ -323,4 +323,3 @@ const dashboardContent = document.getElementById('dashboard-content');
 // **********************************************
 // FIX: Added the missing closing scope bracket(s) 
 // **********************************************
-} // <-- This brace closes the likely missing wrapper scope or final function
