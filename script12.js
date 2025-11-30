@@ -1946,6 +1946,16 @@ async function submitExpenseForm(event) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Get the form element by its ID
+    const inventoryForm = document.getElementById('inventory-form');
+
+    // 2. Check if the form exists and attach the handler
+    if (inventoryForm) {
+        inventoryForm.addEventListener('submit', submitInventoryForm);
+    }
+});
+
 function populateExpenseForm(expense) {
     const idInput = document.getElementById('expense-id');
     const descriptionInput = document.getElementById('expense-description');
