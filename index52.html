@@ -189,6 +189,27 @@
 
   <!-- APP -->
   <div id="main-container" class="hidden h-screen overflow-hidden">
+    <div id="message-modal" class="fixed inset-0 z-50 hidden">
+
+    <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+
+    <div class="flex items-center justify-center min-h-screen p-4">
+        
+        <div class="bg-white rounded-lg shadow-2xl max-w-sm w-full z-10 p-6 transform transition-all scale-100 opacity-100">
+            
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Notification</h3>
+            
+            <p id="message-text" class="text-gray-700 mb-6 break-words">
+                </p>
+
+            <div class="flex justify-end">
+                <button id="message-close-button" type="button" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
    <div id="floating-wrapper" class="fixed bottom-4 right-4 z-50 pointer-events-none flex flex-col items-end">
     
