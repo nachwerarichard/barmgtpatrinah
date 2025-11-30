@@ -21,9 +21,9 @@
         if (isChatOpen) {
             // Open state: Show widget, hide chat icon, show close icon
             chatWidget.classList.remove('opacity-0', 'scale-0');
-            chatWidget.classList.add('opacity-100', 'scale-100');
             openChatButton.classList.add('mt-4'); // Keep spacing consistent
             openChatButton.classList.remove('mt-0');
+                 chatWidget.classList.add("active");   // ADD THIS HERE
 
             chatIcon.classList.add('hidden');
             closeIcon.classList.remove('hidden');
@@ -33,10 +33,10 @@
         } else {
             // Closed state: Hide widget, show chat icon, hide close icon
             chatWidget.classList.remove('opacity-100', 'scale-100');
-            chatWidget.classList.add('opacity-0', 'scale-0');
             openChatButton.classList.remove('mt-4');
             openChatButton.classList.add('mt-0');
-            
+                chatWidget.classList.remove("active");  // ADD THIS HERE
+
             chatIcon.classList.remove('hidden');
             closeIcon.classList.add('hidden');
         }
