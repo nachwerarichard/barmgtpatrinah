@@ -39,26 +39,33 @@
 
 
     /* Sidebar tilt design - diagonal background while keeping text horizontal */
-.tilt-btn {
-  position: relative;
-  overflow: hidden;
-  z-index: 0;
-}
 .tilt-btn::before {
   content: "";
   position: absolute;
   inset: 0;
-  /* create a diagonal panel */
+  /* Updated: Uses the Warm Beige (#E8D1C5) as the primary highlight color. 
+    The opacity creates the subtle background for the normal hover state.
+  */
   transform-origin: left;
-  background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(16,185,129,0.18));
+  background: linear-gradient(90deg, rgba(232, 209, 197, 0.12), rgba(232, 209, 197, 0.18));
   z-index: -1;
   transition: transform .25s ease, opacity .25s ease;
   opacity: 0.95;
 }
+
 /* stronger background when active */
 .tilt-btn.active::before {
-  background: linear-gradient(90deg, rgba(16,185,129,0.95), rgba(6,182,129,0.95));
+  /* Updated: Uses the Warm Beige (#E8D1C5) for a stronger, solid active background. 
+    The gradient provides a subtle texture/lift.
+  */
+  background: linear-gradient(90deg, rgba(232, 209, 197, 0.95), rgba(243, 232, 223, 0.95)); 
 }
+
+/* When tilt-btn is active, you will also need JavaScript to change the text color 
+  from the default (Warm Beige) to Deep Brown-Red (the background color) 
+  for maximum contrast on the light active background.
+  Example: .tilt-btn.active { color: #452829; } 
+*/
 
 /* keep inner text / icon horizontal by counter-skewing */
 .tilt-content {
@@ -70,42 +77,43 @@
 }
     
 
-    /* submenu visibility */
-    .submenu { display: none; }
-    .submenu.open { display: block; }
+/* submenu visibility */
+.submenu { display: none; }
+.submenu.open { display: block; }
 
-    /* small visual for subsection active */
-    .sub-item.active {
-      background-color: rgba(16,185,129,0.12);
-      font-weight: 700;
-      color: #065f46;
+/* small visual for subsection active */
+.sub-item.active {
+    /* Updated: Uses the Deep Brown-Red (#452829) for text on the subtle accent background */
+    background-color: rgba(232, 209, 197, 0.12); /* Subtle Warm Beige background */
+    font-weight: 700;
+    color: #E8D1C5; /* Warm Beige text on the dark background */
+}
+
+/* ensure submenu list items align */
+.sidebar-sublist button { padding-left: 1.75rem; }
+
+/* responsive tweaks */
+@media (max-width: 1024px) {
+    #sidebar { position: absolute; z-index: 40; }
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
     }
-
-    /* ensure submenu list items align */
-    .sidebar-sublist button { padding-left: 1.75rem; }
-
-    /* responsive tweaks */
-    @media (max-width: 1024px) {
-      #sidebar { position: absolute; z-index: 40; }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
-
-
-    @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 .animate-fadeIn {
-  animation: fadeIn 0.25s ease-out;
+    animation: fadeIn 0.25s ease-out;
 }
 
 
-    /* Add this to your main CSS file (or within <style> tags) */
+/* Add this to your main CSS file (or within <style> tags) */
 @keyframes spin {
     to {
         transform: rotate(360deg);
