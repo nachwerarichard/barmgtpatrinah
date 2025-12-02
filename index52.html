@@ -177,14 +177,28 @@
             <div class="w-12 h-12 border-4 border-t-4 border-transparent border-t-emerald-600 rounded-full animate-spin-custom"></div>
         </div>
     </div>
-    <div id="login-section" class="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <img src="patrinah.png" alt="Patrinah Hotel Logo" class="w-24 h-24 mb-6 rounded-full shadow-lg">
-        <h2 class="text-3xl font-bold mb-4 text-gray-800">Login</h2>
-        <input type="text" id="username" placeholder="Username" class="mb-4 p-3 border border-gray-300 rounded-lg w-80 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150">
-        <input type="password" id="password" placeholder="Password" class="mb-6 p-3 border border-gray-300 rounded-lg w-80 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150">
-        <button type="submit" onclick="login()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg w-80 transition duration-300 shadow-md">Login</button>
-        <p id="login-message" class="mt-4 text-red-500 font-medium"></p>
+
+  <div id="login-section" class="flex flex-col items-center justify-center h-screen" style="background-color: #F3E8DF;">
+    <header class="mb-8">
+        <h1 class="text-4xl font-extrabold" style="color: #452829;">Richy AI</h1>
+    </header>
+
+    <div class="p-8 rounded-xl shadow-2xl w-96 flex flex-col items-center" style="background-color: #E8D1C5;">
+        <img src="patrinah.png" alt="Patrinah Hotel Logo" class="w-24 h-24 mb-6 rounded-full shadow-lg border-4" style="border-color: #452829;">
+        
+        <h2 class="text-3xl font-bold mb-6" style="color: #452829;">Login</h2>
+        
+        <input type="text" id="username" placeholder="Username" class="mb-4 p-3 border rounded-lg w-full focus:ring-2 focus:ring-opacity-75 transition duration-150" style="border-color: #57595B; background-color: #F3E8DF; color: #452829; focus:ring: #452829;">
+        
+        <input type="password" id="password" placeholder="Password" class="mb-6 p-3 border rounded-lg w-full focus:ring-2 focus:ring-opacity-75 transition duration-150" style="border-color: #57595B; background-color: #F3E8DF; color: #452829; focus:ring: #452829;">
+        
+        <button type="submit" onclick="login()" class="font-semibold py-3 px-6 rounded-lg w-full transition duration-300 shadow-md" style="background-color: #452829; color: #E8D1C5;">
+            Login
+        </button>
+        
+        <p id="login-message" class="mt-4 font-medium text-red-700"></p>
     </div>
+</div>
  
 
   <!-- APP -->
