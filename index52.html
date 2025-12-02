@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -177,28 +178,14 @@
             <div class="w-12 h-12 border-4 border-t-4 border-transparent border-t-emerald-600 rounded-full animate-spin-custom"></div>
         </div>
     </div>
-
-  <div id="login-section" class="flex flex-col items-center justify-center h-screen" style="background-color: #F3E8DF;">
-    <header class="mb-8">
-        <h1 class="text-4xl font-extrabold" style="color: #452829;">Richy AI</h1>
-    </header>
-
-    <div class="p-8 rounded-xl shadow-2xl w-96 flex flex-col items-center" style="background-color: #E8D1C5;">
-        <img src="patrinah.png" alt="Patrinah Hotel Logo" class="w-24 h-24 mb-6 rounded-full shadow-lg border-4" style="border-color: #452829;">
-        
-        <h2 class="text-3xl font-bold mb-6" style="color: #452829;">Login</h2>
-        
-        <input type="text" id="username" placeholder="Username" class="mb-4 p-3 border rounded-lg w-full focus:ring-2 focus:ring-opacity-75 transition duration-150" style="border-color: #57595B; background-color: #F3E8DF; color: #452829; focus:ring: #452829;">
-        
-        <input type="password" id="password" placeholder="Password" class="mb-6 p-3 border rounded-lg w-full focus:ring-2 focus:ring-opacity-75 transition duration-150" style="border-color: #57595B; background-color: #F3E8DF; color: #452829; focus:ring: #452829;">
-        
-        <button type="submit" onclick="login()" class="font-semibold py-3 px-6 rounded-lg w-full transition duration-300 shadow-md" style="background-color: #452829; color: #E8D1C5;">
-            Login
-        </button>
-        
-        <p id="login-message" class="mt-4 font-medium text-red-700"></p>
+    <div id="login-section" class="flex flex-col items-center justify-center h-screen bg-gray-100">
+        <img src="patrinah.png" alt="Patrinah Hotel Logo" class="w-24 h-24 mb-6 rounded-full shadow-lg">
+        <h2 class="text-3xl font-bold mb-4 text-gray-800">Login</h2>
+        <input type="text" id="username" placeholder="Username" class="mb-4 p-3 border border-gray-300 rounded-lg w-80 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150">
+        <input type="password" id="password" placeholder="Password" class="mb-6 p-3 border border-gray-300 rounded-lg w-80 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150">
+        <button type="submit" onclick="login()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg w-80 transition duration-300 shadow-md">Login</button>
+        <p id="login-message" class="mt-4 text-red-500 font-medium"></p>
     </div>
-</div>
  
 
   <!-- APP -->
@@ -300,23 +287,22 @@
         </div>
     </div>
     
-   <div
-    id="chatButtonContainer"
-    class="z-50 pointer-events-auto mt-4"
->
-    <button
-        id="openChatButton"
-        class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-full p-4 shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/50 transition-all duration-300 **flex items-center justify-center space-x-2 px-6 py-3**"
+    <div
+        id="chatButtonContainer"
+        class="z-50 pointer-events-auto mt-4"
     >
-        <span class="text-lg font-semibold">Ask AI</span>
-        <svg id="chatIcon" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-        </svg>
-        <svg id="closeIcon" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-    </button>
-</div>
+        <button
+            id="openChatButton"
+            class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-full p-4 shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/50 transition-all duration-300"
+        >
+            <svg id="chatIcon" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+            <svg id="closeIcon" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
 </div>
     
 
