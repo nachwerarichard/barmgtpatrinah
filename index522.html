@@ -3,17 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>BMS</title>
+  <title>Financial BMS</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
+      /* Color Variables for Easy Reference */
+      :root {
+        --color-primary: #005691;
+        --color-secondary: #3B8C67;
+        --color-alert: #C44747;
+        --color-text: #333333;
+        --color-background: #FFFFFF;
+      }
+
       /* Custom Keyframes for Spin Animation */
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        .animate-spin {
+        .animate-spin-custom {
             animation: spin 1s linear infinite;
         }
 
@@ -34,63 +43,43 @@
     #main-content, #sidebar { -ms-overflow-style: none; scrollbar-width: none; }
     #main-content::-webkit-scrollbar, #sidebar::-webkit-scrollbar { display: none; }
 
+    /* Sidebar Styling: Replaced previous custom colors with the new palette/defaults */
+    
+    /* Sidebar background is Primary/Action Darkened or a Neutral Dark Grey.
+     * We'll use a deep grey/blueish tone for sidebar for separation and corporate feel.
+     * Using a Tailwind Gray-900 or the Primary color for a cohesive look.
+     * **I'll use Primary (#005691) for Nav to enforce branding and reliability.**
+     */
+    .nav-main { color: #FFFFFF; } /* Text on dark nav */
+    .nav-main:hover { background-color: rgba(255, 255, 255, 0.1); } /* Light hover effect */
+    .tilt-btn.active { background-color: var(--color-primary); }
+    .tilt-btn.active::before { 
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    }
+       
+    /* submenu visibility */
+    .submenu { display: none; }
+    .submenu.open { display: block; }
+    
+    /* Submenu styling: Darker shade of Primary or a solid dark neutral */
+    .sidebar-sublist { background-color: #004270; } /* Darker Primary/Action */
+    .sub-item { color: #F0F0F0; } /* Lighter text for submenu */
+    .sub-item:hover { background-color: var(--color-primary); } /* Primary color on hover */
+    .sub-item.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        font-weight: 700;
+        color: #FFFFFF;
+    }
 
-    /* --- XBOX THEME PALETTE --- */
-    /* Primary Dark Background: #1A1A1A (Very Dark Gray/Black) */
-    /* Secondary Dark/Hover BG: #282828 (Medium Dark Gray) */
-    /* Accent/Xbox Green: #107C10 (Primary Brand Color) */
-    /* Text/Highlight: #F3F4F6 (Off-White/Light Gray) */
-    
-.tilt-btn {
-  position: relative;
-  overflow: hidden;
-  z-index: 0;
-}
+    /* keep inner text / icon horizontal (original tilt content is removed as it's not strictly necessary with the new minimal style) */
+    .tilt-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      justify-content: flex-start;
+    }
+    .tilt-btn::before { content: none; } /* Removed the complex tilt effect for a cleaner corporate look */
 
-.tilt-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* Subtle gradient using the primary brand color (Xbox Green) */
-  transform-origin: left;
-  background: linear-gradient(90deg, 
-    rgba(16, 124, 16, 0.1),  /* Very light transparency of Xbox Green */
-    rgba(16, 124, 16, 0.2)   /* Slightly stronger transparency */
-  );
-  z-index: -1;
-  transition: transform .25s ease, opacity .25s ease;
-  opacity: 0.95;
-}
-
-/* stronger background when active */
-.tilt-btn.active::before {
-  /* Solidifying the Xbox Green for the ACTIVE state */
-  background: linear-gradient(90deg, 
-    rgba(16, 124, 16, 0.3), /* Higher transparency of Xbox Green */
-    rgba(16, 124, 16, 0.4)  /* Even higher transparency */
-  );
-}
-
-/* keep inner text / icon horizontal by counter-skewing */
-.tilt-content {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  justify-content: flex-start;
-}
-    
-/* submenu visibility */
-.submenu { display: none; }
-.submenu.open { display: block; }
-
-/* small visual for subsection active */
-.sub-item.active {
-  /* Active Background: Use a semi-transparent Xbox Green for a soft glow/highlight effect. */
-  background-color: rgba(16, 124, 16, 0.3); 
-  font-weight: 700;
-  /* Active Text: Use the light color for contrast against the dark background. */
-  color: #F3F4F6;
-}
 
     /* ensure submenu list items align */
     .sidebar-sublist button { padding-left: 1.75rem; }
@@ -102,93 +91,55 @@
 
 
     @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-.animate-fadeIn {
-  animation: fadeIn 0.25s ease-out;
-}
-
-
-    /* Add this to your main CSS file (or within <style> tags) */
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
-}
-
-.animate-spin-custom {
-    animation: spin 1s linear infinite;
-}
-
-     /* Custom scrollbar for a nicer look */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1A1A1A; /* Primary Dark BG */ }
-        ::-webkit-scrollbar-thumb { background: #282828; /* Secondary Dark BG */ border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #383838; }
-        
-        /* Ensures the charts adapt cleanly */
-        .chart-container { height: 350px; width: 100%; }
-
-            @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-
+    .animate-fadeIn {
+      animation: fadeIn 0.25s ease-out;
+    }
+    
+    .chart-container { height: 350px; width: 100%; }
 
   </style>
 </head>
-<body class="bg-gray-900 min-h-screen">
-    <div id="preloader" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 hidden">
+<body class="bg-gray-100 min-h-screen">
+        <div id="preloader" class="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-75 hidden">
         <div class="relative w-12 h-12">
-                        <div class="w-12 h-12 border-4 border-t-4 border-transparent border-t-[#107C10] rounded-full animate-spin-custom"></div>
+            <div style="border-top-color: var(--color-secondary);" class="w-12 h-12 border-4 border-t-4 border-transparent rounded-full animate-spin-custom"></div>
         </div>
     </div>
 
-    <div id="login-section" class="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
-        <div class="p-10 rounded-xl shadow-2xl bg-[#1A1A1A] w-full max-w-sm border border-[#282828]">
-            <img src="logo.png" alt="BMS Logo" class="w-24 h-24 mb-6 mx-auto rounded-full shadow-lg border border-[#107C10]">
-                        <h2 class="text-3xl font-bold mb-6 text-gray-100 text-center">Login</h2>
+    <div id="login-section" class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <div class="p-10 rounded-xl shadow-2xl bg-white w-full max-w-sm">
+            <img src="logo.png" alt="Company Logo" class="w-24 h-24 mb-6 mx-auto rounded-full shadow-lg">
+            <h2 style="color: var(--color-text);" class="text-3xl font-bold mb-6 text-center">Financial System Login</h2>
             
-                        <input type="text" id="username" placeholder="Username" class="mb-4 p-3 border border-gray-700 bg-gray-800 rounded-lg w-full focus:ring-[#107C10] focus:border-[#107C10] transition duration-150 text-gray-100 placeholder-gray-500">
-            <input type="password" id="password" placeholder="Password" class="mb-6 p-3 border border-gray-700 bg-gray-800 rounded-lg w-full focus:ring-[#107C10] focus:border-[#107C10] transition duration-150 text-gray-100 placeholder-gray-500">
-                        <button type="submit" onclick="login()" class="bg-[#107C10] hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg w-full transition duration-300 shadow-lg">Login</button>
+            <input type="text" id="username" placeholder="Username" style="color: var(--color-text); border-color: var(--color-text);" class="mb-4 p-3 border rounded-lg w-full focus:ring-2 focus:ring-[--color-primary] focus:border-[--color-primary] transition duration-150">
+            <input type="password" id="password" placeholder="Password" style="color: var(--color-text); border-color: var(--color-text);" class="mb-6 p-3 border rounded-lg w-full focus:ring-2 focus:ring-[--color-primary] focus:border-[--color-primary] transition duration-150">
+            <button type="submit" onclick="login()" style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 font-semibold py-3 px-6 rounded-lg w-full transition duration-300 shadow-lg">
+                Login
+            </button>
             
-            <p id="login-message" class="mt-4 text-red-500 font-medium text-center"></p>
+            <p id="login-message" style="color: var(--color-alert);" class="mt-4 font-medium text-center"></p>
         </div>
     </div>
  
 
     <div id="main-container" class="hidden h-screen overflow-hidden">
-    <div id="message-modal" class="fixed inset-0 z-50 hidden">
-
-    <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
-
-    <div class="flex items-center justify-center min-h-screen p-4">
-        
-        <div class="bg-gray-800 text-gray-100 rounded-lg shadow-2xl max-w-sm w-full z-10 p-6 transform transition-all scale-100 opacity-100">
-            
-            <h3 class="text-xl font-semibold text-gray-100 mb-4">Notification</h3>
-            
-            <p id="message-text" class="text-gray-300 mb-6 break-words">
-                </p>
-
-            <div class="flex justify-end">
-                                <button id="message-close-button" type="button" class="px-4 py-2 text-sm font-medium text-white bg-[#107C10] rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#107C10] transition duration-150 ease-in-out">
-                    Close
-                </button>
+        <div id="message-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-2xl max-w-sm w-full z-10 p-6 transform transition-all scale-100 opacity-100">
+                <h3 style="color: var(--color-text);" class="text-xl font-semibold mb-4">Notification</h3>
+                <p id="message-text" style="color: var(--color-text);" class="mb-6 break-words"></p>
+                <div class="flex justify-end">
+                                        <button id="message-close-button" type="button" style="background-color: var(--color-primary); color: white;" class="px-4 py-2 text-sm font-medium rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[--color-primary] transition duration-150 ease-in-out">
+                        Close
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
       <div id="floating-wrapper" class="fixed bottom-4 right-4 z-50 pointer-events-none flex flex-col items-end">
     
@@ -196,37 +147,37 @@
         id="chatWidget" 
         class="max-w-sm w-full mx-auto shadow-2xl rounded-2xl bg-white flex flex-col transform opacity-0 scale-0 pointer-events-auto"
     >
-                <div class="bg-white rounded-t-2xl shadow-lg p-4 border-b border-gray-200">
+        <div class="bg-white rounded-t-2xl shadow-lg p-4 border-b border-gray-200">
             <div class="flex items-center gap-3">
-                                <div class="bg-gradient-to-br from-[#107C10] to-green-600 p-2 rounded-xl">
+                                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-2 rounded-xl">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-gray-900">AI Business Assistant</h1>
-                    <p class="text-xs text-gray-600">Intelligent Business Analysis</p>
+                    <h1 style="color: var(--color-text);" class="text-lg font-bold">AI Business Assistant</h1>
+                    <p style="color: var(--color-text);" class="text-xs opacity-75">Intelligent Business Analysis</p>
                 </div>
             </div>
         </div>
     
-                <div class="bg-white px-4 py-3 border-b border-gray-200">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Quick Actions</p>
+        <div class="bg-white px-4 py-3 border-b border-gray-200">
+            <p style="color: var(--color-text);" class="text-xs font-semibold uppercase tracking-wide mb-2 opacity-75">Quick Actions</p>
             <div class="flex gap-1 flex-wrap" id="quickActions">
-                <button class="quick-action flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 text-green-700 rounded-lg text-xs font-medium transition-all" data-prompt="Show me a business summary">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                <button style="color: var(--color-primary);" class="quick-action flex items-center gap-1 px-3 py-1 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-medium transition-all" data-prompt="Show me a business summary">
+                    <svg class="w-3 h-3" style="stroke: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Summary
                 </button>
-                <button class="quick-action flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 text-green-700 rounded-lg text-xs font-medium transition-all" data-prompt="Check inventory status">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                <button style="color: var(--color-primary);" class="quick-action flex items-center gap-1 px-3 py-1 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-medium transition-all" data-prompt="Check inventory status">
+                    <svg class="w-3 h-3" style="stroke: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                     Inventory
                 </button>
-                <button class="quick-action flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 text-green-700 rounded-lg text-xs font-medium transition-all" data-prompt="What are my top expenses?">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <button style="color: var(--color-primary);" class="quick-action flex items-center gap-1 px-3 py-1 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-medium transition-all" data-prompt="What are my top expenses?">
+                    <svg class="w-3 h-3" style="stroke: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Expenses
                 </button>
-                <button class="quick-action flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 text-green-700 rounded-lg text-xs font-medium transition-all" data-prompt="Analyze my profit">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <button style="color: var(--color-primary);" class="quick-action flex items-center gap-1 px-3 py-1 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-medium transition-all" data-prompt="Analyze my profit">
+                    <svg class="w-3 h-3" style="stroke: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                     Profit
                 </button>
             </div>
@@ -234,10 +185,10 @@
     
         <div class="flex-1 overflow-y-auto bg-white p-4 space-y-3" id="messagesContainer">
             <div class="flex justify-start">
-                <div class="max-w-[90%] rounded-2xl px-3 py-2 bg-gray-100 text-gray-900">
+                <div class="max-w-[90%] rounded-2xl px-3 py-2 bg-gray-100" style="color: var(--color-text);">
                     <div class="flex items-center gap-2 mb-1">
-                                                <svg class="w-3 h-3 text-[#107C10]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        <span class="text-xs font-semibold text-[#107C10]">AI Assistant</span>
+                        <svg class="w-3 h-3" style="stroke: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span class="text-xs font-semibold" style="color: var(--color-primary);">AI Assistant</span>
                     </div>
                     <div class="whitespace-pre-wrap text-sm leading-relaxed">Hello! 👋 I'm your intelligent business assistant. Try asking: "Show me a **business summary**"</div>
                 </div>
@@ -249,12 +200,14 @@
                 <textarea 
                     id="messageInput"
                     placeholder="Ask about your business data..."
-                    class="flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#107C10] focus:border-transparent"
+                    class="flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[--color-primary] focus:border-transparent"
                     rows="1"
+                    style="color: var(--color-text);"
                 ></textarea>
                                 <button
                     id="sendButton"
-                    class="bg-gradient-to-r from-[#107C10] to-green-600 hover:from-green-700 hover:to-green-700 text-white rounded-xl px-4 py-2 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 self-end text-sm"
+                    style="background-color: var(--color-primary); color: white;"
+                    class="hover:opacity-90 rounded-xl px-4 py-2 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 self-end text-sm"
                 >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
@@ -265,13 +218,14 @@
         </div>
     </div>
     
-        <div
+    <div
         id="chatButtonContainer"
         class="z-50 pointer-events-auto mt-4"
     >
-        <button
+                <button
             id="openChatButton"
-            class="bg-gradient-to-r from-[#107C10] to-green-600 hover:from-green-700 hover:to-green-700 text-white rounded-full p-4 shadow-lg focus:outline-none focus:ring-4 focus:ring-[#107C10]/50 transition-all duration-300"
+            style="background-color: var(--color-primary); color: white;"
+            class="hover:opacity-90 rounded-full p-4 shadow-lg focus:outline-none focus:ring-4 focus:ring-[--color-primary]/50 transition-all duration-300"
         >
             <svg id="chatIcon" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -285,26 +239,26 @@
     
 
     
-<header class="bg-white shadow-lg p-4 flex justify-between items-center sticky top-0 z-50">
+<header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
     <div class="flex items-center space-x-3">
-        <img src="logo.png" alt="BMS Logo" class="w-10 h-10 object-contain">
-                <h1 class="text-xl font-extrabold text-gray-900 tracking-wider hidden sm:block">RICHY</h1>
+        <img src="logo.png" alt="Company Logo" class="w-10 h-10 object-contain">
+        <h1 style="color: var(--color-text);" class="text-xl font-extrabold tracking-wider hidden sm:block">FINANCIAL BMS</h1>
     </div>
 
     <div class="flex items-center space-x-4">
         
-                <div class="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition duration-150 cursor-pointer">
+        <div class="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition duration-150 cursor-pointer">
             
-            <span id="current-user-display" class="username-display text-sm font-semibold text-gray-700 inline-block">
+            <span id="current-user-display" style="color: var(--color-text);" class="username-display text-sm font-semibold inline-block">
             </span>
             <img id="user-profile-pic" 
                  src="user.png" 
                  alt="User Profile" 
-                 class="w-8 h-8 rounded-full object-cover border border-[#107C10]">
+                 class="w-8 h-8 rounded-full object-cover border border-gray-300">
 
         </div>
 
-        <button id="menu-toggle-open" class="text-gray-700 hover:text-gray-900 text-xl p-2 rounded-full hover:bg-gray-100 transition duration-150 lg:hidden">
+        <button id="menu-toggle-open" style="color: var(--color-text);" class="hover:text-gray-900 text-xl p-2 rounded-full hover:bg-gray-100 transition duration-150 lg:hidden">
             <i class="fas fa-bars"></i>
         </button>
     </div>
@@ -313,45 +267,47 @@
    <div id="delete-confirmation-modal"
      class="hidden fixed inset-0 z-5000 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300">
     
-    <div class="bg-gray-800 text-gray-100 rounded-2xl shadow-2xl w-11/12 max-w-md p-6 mx-4 sm:mx-0 animate-fadeIn transform transition-all border border-[#107C10]">
+    <div class="bg-white rounded-2xl shadow-2xl w-11/12 max-w-md p-6 mx-4 sm:mx-0 animate-fadeIn transform transition-all">
         
-        <h3 class="text-xl font-semibold text-center text-gray-100 mb-4">
+        <h3 style="color: var(--color-text);" class="text-xl font-semibold text-center mb-4">
             Confirm Deletion
         </h3>
         
-        <p class="text-center text-gray-300 mb-6 leading-relaxed">
-            Are you sure you want to delete this inventory item? This action cannot be undone.
+        <p style="color: var(--color-text);" class="text-center opacity-80 mb-6 leading-relaxed">
+            Are you sure you want to delete this item? This action cannot be undone.
         </p>
         
         <div class="flex justify-center space-x-3">
             
             <button id="cancel-delete-btn"
-                class="px-5 py-2.5 bg-gray-600 text-gray-100 font-medium rounded-lg shadow hover:bg-gray-700 active:scale-95 transition-transform">
+                class="px-5 py-2.5 bg-gray-300 text-[--color-text] font-medium rounded-lg shadow hover:bg-gray-400 active:scale-95 transition-transform">
                 Cancel
             </button>
             
             <button id="confirm-delete-btn"
-                class="px-5 py-2.5 bg-red-600 text-white font-medium rounded-lg shadow hover:bg-red-700 active:scale-95 transition-transform">
+                style="background-color: var(--color-alert); color: white;"
+                class="px-5 py-2.5 font-medium rounded-lg shadow hover:opacity-90 active:scale-95 transition-transform">
                 Delete
             </button>
         </div>
     </div>
 </div>
     
-        <div class="flex flex-1 h-[calc(100vh-64px)]">
-            <nav id="sidebar" class="w-64 bg-[#1A1A1A] text-gray-100 flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
+    <div class="flex flex-1 h-[calc(100vh-64px)]">
+            <nav id="sidebar" style="background-color: var(--color-primary); color: white;" class="w-64 flex-shrink-0 overflow-y-auto transition-transform duration-300 transform -translate-x-full lg:translate-x-0 absolute lg:relative h-full z-20 shadow-xl">
     <div class="lg:hidden flex justify-end p-2">
       <button id="close-sidebar"
-                            class="text-gray-100 bg-[#1A1A1A] hover:bg-[#282828] p-2 rounded-md focus:outline-none transition">
+              style="color: white;"
+              class="bg-[--color-primary] hover:bg-[#004270] p-2 rounded-md focus:outline-none transition">
         <i class="fas fa-times text-xl"></i>
       </button>
     </div>
 
     <div class="p-4 mb-16"> 
-        <div class="mb-4 text-center font-bold text-lg text-[#107C10]">BMS</div>
+        <div class="mb-4 text-center font-bold text-lg text-white">BMS</div>
 
         <div class="mb-1">
-                        <button id="nav-dashboard" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#282828] hover:text-[#107C10] flex items-center justify-between" onclick="showSubSection('dashboard','nav-dashboard')">
+            <button id="nav-dashboard" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#004270] flex items-center justify-between" onclick="showSubSection('dashboard','nav-dashboard')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Dashboard</span>
                 </span>
@@ -359,71 +315,71 @@
         </div>
 
         <div class="mb-1">
-            <button id="nav-inventory" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#282828] hover:text-[#107C10] flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
+            <button id="nav-inventory" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#004270] flex items-center justify-between" data-target="inventory-submenu" onclick="toggleSubmenu('inventory-submenu','nav-inventory')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Inventory</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i> 
             </button>
-                        <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#282828] p-1">
-                                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add Inventory</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
+            <ul id="inventory-submenu" class="sidebar-sublist submenu mt-2 rounded-lg p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="inventory-add" onclick="showSubSection('inventory-add','nav-inventory')">Add Inventory</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="inventory-records" onclick="showSubSection('inventory-records','nav-inventory')">Inventory Records</button></li>
             </ul>
         </div>
         
         <div class="mb-1">
-            <button id="nav-sales" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#282828] hover:text-[#107C10] flex items-center justify-between" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
+            <button id="nav-sales" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#004270] flex items-center justify-between" data-target="sales-submenu" onclick="toggleSubmenu('sales-submenu','nav-sales')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Sales</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </button>
-            <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#282828] p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
+            <ul id="sales-submenu" class="sidebar-sublist submenu mt-2 rounded-lg p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="sales-new" onclick="showSubSection('sales-new','nav-sales')">Record New Sale</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="sales-records" onclick="showSubSection('sales-records','nav-sales')">Sales Records</button></li>
             </ul>
         </div>
 
         <div class="mb-1">
-            <button id="nav-expenses" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#282828] hover:text-[#107C10] flex items-center justify-between" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
+            <button id="nav-expenses" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#004270] flex items-center justify-between" data-target="expenses-submenu" onclick="toggleSubmenu('expenses-submenu','nav-expenses')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Expenses</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </button>
-            <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#282828] p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
+            <ul id="expenses-submenu" class="sidebar-sublist submenu mt-2 rounded-lg p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="expenses-add" onclick="showSubSection('expenses-add','nav-expenses')">Record New Expense</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="expenses-records" onclick="showSubSection('expenses-records','nav-expenses')">Expense Records</button></li>
             </ul>
         </div>
 
         <div class="mb-1">
-            <button id="nav-cash-management" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#282828] hover:text-[#107C10] flex items-center justify-between" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
+            <button id="nav-cash-management" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#004270] flex items-center justify-between" data-target="cash-submenu" onclick="toggleSubmenu('cash-submenu','nav-cash-management')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Cash Management</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </button>
-            <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#282828] p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
+            <ul id="cash-submenu" class="sidebar-sublist submenu mt-2 rounded-lg p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="cash-record" onclick="showSubSection('cash-record','nav-cash-management')">Record Cash Movement</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="cash-records" onclick="showSubSection('cash-records','nav-cash-management')">Cash Records</button></li>
             </ul>
         </div>
 
         <div class="mb-1">
-            <button id="nav-reports" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#282828] hover:text-[#107C10] flex items-center justify-between" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
+            <button id="nav-reports" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#004270] flex items-center justify-between" data-target="reports-submenu" onclick="toggleSubmenu('reports-submenu','nav-reports')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Reports</span>
                 </span>
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </button>
-            <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg bg-[#282828] p-1">
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
-                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[#1A1A1A] hover:text-[#107C10]" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
+            <ul id="reports-submenu" class="sidebar-sublist submenu mt-2 rounded-lg p-1">
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="reports-department" onclick="showSubSection('reports-department','nav-reports')">Department Totals</button></li>
+                <li><button class="sub-item block w-full text-left p-3 rounded-md hover:bg-[--color-primary]" data-show="reports-overall" onclick="showSubSection('reports-overall','nav-reports')">Overall Summary</button></li>
             </ul>
         </div>
         <div class="mb-1">
-            <button id="nav-audit-logs" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#282828] hover:text-[#107C10] flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs')">
+            <button id="nav-audit-logs" class="tilt-btn nav-main w-full text-left p-3 rounded-lg hover:bg-[#004270] flex items-center justify-between" onclick="showSubSection('audit-logs','nav-audit-logs')">
                 <span class="tilt-content flex items-center">
                     <span class="ml-3">Audit Logs</span>
                 </span>
@@ -431,42 +387,71 @@
         </div>
     </div>
     
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-[#1A1A1A]">
-        <button id="logout-button" onclick="logout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
+        <div class="absolute bottom-0 left-0 right-0 p-4" style="background-color: #004270;">
+        <button id="logout-button" onclick="logout()" style="background-color: var(--color-alert); color: white;" class="w-full hover:opacity-90 font-semibold py-2 px-3 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
             <span>Logout</span>
             <i class="fas fa-sign-out-alt"></i>
         </button>
     </div>
 </nav>
       
-            <main id="main-content" class="flex-1 p-6 overflow-y-auto bg-gray-900">
+            <main id="main-content" class="flex-1 p-6 overflow-y-auto bg-gray-100">
+                <section id="dashboard" class="section active bg-white p-6 rounded-xl shadow-lg mb-6 section-content">
+            <h2 style="color: var(--color-text);" class="text-2xl font-bold mb-6">Financial Dashboard</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-[--color-secondary]">
+                    <p style="color: var(--color-text);" class="text-sm font-medium opacity-80">Total Revenue</p>
+                    <p style="color: var(--color-secondary);" class="text-2xl font-bold mt-1">$45,231.89</p>
+                </div>
+                                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-[--color-alert]">
+                    <p style="color: var(--color-text);" class="text-sm font-medium opacity-80">Total Expenses</p>
+                    <p style="color: var(--color-alert);" class="text-2xl font-bold mt-1">$12,450.00</p>
+                </div>
+                                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-[--color-secondary]">
+                    <p style="color: var(--color-text);" class="text-sm font-medium opacity-80">Net Profit</p>
+                    <p style="color: var(--color-secondary);" class="text-2xl font-bold mt-1">$32,781.89</p>
+                </div>
+                                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-[--color-primary]">
+                    <p style="color: var(--color-text);" class="text-sm font-medium opacity-80">Current Cash</p>
+                    <p style="color: var(--color-primary);" class="text-2xl font-bold mt-1">$8,950.00</p>
+                </div>
+            </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 style="color: var(--color-text);" class="text-xl font-medium mb-4 border-b pb-2">Revenue & Expense Trend</h3>
+                <div class="chart-container">
+                    <canvas id="revenueExpenseChart"></canvas>
+                </div>
+            </div>
+        </section>
 
                 <section id="inventory-add" class="section bg-white p-6 rounded-xl shadow-lg mb-6 section-content">
-          <h3 class="text-xl font-medium mb-3 border-b pb-2 text-gray-900">Add Inventory Item</h3>
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Add Inventory Item</h3>
           <form id="inventory-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border rounded-lg bg-gray-50">
             <input type="hidden" id="inventory-id">
             <div>
-              <label for="item" class="block text-sm font-medium text-gray-700">Item:</label>
-                            <input type="text" id="item" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="item" style="color: var(--color-text);" class="block text-sm font-medium">Item:</label>
+              <input type="text" id="item" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
             </div>
             <div>
-              <label for="opening" class="block text-sm font-medium text-gray-700">Opening Stock:</label>
-              <input type="number" id="opening" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="opening" style="color: var(--color-text);" class="block text-sm font-medium">Opening Stock:</label>
+              <input type="number" id="opening" min="0" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
             </div>
             <div>
-              <label for="purchases" class="block text-sm font-medium text-gray-700">Purchases:</label>
-              <input type="number" id="purchases" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="purchases" style="color: var(--color-text);" class="block text-sm font-medium">Purchases:</label>
+              <input type="number" id="purchases" min="0" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
             </div>
             <div>
-              <label for="inventory-sales" class="block text-sm font-medium text-gray-700">Sales :</label>
-              <input type="number" id="inventory-sales" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="inventory-sales" style="color: var(--color-text);" class="block text-sm font-medium">Sales :</label>
+              <input type="number" id="inventory-sales" min="0" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
             </div>
             <div>
-              <label for="spoilage" class="block text-sm font-medium text-gray-700">Spoilage:</label>
-              <input type="number" id="spoilage" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="spoilage" style="color: var(--color-text);" class="block text-sm font-medium">Spoilage:</label>
+              <input type="number" id="spoilage" min="0" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
             </div>
             <div class="md:col-span-2 flex justify-end pt-4">
-                            <button type="submit" class="bg-[#107C10] hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 flex items-center space-x-2">
+                            <button type="submit" style="background-color: var(--color-secondary); color: white;" class="hover:opacity-90 font-semibold py-2 px-4 rounded-lg transition duration-300 flex items-center space-x-2">
   <i class="fas fa-save"></i> <span id="inventory-submit-text">Save Inventory</span>
 </button>
             </div>
@@ -474,65 +459,415 @@
         </section>
 
         <section id="inventory-records" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
-          <h3 class="text-xl font-medium mb-3 border-b pb-2 text-gray-900">Inventory Records</h3>
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Inventory Records</h3>
           <div class="filter-controls flex flex-wrap gap-4 mb-4 items-end">
-            <input type="date" id="search-inventory-date" placeholder="Filter by date" class="p-2 border border-gray-300 rounded-md">
-                        <button onclick="fetchInventory()" class="bg-[#107C10] hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg">
+            <input type="date" id="search-inventory-date" placeholder="Filter by date" style="color: var(--color-text);" class="p-2 border border-gray-300 rounded-md focus:ring-[--color-primary] focus:border-[--color-primary]">
+                        <button onclick="fetchInventory()" style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 font-semibold py-2 px-4 rounded-lg">
               <i class="fas fa-search"></i> <span>Search</span>
             </button>
           </div>
           <div class="table-responsive" id="table-responsive">
-                        <button class="export-button bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 px-4 rounded-lg mb-3" onclick="exportTableToExcel('inventory-table', 'Inventory_Report_SheetJS')">Export to Excel</button>
+                        <button style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 text-sm font-semibold py-2 px-4 rounded-lg mb-3" onclick="exportTableToExcel('inventory-table', 'Inventory_Report_SheetJS')">Export to Excel</button>
             <table id="inventory-table" class="min-w-full divide-y divide-gray-200 border border-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Opening</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchases</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spoilage</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Closing</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Item</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Opening</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Purchases</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Sales</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Spoilage</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Closing</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200"></tbody>
+              <tbody style="color: var(--color-text);" class="bg-white divide-y divide-gray-200"></tbody>
             </table>
           </div>
         </section>
 
                 <section id="sales-new" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
-                    <h3 class="text-xl font-medium mb-3 border-b pb-2 text-gray-900">Record New Sale</h3>
+                    <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Record New Sale</h3>
 
           <form id="sale-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border rounded-lg bg-gray-50">
             <input type="hidden" id="sale-id">
             <div>
-              <label for="sale-item" class="block text-sm font-medium text-gray-700">Item:</label>
-              <input type="text" id="sale-item" list="item-suggestions" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="sale-item" style="color: var(--color-text);" class="block text-sm font-medium">Item:</label>
+              <input type="text" id="sale-item" list="item-suggestions" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-[--color-primary] focus:border-[--color-primary]">
               <datalist id="item-suggestions"></datalist>
             </div>
             <div>
-              <label for="sale-number" class="block text-sm font-medium text-gray-700">Number Sold:</label>
-              <input type="number" id="sale-number" min="1" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="sale-number" style="color: var(--color-text);" class="block text-sm font-medium">Number Sold:</label>
+              <input type="number" id="sale-number" min="1" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-[--color-primary] focus:border-[--color-primary]">
             </div>
             <div>
-              <label for="sale-bp" class="block text-sm font-medium text-gray-700">Buying Price (BP):</label>
-              <input type="number" id="sale-bp" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="sale-bp" style="color: var(--color-text);" class="block text-sm font-medium">Buying Price (BP):</label>
+              <input type="number" id="sale-bp" step="0.01" min="0" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-[--color-primary] focus:border-[--color-primary]">
             </div>
             <div>
-              <label for="sale-sp" class="block text-sm font-medium text-gray-700">Selling Price (SP):</label>
-              <input type="number" id="sale-sp" step="0.01" min="0" required class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-[#107C10] focus:border-[#107C10]">
+              <label for="sale-sp" style="color: var(--color-text);" class="block text-sm font-medium">Selling Price (SP):</label>
+              <input type="number" id="sale-sp" step="0.01" min="0" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-[--color-primary] focus:border-[--color-primary]">
             </div>
             <div class="md:col-span-2 flex justify-end pt-4">
-                            <button type="submit" class="bg-[#107C10] hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg">
-                <i class="fas fa-plus-circle"></i> Record Sale
+                            <button type="submit" style="background-color: var(--color-secondary); color: white;" class="hover:opacity-90 font-semibold py-2 px-4 rounded-lg">
+                <i class="fas fa-plus-circle"></i> <span>Record Sale</span>
               </button>
             </div>
           </form>
         </section>
 
         <section id="sales-records" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
-                    <h3 class="text-xl font-medium mb-3 border-b pb-2 text-gray-900">Sales Records</h3>
-
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Sales Records</h3>
           <div class="filter-controls flex flex-wrap gap-4 mb-4 items-end">
-            <label for="sales-date-filter" class="text-sm font-medium text-gray-700">Filter by Date:</label>
-            <input type="date" id="sales-date-filter" class="p-2 border border-gray-300 rounded-md">
+            <input type="date" id="search-sales-date" placeholder="Filter by date" style="color: var(--color-text);" class="p-2 border border-gray-300 rounded-md focus:ring-[--color-primary] focus:border-[--color-primary]">
+            <button onclick="fetchSales()" style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 font-semibold py-2 px-4 rounded-lg">
+              <i class="fas fa-search"></i> <span>Search</span>
+            </button>
+          </div>
+          <div class="table-responsive">
+            <button style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 text-sm font-semibold py-2 px-4 rounded-lg mb-3" onclick="exportTableToExcel('sales-table', 'Sales_Report_SheetJS')">Export to Excel</button>
+            <table id="sales-table" class="min-w-full divide-y divide-gray-200 border border-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Item</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Quantity</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Total BP</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Total SP</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Profit</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody style="color: var(--color-text);" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+        </section>
+
+                <section id="expenses-add" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Record New Expense</h3>
+          <form id="expense-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border rounded-lg bg-gray-50">
+            <input type="hidden" id="expense-id">
+            <div>
+              <label for="expense-category" style="color: var(--color-text);" class="block text-sm font-medium">Category:</label>
+              <select id="expense-category" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
+                <option value="">Select Category</option>
+                <option value="Supplies">Supplies</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Salary">Salary</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="expense-amount" style="color: var(--color-text);" class="block text-sm font-medium">Amount:</label>
+              <input type="number" id="expense-amount" step="0.01" min="0" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
+            </div>
+            <div>
+              <label for="expense-notes" style="color: var(--color-text);" class="block text-sm font-medium">Notes (Optional):</label>
+              <input type="text" id="expense-notes" style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
+            </div>
+            <div>
+              <label for="expense-date" style="color: var(--color-text);" class="block text-sm font-medium">Date:</label>
+              <input type="date" id="expense-date" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
+            </div>
+            <div class="md:col-span-2 flex justify-end pt-4">
+                            <button type="submit" style="background-color: var(--color-secondary); color: white;" class="hover:opacity-90 font-semibold py-2 px-4 rounded-lg">
+                <i class="fas fa-money-bill-wave"></i> <span>Record Expense</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section id="expenses-records" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Expense Records</h3>
+          <div class="filter-controls flex flex-wrap gap-4 mb-4 items-end">
+            <input type="date" id="search-expenses-date" placeholder="Filter by date" style="color: var(--color-text);" class="p-2 border border-gray-300 rounded-md focus:ring-[--color-primary] focus:border-[--color-primary]">
+            <button onclick="fetchExpenses()" style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 font-semibold py-2 px-4 rounded-lg">
+              <i class="fas fa-search"></i> <span>Search</span>
+            </button>
+          </div>
+          <div class="table-responsive">
+            <button style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 text-sm font-semibold py-2 px-4 rounded-lg mb-3" onclick="exportTableToExcel('expenses-table', 'Expenses_Report_SheetJS')">Export to Excel</button>
+            <table id="expenses-table" class="min-w-full divide-y divide-gray-200 border border-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Category</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Amount</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Notes</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody style="color: var(--color-text);" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+        </section>
+
+                <section id="cash-record" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Record Cash Movement</h3>
+          <form id="cash-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border rounded-lg bg-gray-50">
+            <input type="hidden" id="cash-id">
+            <div>
+              <label for="cash-type" style="color: var(--color-text);" class="block text-sm font-medium">Movement Type:</label>
+              <select id="cash-type" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
+                <option value="Deposit" style="color: var(--color-secondary);">Deposit (In)</option>
+                <option value="Withdrawal" style="color: var(--color-alert);">Withdrawal (Out)</option>
+              </select>
+            </div>
+            <div>
+              <label for="cash-amount" style="color: var(--color-text);" class="block text-sm font-medium">Amount:</label>
+              <input type="number" id="cash-amount" step="0.01" min="0" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
+            </div>
+            <div>
+              <label for="cash-reason" style="color: var(--color-text);" class="block text-sm font-medium">Reason:</label>
+              <input type="text" id="cash-reason" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
+            </div>
+            <div>
+              <label for="cash-date" style="color: var(--color-text);" class="block text-sm font-medium">Date:</label>
+              <input type="date" id="cash-date" required style="color: var(--color-text);" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[--color-primary] focus:border-[--color-primary]">
+            </div>
+            <div class="md:col-span-2 flex justify-end pt-4">
+                            <button type="submit" style="background-color: var(--color-secondary); color: white;" class="hover:opacity-90 font-semibold py-2 px-4 rounded-lg">
+                <i class="fas fa-exchange-alt"></i> <span>Record Cash Movement</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section id="cash-records" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Cash Records</h3>
+          <div class="filter-controls flex flex-wrap gap-4 mb-4 items-end">
+            <input type="date" id="search-cash-date" placeholder="Filter by date" style="color: var(--color-text);" class="p-2 border border-gray-300 rounded-md focus:ring-[--color-primary] focus:border-[--color-primary]">
+            <button onclick="fetchCash()" style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 font-semibold py-2 px-4 rounded-lg">
+              <i class="fas fa-search"></i> <span>Search</span>
+            </button>
+          </div>
+          <div class="table-responsive">
+            <button style="background-color: var(--color-primary); color: white;" class="hover:opacity-90 text-sm font-semibold py-2 px-4 rounded-lg mb-3" onclick="exportTableToExcel('cash-table', 'Cash_Records_Report_SheetJS')">Export to Excel</button>
+            <table id="cash-table" class="min-w-full divide-y divide-gray-200 border border-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Type</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Amount</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Reason</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody style="color: var(--color-text);" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+        </section>
+
+                <section id="reports-department" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Department Totals Report</h3>
+          <p style="color: var(--color-text);" class="opacity-80">Generate detailed reports for income and expenses segmented by department or category.</p>
+                  </section>
+
+        <section id="reports-overall" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">Overall Financial Summary</h3>
+          <p style="color: var(--color-text);" class="opacity-80">View a high-level summary of your business's financial health, including key performance indicators (KPIs).</p>
+        </section>
+
+                <section id="audit-logs" class="section bg-white p-6 rounded-xl shadow-lg mb-6">
+          <h3 style="color: var(--color-text);" class="text-xl font-medium mb-3 border-b pb-2">System Audit Logs</h3>
+          <div class="table-responsive">
+            <table id="audit-table" class="min-w-full divide-y divide-gray-200 border border-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Timestamp</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">User</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Action</th>
+                  <th style="color: var(--color-text); opacity: 0.7;" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Details</th>
+                </tr>
+              </thead>
+              <tbody style="color: var(--color-text);" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+        </section>
+
+
+      </main>
+    </div>
+  </div>
+
+<script>
+    // Dummy Data for Chart
+    const chartData = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [
+        {
+          label: 'Revenue',
+          // Secondary/Growth
+          borderColor: '#3B8C67',
+          backgroundColor: 'rgba(59, 140, 103, 0.1)',
+          data: [12000, 15000, 10000, 18000, 16000, 22000],
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Expenses',
+          // Alert/Warning
+          borderColor: '#C44747',
+          backgroundColor: 'rgba(196, 71, 71, 0.1)',
+          data: [4000, 5000, 3500, 6000, 5500, 7000],
+          fill: true,
+          tension: 0.3
+        }
+      ]
+    };
+
+    // Function to initialize Chart.js
+    function initializeChart() {
+      const ctx = document.getElementById('revenueExpenseChart');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'line',
+          data: chartData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+            }
+          }
+        });
+      }
+    }
+    
+    // Utility functions (simulated)
+    function showMessage(text) {
+      document.getElementById('message-text').textContent = text;
+      document.getElementById('message-modal').classList.remove('hidden');
+    }
+
+    document.getElementById('message-close-button').onclick = () => {
+      document.getElementById('message-modal').classList.add('hidden');
+    };
+
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const messageElement = document.getElementById('login-message');
+      
+      if (username === 'admin' && password === 'admin') {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('main-container').classList.remove('hidden');
+        document.getElementById('current-user-display').textContent = 'Admin User';
+        showSubSection('dashboard', 'nav-dashboard'); // Show dashboard on login
+        initializeChart(); // Initialize chart when dashboard is shown
+      } else {
+        messageElement.textContent = 'Invalid username or password.';
+      }
+    }
+
+    function logout() {
+      document.getElementById('main-container').classList.add('hidden');
+      document.getElementById('login-section').classList.remove('hidden');
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('login-message').textContent = '';
+    }
+
+    function showSubSection(sectionId, navButtonId) {
+      // Hide all sections
+      document.querySelectorAll('.section-content').forEach(section => {
+        section.classList.remove('active');
+        section.style.display = 'none';
+      });
+      
+      // Deactivate all nav buttons/sub-items
+      document.querySelectorAll('.nav-main, .sub-item').forEach(button => {
+        button.classList.remove('active');
+      });
+      
+      // Show the target section
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+        targetSection.style.display = 'block';
+      }
+
+      // Activate the main nav item
+      const mainNavId = navButtonId.replace(/-add|-records|-new|-record/g, '');
+      const mainNavButton = document.getElementById(mainNavId);
+      if (mainNavButton) {
+        mainNavButton.classList.add('active');
+        // Also open the submenu if it exists
+        const targetSubmenuId = mainNavButton.dataset.target;
+        if (targetSubmenuId) {
+          document.getElementById(targetSubmenuId).classList.add('open');
+          mainNavButton.querySelector('.arrow-icon').style.transform = 'rotate(180deg)';
+        }
+      }
+
+      // Activate the sub-item if applicable
+      const subItemButton = document.querySelector(`.sub-item[data-show="${sectionId}"]`);
+      if (subItemButton) {
+        subItemButton.classList.add('active');
+      }
+
+      // Close sidebar on mobile
+      if (window.innerWidth < 1024) {
+        document.getElementById('sidebar').classList.add('-translate-x-full');
+      }
+    }
+
+
+    function toggleSubmenu(submenuId, navButtonId) {
+      const submenu = document.getElementById(submenuId);
+      const navButton = document.getElementById(navButtonId);
+      const arrowIcon = navButton.querySelector('.arrow-icon');
+      
+      // Close all other submenus first
+      document.querySelectorAll('.submenu').forEach(otherSubmenu => {
+        if (otherSubmenu.id !== submenuId) {
+          otherSubmenu.classList.remove('open');
+          document.querySelector(`[data-target="${otherSubmenu.id}"] .arrow-icon`).style.transform = 'rotate(0deg)';
+        }
+      });
+
+      if (submenu.classList.contains('open')) {
+        submenu.classList.remove('open');
+        arrowIcon.style.transform = 'rotate(0deg)';
+      } else {
+        submenu.classList.add('open');
+        arrowIcon.style.transform = 'rotate(180deg)';
+      }
+      
+      // Ensure parent button remains active when its submenu is open
+      document.querySelectorAll('.nav-main').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Only activate the main button if none of its sub-items are active
+      if (!submenu.querySelector('.sub-item.active')) {
+        navButton.classList.add('active');
+      }
+    }
+
+    // Mobile Sidebar Toggle
+    document.getElementById('menu-toggle-open').onclick = () => {
+      document.getElementById('sidebar').classList.remove('-translate-x-full');
+    };
+    document.getElementById('close-sidebar').onclick = () => {
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+    };
+
+
+    // Chart.js needs to be re-initialized when its containing element is displayed,
+    // but since we set `dashboard` to `active` on load, the standard initialization
+    // in a dedicated function tied to the section being shown is the best practice.
+    
+    // Initial setup (assuming user is logged in for development, otherwise will be called in login())
+    // showSubSection('dashboard', 'nav-dashboard');
+    
+</script>
+</body>
+</html>
