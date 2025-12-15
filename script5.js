@@ -350,12 +350,25 @@ async function loadDashboardData() {
     renderLowStockTable(filteredLowStockItems);
 }
 
-applyFilterButton.addEventListener('click', loadDashboardData);
+// Get necessary elements once
+const applyFilterButton = document.getElementById('apply-filter-button');
+const filterButtonText = document.getElementById('filter-button-text');
+const filterButtonSpinner = document.getElementById('filter-button-spinner');
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (authToken) {
-        updateUI(true);
+/**
+ * Toggles the loading state for the Apply Filter button.
+ * @param {boolean} isLoading - True to show spinner/disable, false to hide/enable.
+ */
+function setFilterButtonLoading(isLoading) {
+    if (isLoading) {
+        applyFilterButton.disabled = true;
+        applyFilterButton.classList.add('opacity-50', 'cursor-not-allowed'); // Optional: Add visual disabled state
+        filterButtonText.textContent = 'Searching...'; // Update text
+        filterButtonSpinner.classList.remove('hidden');
     } else {
-        updateUI(false);
+        applyFilterButton.disabled = false;
+        applyFilterButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        filterButtonText.textContent = 'Search'; // Restore text
+        filterButtonSpinner.classList.add('hidden');
     }
-});
+}
