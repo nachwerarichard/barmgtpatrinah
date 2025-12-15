@@ -395,7 +395,7 @@ function showSubSection(sectionId, parentNavId = null) {
  */
 function initSidebarState() {
     // Show inventory-add by default, and set its parent nav-inventory as active
-    showSubSection('inventory-add', 'nav-inventory');
+    showSubSection( 'nav-dashboard');
     
     // Manually ensure the submenu is open and arrow is correct on initial load
     const submenu = document.getElementById('inventory-submenu');
