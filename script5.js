@@ -8,9 +8,7 @@ const applyFilterButton = document.getElementById('apply-filter-button');
 const periodDisplay = document.getElementById('period-display');
 
 let chartInstance = null;
-
 // --- Utility Functions ---
-
 function showMessage(title, message, isError = true) {
     const modal = document.getElementById('message-modal');
     document.getElementById('modal-title').textContent = title;
