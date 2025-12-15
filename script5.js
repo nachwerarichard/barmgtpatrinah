@@ -351,7 +351,6 @@ async function loadDashboardData() {
 }
 
 // Get necessary elements once
-const applyFilterButton = document.getElementById('apply-filter-button');
 const filterButtonText = document.getElementById('filter-button-text');
 const filterButtonSpinner = document.getElementById('filter-button-spinner');
 
