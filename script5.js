@@ -393,3 +393,5 @@ function setFilterButtonLoading(isLoading) {
         filterButtonSpinner.classList.add('hidden');
     }
 }
+
+applyFilterButton.addEventListener('click', loadDashboardData);
