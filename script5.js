@@ -246,7 +246,7 @@ function renderFinancialChart(data) {
 /**
  * Renders the Key Performance Indicators (KPIs).
  * @param {object} financialSummary - The financial summary data.
- * @param {Array<object>} filteredLowStockItems - The low stock items array, ALREADY filtered (excludes "res").
+ * @param {Array<object>} filteredLowStockItems - The low stock items array, ALREADY filtered (only includes "bar").
  */
 function renderKpis(financialSummary, filteredLowStockItems) {
     const lowStockCount = filteredLowStockItems.length; // Uses the count of filtered items
@@ -274,7 +274,7 @@ function renderKpis(financialSummary, filteredLowStockItems) {
 
 /**
  * Renders the Low Stock table.
- * @param {Array<object>} items - The low stock items array, ALREADY filtered (excludes "res").
+ * @param {Array<object>} items - The low stock items array, ALREADY filtered (only includes "bar").
  */
 function renderLowStockTable(items) {
     const lowStockList = document.getElementById('low-stock-list');
@@ -326,12 +326,13 @@ async function loadDashboardData() {
 
     const [financialData, lowStockData] = await Promise.all([financialDataPromise, lowStockDataPromise]);
 
-    // *** MODIFIED FILTER LOGIC: Filter out items starting with "res" ***
+    // *** MODIFIED FILTER LOGIC: ONLY INCLUDE items starting with "bar" ***
     let filteredLowStockItems = [];
     if (lowStockData && lowStockData.items) {
         filteredLowStockItems = lowStockData.items.filter(item => {
-            // Convert to lowercase and check if it starts with "res"
-            return !item.item.toLowerCase().startsWith('res');
+            // Convert to lowercase and check if it starts with "bar"
+            // The logic is now: return TRUE only if it starts with 'bar'
+            return item.item.toLowerCase().startsWith('bar');
         });
     }
     // *** END MODIFIED FILTER LOGIC ***
