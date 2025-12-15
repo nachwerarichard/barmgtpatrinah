@@ -296,7 +296,7 @@ function renderLowStockTable(items) {
 
         row.innerHTML = `
             <td class="py-3 text-sm font-medium text-gray-800">${item.item}</td>
-            <td class="py-3 text-sm text-right font-bold text-red-500">${item.closingStock} units</td>
+            <td class="py-3 text-sm text-right font-bold text-red-500">${item.closingStock} </td>
         `;
 
         lowStockList.appendChild(row);
