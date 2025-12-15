@@ -21,8 +21,18 @@ function showMessage(title, message, isError = true) {
     modal.classList.add('flex');
 }
 
+/**
+ * Custom function to format currency as UGX.
+ * The output will look like "UGX 100,000"
+ */
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    // Using 'en-UG' locale and 'UGX' currency code for Ugandan Shillings format.
+    return new Intl.NumberFormat('en-UG', { 
+        style: 'currency', 
+        currency: 'UGX',
+        minimumFractionDigits: 0, // Typically, UGX is shown without decimal places
+        maximumFractionDigits: 0 
+    }).format(amount);
 }
 
 function getDateString(date) {
@@ -200,12 +210,13 @@ function renderFinancialChart(data) {
                 y: {
                     stacked: false,
                     beginAtZero: true,
-                    // Axis Title/Tick Color: Secondary/Primary Text for light theme
-                    title: { display: true, text: 'Amount (USD)', color: '#6B7280' },
+                    // MODIFIED TEXT FOR UGX
+                    title: { display: true, text: 'Amount (UGX)', color: '#6B7280' },
                     grid: { color: 'rgba(156, 163, 175, 0.2)' }, // Lighter grid lines
                     ticks: {
                         color: '#1F2937',
                         callback: function(value) {
+                            // Uses the updated formatCurrency function
                             return formatCurrency(value);
                         }
                     }
@@ -222,6 +233,7 @@ function renderFinancialChart(data) {
                                 label += ': ';
                             }
                             if (context.parsed.y !== null) {
+                                // Uses the updated formatCurrency function
                                 label += formatCurrency(context.parsed.y);
                             }
                             return label;
@@ -236,10 +248,10 @@ function renderFinancialChart(data) {
 /**
  * Renders the Key Performance Indicators (KPIs).
  * @param {object} financialSummary - The financial summary data.
- * @param {Array<object>} filteredLowStockItems - The low stock items array, ALREADY filtered.
+ * @param {Array<object>} filteredLowStockItems - The low stock items array, ALREADY filtered (excludes "res").
  */
 function renderKpis(financialSummary, filteredLowStockItems) {
-    const lowStockCount = filteredLowStockItems.length; // Use the length of the filtered array
+    const lowStockCount = filteredLowStockItems.length; // Uses the count of filtered items
     document.getElementById('kpi-revenue').textContent = formatCurrency(financialSummary.totalRevenue);
     document.getElementById('kpi-profit').textContent = formatCurrency(financialSummary.totalProfit);
     document.getElementById('kpi-expenses').textContent = formatCurrency(financialSummary.totalExpenses);
@@ -264,7 +276,7 @@ function renderKpis(financialSummary, filteredLowStockItems) {
 
 /**
  * Renders the Low Stock table.
- * @param {Array<object>} items - The low stock items array, ALREADY filtered.
+ * @param {Array<object>} items - The low stock items array, ALREADY filtered (excludes "res").
  */
 function renderLowStockTable(items) {
     const lowStockList = document.getElementById('low-stock-list');
@@ -316,15 +328,15 @@ async function loadDashboardData() {
 
     const [financialData, lowStockData] = await Promise.all([financialDataPromise, lowStockDataPromise]);
 
-    // *** NEW LOGIC: Filter out items starting with "rest" ***
+    // *** MODIFIED FILTER LOGIC: Filter out items starting with "res" ***
     let filteredLowStockItems = [];
     if (lowStockData && lowStockData.items) {
         filteredLowStockItems = lowStockData.items.filter(item => {
-            // Convert to lowercase and check if it starts with "rest"
-            return !item.item.toLowerCase().startsWith('rest');
+            // Convert to lowercase and check if it starts with "res"
+            return !item.item.toLowerCase().startsWith('res');
         });
     }
-    // *** END NEW LOGIC ***
+    // *** END MODIFIED FILTER LOGIC ***
 
 
     if (financialData) {
