@@ -304,50 +304,72 @@ function renderLowStockTable(items) {
 }
 
 // Main function to load data
+// The setup code (setFilterButtonLoading, etc.) is already correct in your script.
+
+// Main function to load data
 async function loadDashboardData() {
-    // Check for custom range input
+    // 1. Check for custom range input
     const start = startDateInput.value;
     const end = endDateInput.value;
 
     let financialEndpoint = '/reports/financial-summary';
     if (start && end) {
+        // Validate date range before starting load
+        if (new Date(start) > new Date(end)) {
+            showMessage('Invalid Range', 'The start date cannot be after the end date.', true);
+            return;
+        }
         financialEndpoint += `?start=${start}&end=${end}`;
     }
 
-    // Show loading status
+    // --- START ANIMATION & DISABLE BUTTON ---
+    setFilterButtonLoading(true);
+
+    // Show loading status for chart container
     chartLoadingStatus.classList.remove('hidden');
     chartLoadingStatus.textContent = 'Loading financial data...';
 
-    // 1. Fetch Financial Summary
-    const financialDataPromise = apiFetch(financialEndpoint);
 
-    // 2. Fetch Low Stock Items (This is always for the current status)
-    const lowStockDataPromise = apiFetch('/reports/low-stock-items');
+    try {
+        // 2. Fetch Financial Summary
+        const financialDataPromise = apiFetch(financialEndpoint);
 
-    const [financialData, lowStockData] = await Promise.all([financialDataPromise, lowStockDataPromise]);
+        // 3. Fetch Low Stock Items (This is always for the current status)
+        const lowStockDataPromise = apiFetch('/reports/low-stock-items');
 
-    // *** MODIFIED FILTER LOGIC: ONLY INCLUDE items starting with "bar" ***
-    let filteredLowStockItems = [];
-    if (lowStockData && lowStockData.items) {
-        filteredLowStockItems = lowStockData.items.filter(item => {
-            // Convert to lowercase and check if it starts with "bar"
-            // The logic is now: return TRUE only if it starts with 'bar'
-            return item.item.toLowerCase().startsWith('bar');
-        });
-    }
-    // *** END MODIFIED FILTER LOGIC ***
+        const [financialData, lowStockData] = await Promise.all([financialDataPromise, lowStockDataPromise]);
+
+        // If either call failed and returned null, stop processing.
+        if (!financialData || !lowStockData) {
+            chartLoadingStatus.textContent = 'Data loading failed for one or more reports.';
+            return;
+        }
+
+        // *** MODIFIED FILTER LOGIC: ONLY INCLUDE items starting with "bar" ***
+        let filteredLowStockItems = [];
+        if (lowStockData && lowStockData.items) {
+            filteredLowStockItems = lowStockData.items.filter(item => {
+                // Convert to lowercase and check if it starts with "bar"
+                return item.item.toLowerCase().startsWith('bar');
+            });
+        }
+        // *** END MODIFIED FILTER LOGIC ***
 
 
-    if (financialData) {
-        // Pass the *filtered* list to renderKpis for the accurate count
+        // 4. Render Data
         renderKpis(financialData, filteredLowStockItems);
         renderFinancialChart(financialData.chartData);
-    } else {
-        chartLoadingStatus.textContent = 'Failed to load financial data. Check console for details.';
-    }
+        renderLowStockTable(filteredLowStockItems);
 
-    // Pass the *filtered* list to renderLowStockTable
-    renderLowStockTable(filteredLowStockItems);
+    } catch (error) {
+        // The apiFetch function handles the showMessage for network errors.
+        console.error('Dashboard data load sequence failed:', error);
+        chartLoadingStatus.textContent = 'An unexpected error occurred during data processing.';
+
+    } finally {
+        // --- STOP ANIMATION & ENABLE BUTTON (Guaranteed to run) ---
+        setFilterButtonLoading(false);
+    }
 }
 
 // Get necessary elements once
