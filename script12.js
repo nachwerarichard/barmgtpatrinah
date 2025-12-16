@@ -38,48 +38,7 @@ function hidePreloader() {
 }
 
 
-async function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const loginMessage = document.getElementById('login-message');
-    
-    // 1. Show preloader and clear previous message
-    showPreloader();
-    loginMessage.textContent = ''; 
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Store authentication information
-            authToken = data.token;
-            currentUsername = username;
-            currentUserRole = data.role || 'Bar Staff'; 
-
-            localStorage.setItem('authToken', authToken);
-            localStorage.setItem('username', currentUsername);
-            localStorage.setItem('userRole', currentUserRole);
-
-            // Update UI and show the main application
-            updateUIForUserRole();
-            initSidebarState(); 
-        } else {
-            loginMessage.textContent = data.message || 'Login failed. Please check your credentials.';
-        }
-    } catch (error) {
-        console.error('Login request failed:', error);
-        loginMessage.textContent = 'Network error or service unavailable.';
-    } finally {
-        // 2. Hide preloader after the request finishes (success or failure)
-        hidePreloader();
-    }
-}
 /**
  * Displays a custom alert message to the user.
  * (Requires #message-modal, #message-text, #message-close-button in HTML)
