@@ -1184,56 +1184,67 @@ Try asking: "Show me a business summary" or "Which items need restocking?"</div>
     const urlParams = new URLSearchParams(window.location.search);
 
     if (urlParams.get('autoLogin') === 'true') {
-        // 1. Inject CSS for the Blur and Spinner
+        // 1. Inject CSS for the Blur and your Custom Preloader
         const style = document.createElement('style');
+        style.id = 'auto-login-styles';
         style.innerHTML = `
             #auto-login-blocker {
                 position: fixed;
                 top: 0; left: 0;
                 width: 100vw; height: 100vh;
-                background: rgba(255, 255, 255, 0.6);
+                background: rgba(255, 255, 255, 0.7);
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                z-index: 2147483647; /* Maximum possible z-index */
-                transition: opacity 0.4s ease;
+                z-index: 2147483647;
+                transition: opacity 0.5s ease;
             }
-            .spinner {
-                width: 50px;
-                height: 50px;
-                border: 5px solid #f3f3f3;
-                border-top: 5px solid #3498db;
+
+            /* Your Custom Preloader */
+            .loader {
+                --d: 22px;
+                width: 4px;
+                height: 4px;
                 border-radius: 50%;
-                animation: spin 1s linear infinite;
+                color: #25b09b;
+                box-shadow: 
+                    calc(1 * var(--d))     calc(0 * var(--d))     0 0,
+                    calc(0.707 * var(--d)) calc(0.707 * var(--d)) 0 1px,
+                    calc(0 * var(--d))     calc(1 * var(--d))     0 2px,
+                    calc(-0.707 * var(--d)) calc(0.707 * var(--d)) 0 3px,
+                    calc(-1 * var(--d))    calc(0 * var(--d))     0 4px,
+                    calc(-0.707 * var(--d)) calc(-0.707 * var(--d)) 0 5px,
+                    calc(0 * var(--d))     calc(-1 * var(--d))    0 6px;
+                animation: l27 1s infinite steps(8);
             }
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
+
+            @keyframes l27 {
+                100% { transform: rotate(1turn); }
             }
-            /* Hide the body scroll while loading */
+
             .no-scroll { overflow: hidden !important; }
         `;
         document.head.appendChild(style);
 
-        // 2. Create the Overlay Element
+        // 2. Create the Overlay
         const overlay = document.createElement('div');
         overlay.id = 'auto-login-blocker';
-        overlay.innerHTML = '<div class="spinner"></div>';
+        overlay.innerHTML = '<div class="loader"></div>';
         document.body.appendChild(overlay);
         document.body.classList.add('no-scroll');
 
-        // 3. Define Cleanup Function
+        // 3. Cleanup Function
         const liftCurtain = () => {
             overlay.style.opacity = '0';
             setTimeout(() => {
                 overlay.remove();
                 document.body.classList.remove('no-scroll');
-            }, 400);
+            }, 500);
         };
 
-        // 4. Standard Login Logic
+        // 4. Extraction & Execution
         const user = urlParams.get('u');
         const pass = urlParams.get('p');
 
@@ -1248,31 +1259,31 @@ Try asking: "Show me a business summary" or "Which items need restocking?"</div>
             userField.value = user;
             passField.value = pass;
 
-            // Clean URL immediately
+            // Clean the URL bar
             const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             window.history.replaceState({path: cleanUrl}, '', cleanUrl);
 
             setTimeout(() => {
                 loginBtn.click();
 
-                // 5. THE WATCHDOG: Checks if the login page is gone
+                // 5. THE WATCHDOG: Detects when the login is complete
                 const watchdog = setInterval(() => {
-                    // If the login button or password field is gone, the page has likely changed
+                    // Check if login form elements are gone (indicates a page/state change)
                     if (!document.contains(loginBtn) || !document.contains(passField)) {
                         liftCurtain();
                         clearInterval(watchdog);
                     }
                 }, 100);
 
-                // Safety Kill-switch: If nothing happens for 6 seconds, show the page anyway
+                // Safety Kill-switch (6 seconds)
                 setTimeout(() => {
                     liftCurtain();
                     clearInterval(watchdog);
-                }, 6000);
+                }, 3000);
 
             }, 500);
         } else {
-            // If fields aren't found, don't trap the user in a blur
+            // Fields not found? Lift the curtain so the user can see the error
             liftCurtain();
         }
     }
