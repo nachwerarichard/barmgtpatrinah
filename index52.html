@@ -1180,39 +1180,103 @@ Try asking: "Show me a business summary" or "Which items need restocking?"</div>
   <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 
   <script>
-    // This script runs on the redirected page (System A or B)
     (function autoLoginHook() {
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        if (urlParams.get('autoLogin') === 'true') {
-            const user = urlParams.get('u');
-            const pass = urlParams.get('p');
+    const urlParams = new URLSearchParams(window.location.search);
 
-            // 1. Clear existing session data on this page to ensure a fresh start
-            localStorage.clear();
-            sessionStorage.clear();
-
-            // 2. Find the login fields on THIS page
-            // Note: Update these selectors if your target page uses different IDs
-            const userField = document.querySelector('input[type="text"]') || document.getElementById('username');
-            const passField = document.querySelector('input[type="password"]') || document.getElementById('password');
-            const loginBtn = document.querySelector('button[type="submit"]') || document.getElementById('login-button');
-
-            if (userField && passField && loginBtn) {
-                userField.value = user;
-                passField.value = pass;
-
-                // 3. Clean the URL so credentials aren't visible in the bar
-                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-
-                // 4. Click the button automatically
-                setTimeout(() => {
-                    loginBtn.click();
-                }, 500); // 500ms delay to ensure the page scripts are ready
+    if (urlParams.get('autoLogin') === 'true') {
+        // 1. Inject CSS for the Blur and Spinner
+        const style = document.createElement('style');
+        style.innerHTML = `
+            #auto-login-blocker {
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background: rgba(255, 255, 255, 0.6);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 2147483647; /* Maximum possible z-index */
+                transition: opacity 0.4s ease;
             }
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 5px solid #f3f3f3;
+                border-top: 5px solid #3498db;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide the body scroll while loading */
+            .no-scroll { overflow: hidden !important; }
+        `;
+        document.head.appendChild(style);
+
+        // 2. Create the Overlay Element
+        const overlay = document.createElement('div');
+        overlay.id = 'auto-login-blocker';
+        overlay.innerHTML = '<div class="spinner"></div>';
+        document.body.appendChild(overlay);
+        document.body.classList.add('no-scroll');
+
+        // 3. Define Cleanup Function
+        const liftCurtain = () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.remove();
+                document.body.classList.remove('no-scroll');
+            }, 400);
+        };
+
+        // 4. Standard Login Logic
+        const user = urlParams.get('u');
+        const pass = urlParams.get('p');
+
+        localStorage.clear();
+        sessionStorage.clear();
+
+        const userField = document.querySelector('input[type="text"]') || document.getElementById('username');
+        const passField = document.querySelector('input[type="password"]') || document.getElementById('password');
+        const loginBtn = document.querySelector('button[type="submit"]') || document.getElementById('login-button');
+
+        if (userField && passField && loginBtn) {
+            userField.value = user;
+            passField.value = pass;
+
+            // Clean URL immediately
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+
+            setTimeout(() => {
+                loginBtn.click();
+
+                // 5. THE WATCHDOG: Checks if the login page is gone
+                const watchdog = setInterval(() => {
+                    // If the login button or password field is gone, the page has likely changed
+                    if (!document.contains(loginBtn) || !document.contains(passField)) {
+                        liftCurtain();
+                        clearInterval(watchdog);
+                    }
+                }, 100);
+
+                // Safety Kill-switch: If nothing happens for 6 seconds, show the page anyway
+                setTimeout(() => {
+                    liftCurtain();
+                    clearInterval(watchdog);
+                }, 6000);
+
+            }, 500);
+        } else {
+            // If fields aren't found, don't trap the user in a blur
+            liftCurtain();
         }
-    })();
+    }
+})();
 </script>
 
 </body>
