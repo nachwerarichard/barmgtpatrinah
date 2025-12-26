@@ -38,12 +38,7 @@ function hidePreloader() {
 }
 
 // Place this at the very beginning of your script initialization
-function checkAuth() {
-    if (!localStorage.getItem('isAuthenticated')) {
-        // If the flag is gone, they shouldn't be here. Kick them out.
-        window.location.replace('https://elegant-pasca-cea136.netlify.app/frontend/login.html');
-    }
-}
+
 
 // Call it immediately
 checkAuth();
