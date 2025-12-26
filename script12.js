@@ -123,20 +123,19 @@ function showMessage(message, callback = null) {
  * Clears user state, local storage, and updates UI to show the login screen.
  */
 function logout() {
-    // Clear authentication info
+    // 1. Clear in-memory variables
     authToken = '';
     currentUsername = '';
     currentUserRole = '';
+
+    // 2. Wipe ALL stored data from the browser
     localStorage.clear();
 
-    // UI update
-    document.getElementById('main-container').classList.add('hidden');
-    document.getElementById('login-section').classList.remove('hidden');
-
-    // Ensure the full update logic runs to hide navigation elements
-    updateUIForUserRole();
+    // 3. Prevent "Back" button access
+    // We use .replace() so the dashboard is removed from browser history
+    console.log("Session cleared. Redirecting to login...");
+    window.location.replace('https://elegant-pasca-cea136.netlify.app/frontend/login.html');
 }
-
 /**
  * Wrapper for fetch API to include authentication token and handle errors.
  */
