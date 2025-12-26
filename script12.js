@@ -506,39 +506,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function logout() {
     try {
-        // Optionally notify backend of logout for audit logging
-        // Send token before clearing it, to allow backend to process if needed
-        await fetch(`${API_BASE_URL}/logout`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${authToken}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        // 1. Notify backend (using the token before we wipe it)
+        if (authToken) {
+            await fetch(`${API_BASE_URL}/logout`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+        }
     } catch (error) {
-        // This catch handles network errors or if the backend doesn't exist
-        // or doesn't require auth for logout, which is acceptable.
-        console.warn('Error notifying backend of logout (may be due to network issues or no backend endpoint):', error);
+        // Log the error but continue with local logout anyway
+        console.warn('Backend logout failed or endpoint missing:', error);
     }
 
+    // 2. Wipe local in-memory state
     authToken = '';
     currentUsername = '';
     currentUserRole = '';
-    localStorage.clear(); // Clear all stored user data
-    updateUIForUserRole(); // Reset UI to login state
-    if (document.getElementById('username')) document.getElementById('username').value = '';
-    if (document.getElementById('password')) document.getElementById('password').value = '';
-    if (document.getElementById('login-message')) document.getElementById('login-message').textContent = '';
-}
 
-// --- Inventory Functions ---
-// Function to update the search button text
-function updateSearchButton(text, iconClass) {
-    const searchButton = document.querySelector('.filter-controls button[onclick="fetchInventory()"]');
-    if (searchButton) {
-        // Clear existing content and set new text and icon
-        searchButton.innerHTML = `${text} <i class="${iconClass}"></i>`;
-    }
+    // 3. Clear all stored data (Tokens, Roles, Flags)
+    localStorage.clear();
+
+    // 4. Secure Redirect
+    // Using .replace() removes the current page from history so 
+    // the user cannot click "Back" to see the dashboard.
+    console.log("Logout successful. Redirecting...");
+    window.location.replace('https://elegant-pasca-cea136.netlify.app/frontend/login.html');
 }
 
 
