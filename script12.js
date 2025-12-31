@@ -284,7 +284,7 @@ function showSubSection(sectionId, parentNavId = null) {
     // --- Role-based Access Check ---
     const allowedSections = {
         'Nachwera Richard': ['inventory', 'sales', 'expenses', 'cash', 'reports', 'audit','dashboard'],
-        'Nelson': ['inventory', 'sales', 'expenses', 'cash', 'reports', 'audit','dashboard'],
+        'admin': ['inventory', 'sales', 'expenses', 'cash', 'reports', 'audit','dashboard'],
         'Florence': ['inventory', 'sales', 'expenses', 'cash', 'reports', 'audit'],
         'Martha': ['inventory', 'sales', 'expenses', 'cash'],
         'Mercy': ['inventory', 'sales', 'expenses', 'cash'],
@@ -295,7 +295,7 @@ function showSubSection(sectionId, parentNavId = null) {
 
     if (currentUserRole && !allowedSections[currentUserRole]?.includes(checkSectionId)) {
         // ... (Your existing redirection/access denial logic)
-        const fullAccessRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        const fullAccessRoles = ['Nachwera Richard', 'admin', 'Florence'];
         if (fullAccessRoles.includes(currentUserRole)) {
             initSidebarState(); 
         } else if (currentUserRole === 'Martha' || currentUserRole === 'Mercy' || currentUserRole === 'Joshua') {
@@ -422,7 +422,7 @@ function updateUIForUserRole() {
     // MAPPING FIX: Confirmed all 6 main nav items for full-access roles.
     const rolePermissions = {
         'Nachwera Richard': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashboard'],
-        'Nelson': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashboard'],
+        'admin': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs','nav-dashboard'],
         'Florence': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management', 'nav-reports', 'nav-audit-logs'],
         'Martha': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management'],
         'Mercy': ['nav-inventory', 'nav-sales', 'nav-expenses', 'nav-cash-management'],
@@ -754,7 +754,7 @@ function renderInventoryTable(inventory) {
         actionsCell.className = 'actions';
         // ... (end of existing code) ...
 
-        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
 
         if (adminRoles.includes(currentUserRole) && item._id) {
             const editButton = document.createElement('button');
@@ -871,7 +871,7 @@ async function submitInventoryForm(event) {
 
         if (id && id !== '') {
             // Edit operation (PUT)
-            const allowedToEditInventory = ['Nachwera Richard', 'Nelson', 'Florence'];
+            const allowedToEditInventory = ['Nachwera Richard', 'admin', 'Florence'];
             if (!allowedToEditInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit inventory.');
                 // 3a. Revert button and enable it immediately on permission failure
@@ -887,7 +887,7 @@ async function submitInventoryForm(event) {
             successMessage = 'Updated! ✅'; // Shortened for button display
         } else {
             // New item creation (POST)
-            const allowedToAddInventory = ['Nachwera Richard', 'Nelson', 'Florence', 'Martha','Mercy', 'Joshua'];
+            const allowedToAddInventory = ['Nachwera Richard', 'admin', 'Florence', 'Martha','Mercy', 'Joshua'];
             if (!allowedToAddInventory.includes(currentUserRole)) {
                 showMessage('Permission Denied: You do not have permission to add inventory.');
                 // 3b. Revert button and enable it immediately on permission failure
@@ -1141,7 +1141,7 @@ function renderSalesTable(sales) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
@@ -1217,7 +1217,7 @@ function showConfirm(message, onConfirm, onCancel = null) {
 }
 
 async function deleteSale(id) {
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
     if (!adminRoles.includes(currentUserRole)) {
         showMessage('Permission Denied: Only administrators can delete sales records.');
         return;
@@ -1248,7 +1248,7 @@ async function submitSaleForm(event) {
     const submitButton = document.querySelector('#sale-form button[type="submit"]');
     const originalButtonText = submitButton.innerHTML;
 
-    const allowedToRecordSales = ['Nachwera Richard', 'Martha', 'Mercy', 'Joshua', 'Nelson', 'Florence'];
+    const allowedToRecordSales = ['Nachwera Richard', 'Martha', 'Mercy', 'Joshua', 'admin', 'Florence'];
     if (!allowedToRecordSales.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record sales.');
         return;
@@ -1308,7 +1308,7 @@ async function submitSaleForm(event) {
         let successMessage;
 
         if (id) {
-            const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+            const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
             if (!adminRoles.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit sales.');
                 return;
@@ -1631,7 +1631,7 @@ function renderExpensesTable(expenses) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
         // Only administrators can edit expenses
         if (adminRoles.includes(currentUserRole)) {
             const editButton = document.createElement('button');
@@ -1772,7 +1772,7 @@ function setEditButtonLoading(isLoading) {
 async function submitEditExpenseForm(event) {
     event.preventDefault();
 
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
     if (!adminRoles.includes(currentUserRole)) {
         showMessage('Permission Denied: Only administrators can edit expenses.');
         return;
@@ -1834,7 +1834,7 @@ async function submitExpenseForm(event) {
         return;
     }
 
-    const allowedToRecordExpenses = ['Nachwera Richard', 'Martha','Mercy', 'Joshua', 'Nelson', 'Florence'];
+    const allowedToRecordExpenses = ['Nachwera Richard', 'Martha','Mercy', 'Joshua', 'admin', 'Florence'];
     if (!allowedToRecordExpenses.includes(currentUserRole)) {
         showMessage('Permission Denied: You do not have permission to record expenses.');
         return;
@@ -1879,7 +1879,7 @@ async function submitExpenseForm(event) {
 
         if (id) {
             // Edit operation (PUT)
-            const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+            const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
             if (!adminRoles.includes(currentUserRole)) {
                 showMessage('Permission Denied: Only administrators can edit expenses.');
                 // Revert button on permission fail
@@ -2073,8 +2073,8 @@ function renderCashJournalTable(records) {
         const actionsCell = row.insertCell();
         actionsCell.className = 'actions';
 
-        // Only Nachwera Richard, Nelson, Florence can edit cash entries
-        const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+        // Only Nachwera Richard, admin, Florence can edit cash entries
+        const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
         // Assuming currentUserRole is defined globally/in scope
         if (adminRoles.includes(currentUserRole)) { 
             const editButton = document.createElement('button');
@@ -2125,7 +2125,7 @@ async function submitEditCashForm(event) {
     const modal = document.getElementById('edit-cash-modal');
     
     // The existing adminRoles check from your original submitCashJournalForm for editing
-    const adminRoles = ['Nachwera Richard', 'Nelson', 'Florence'];
+    const adminRoles = ['Nachwera Richard', 'admin', 'Florence'];
     if (!adminRoles.includes(currentUserRole)) {
         showMessage('Permission Denied: Only administrators can edit cash entries.');
         return;
