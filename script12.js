@@ -41,7 +41,6 @@ function hidePreloader() {
 
 
 // Call it immediately
-checkAuth();
 
 async function login() {
     const username = document.getElementById('username').value;
