@@ -447,7 +447,7 @@ function updateUIForUserRole() {
     // 2. Update user display
     const userDisplay = document.getElementById('current-user-display');
     if (userDisplay) {
-         userDisplay.textContent = currentUserRole ? `${currentUserRole}` : '';
+         userDisplay.textContent = currentUsername ? `${currentUsername}` : '';
     }
 
     // 3. Show main app container if logged in
